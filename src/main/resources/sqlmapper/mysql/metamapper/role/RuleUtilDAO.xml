@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="RuleUtilDAO">
+
+	<resultMap type="ctrlItemVO" id="ctrlItemInfo">
+		<result property="objId" column="OBJ_ID" />
+		<result property="objNm" column="OBJ_NM"/>
+		<result property="mngObjTp" column="MNG_OBJ_TP"/>
+		<result property="comment" column="COMMENT"/>
+		<result property="modDate" column="MOD_DT" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+		<result property="modUserId" column="MOD_USER_ID"/>
+	</resultMap>
+
+	<resultMap type="ctrlPropVO" id="ctrlPropInfo">
+		<result property="objId" column="OBJ_ID" />
+		<result property="propId" column="PROP_ID"/>
+		<result property="propNm" column="PROP_NM"/>
+		<result property="propValue" column="PROP_VALUE"/>
+		<result property="link" column="LINK"/>
+		<result property="modDate" column="MOD_DT" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+		<result property="modUserId" column="MOD_USER_ID"/>
+	</resultMap>
+
+	<!-- 정책 - 제어대상 관련 항목 조회 -->
+	<select id="selectCtrlItem" parameterType="String" resultMap="ctrlItemInfo">
+
+		SELECT
+			OBJ_ID, OBJ_NM, MNG_OBJ_TP, COMMENT, 
+			MOD_DT, MOD_USER_ID  
+		FROM CTRL_ITEM_MSTR
+		WHERE OBJ_ID=#{objId}
+
+	</select>
+
+	<!-- 정책 - 제어대상 관련 속성 리스트 조회 -->
+	<select id="selectCtrlPropList" parameterType="String" resultMap="ctrlPropInfo">
+	
+		SELECT OBJ_ID, PROP_ID, PROP_NM, PROP_VALUE, LINK, MOD_DT, MOD_USER_ID 
+		FROM CTRL_ITEM_PROP
+		WHERE OBJ_ID=#{objId}
+
+	</select>
+
+	<!-- 정책항목 아이디 조회 사용정책 -->
+	<select id="selectItemIdByMap" parameterType="hashMap" resultType="String">
+		SELECT CONF_ID FROM (
+			SELECT CONF_ID
+			FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+			WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP=#{confTp}
+			UNION
+			SELECT CONF_ID
+			FROM GR_USER_RULE_CONF RC 
+			WHERE RC.USER_ID=#{userId} AND RC.CONF_TP=#{confTp}
+			UNION
+			SELECT CONF_ID
+			FROM GR_DEPT_RULE_CONF RC JOIN USER_MSTR UM ON RC.DEPT_CD = UM.DEPT_CD
+			WHERE UM.USER_ID=#{userId} AND RC.CONF_TP=#{confTp}
+			UNION
+			SELECT #{defaultConfId} AS CONF_ID FROM DUAL
+		) AM LIMIT 1;
+	</select>
+
+	<!-- 정책항목 아이디 조회, 단말정책 -->
+	<select id="selectItemIdWithMapInClientRule" parameterType="hashMap" resultType="String">
+		SELECT CONF_ID FROM (
+			SELECT CONF_ID
+			FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+			WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP=#{confTp}
+			UNION
+			SELECT #{defaultConfId} AS CONF_ID FROM DUAL
+		) AM LIMIT 1;
+	</select>
+	
+	<!-- 사이트버전 조회 -->
+	<select id="selectSiteVersion" parameterType="string" resultType="String">
+		SELECT SERVER_VERSION FROM SITE_MSTR WHERE SITE_NAME=#{siteName};
+	</select>
+
+</mapper>

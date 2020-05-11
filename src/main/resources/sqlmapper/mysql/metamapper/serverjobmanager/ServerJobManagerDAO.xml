@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ServerJobManagerDAO">
+
+	<resultMap id="ResultMapJobList" type="JobVO" >
+		<result property="jobNo" column="job_no"/>
+		<result property="clientId" column="client_id"/>
+		<result property="job" column="job_data"/>
+		<result property="jobTp" column="job_tp"/>
+	</resultMap>
+
+
+    <select id="selectListForClientReady" parameterType="map" resultMap="ResultMapJobList">
+    	<!--
+		(SELECT A.job_no AS job_no, A.job_tp AS job_tp, '-' AS client_id, A.job_data AS job_data 
+		  FROM (SELECT job_no, job_tp, job_data FROM job_mstr WHERE job_tp = 'A') A
+		  WHERE A.job_no NOT IN (SELECT job_no FROM job_trgt WHERE client_id = 'agent-rc2-local-001')
+		)
+		UNION ALL
+		(SELECT trgt.job_no AS job_no, trgt.client_id AS client_id, mstr.job_tp AS job_tp, mstr.job_data AS job_data
+		  FROM job_trgt trgt, job_mstr mstr
+		  WHERE mstr.job_tp != 'A'
+		    AND trgt.job_no = mstr.job_no 
+		    AND trgt.job_stat = 'R'         
+		    AND trgt.client_id = 'agent-rc2-local-001'
+		)
+		ORDER BY job_no  
+		-->     
+		SELECT trgt.job_no, trgt.client_id, mstr.job_tp, mstr.job_data
+		FROM job_trgt trgt, job_mstr mstr
+		WHERE trgt.job_no = mstr.job_no 
+		  AND trgt.job_stat = 'R'         
+		  AND trgt.client_id = #{clientId}
+		ORDER BY job_no  
+    </select>
+
+	<update id="updateReadyToDoing" parameterType="map">
+		UPDATE job_trgt as jt,
+		(
+			SELECT trgt.job_no as jno, trgt.client_id as tid
+			FROM job_trgt trgt, job_mstr mstr
+			WHERE trgt.job_no = mstr.job_no
+				AND trgt.job_stat = 'R'
+				AND trgt.client_id = #{clientId}
+				AND trgt.job_no = #{jobNo}
+		) as selected
+		SET job_stat = 'D' WHERE selected.jno = jt.job_no AND selected.tid = jt.client_id
+	</update>
+	
+	<update id="updateDoingToComplete" parameterType="map">
+		UPDATE job_trgt 
+		SET job_stat = 'C',mod_dt = now() WHERE job_no=#{jobNo} AND client_id=#{clientId}
+	</update>
+	
+	<update id="updateDoingToError" parameterType="map">
+		UPDATE job_trgt 
+		SET job_stat = 'E',mod_dt = now() WHERE job_no=#{jobNo} AND client_id=#{clientId}
+	</update>
+	
+	<insert id="insertOrUpdateJobResult" parameterType="map">
+		UPDATE job_trgt SET result_data = #{resultData}, job_stat = #{jobStat}, mod_dt = now(6)
+		WHERE job_no = #{jobNo} AND client_id = #{clientId}
+	</insert>
+	
+	<insert id="insertOrUpdateClientConnStatus" parameterType="map">
+		INSERT INTO client_access (client_id,user_id,check_dt,max_rsp_time,timeout_cnt) VALUES(#{clientId},#{userId},now(),#{maxRspTime},#{timeoutCnt})
+		ON DUPLICATE KEY UPDATE user_id=#{userId},check_dt=now(),max_rsp_time=#{maxRspTime},timeout_cnt=#{timeoutCnt} 
+	</insert>
+	
+	<insert id="insertOrUpdateOnlineClientConnStatus" parameterType="map">
+		INSERT INTO client_access 
+		(client_id,on_user_id,on_last_id,on_check_dt,local_user_id,check_dt,max_rsp_time,timeout_cnt
+		<if test="pollingTime != -3137">,polling_time</if>
+		) 
+		VALUES(#{clientId},#{userId},#{userId},now(),'-',now(),#{maxRspTime},#{timeoutCnt}
+		<if test="pollingTime != -3137">,#{pollingTime}</if>
+		)
+		ON DUPLICATE KEY UPDATE on_user_id=#{userId},on_last_id=#{userId},on_check_dt=now(),local_user_id='-',check_dt=now(),max_rsp_time=#{maxRspTime},timeout_cnt=#{timeoutCnt} 
+		<if test="pollingTime != -3137">,polling_time=#{pollingTime}</if>
+	</insert>
+	
+	<insert id="insertOrUpdateLocalClientConnStatus" parameterType="map">
+		INSERT INTO client_access 
+		(client_id,local_user_id,local_last_id,local_check_dt,on_user_id,check_dt,max_rsp_time,timeout_cnt
+		<if test="pollingTime != -3137">,polling_time</if>
+		) 
+		VALUES(#{clientId},#{userId},#{userId},now(),'-',now(),#{maxRspTime},#{timeoutCnt}
+		<if test="pollingTime != -3137">,#{pollingTime}</if>
+		)
+		ON DUPLICATE KEY UPDATE local_user_id=#{userId},local_last_id=#{userId},local_check_dt=now(),on_user_id='-',check_dt=now(),max_rsp_time=#{maxRspTime},timeout_cnt=#{timeoutCnt}
+		<if test="pollingTime != -3137">,polling_time=#{pollingTime}</if>
+	</insert>
+	
+	<insert id="insertOrUpdateNotLogginedClientConnStatus" parameterType="map">
+		INSERT INTO client_access 
+		(client_id,on_user_id,local_user_id,check_dt,max_rsp_time,timeout_cnt
+		<if test="pollingTime != -3137">,polling_time</if>
+		) 
+		VALUES(#{clientId},'-','-',now(),#{maxRspTime},#{timeoutCnt}
+		<if test="pollingTime != -3137">,#{pollingTime}</if>
+		)
+		ON DUPLICATE KEY UPDATE on_user_id='-',local_user_id='-',check_dt=now(),max_rsp_time=#{maxRspTime},timeout_cnt=#{timeoutCnt}
+		<if test="pollingTime != -3137">,polling_time=#{pollingTime}</if>
+	</insert>
+	
+	<select id="selectIsJob" parameterType="String" resultType="int">
+		SELECT is_job FROM client_access WHERE client_id=#{clientId}
+	</select>
+	
+	<update id="updateIsJobTo0" parameterType="String">
+		UPDATE client_access SET is_job=0 WHERE client_id = #{clientId}
+	</update>
+	
+	<select id="selectOnlineAccessDiffTime" parameterType="String" resultType="String">
+		SELECT timestampdiff(SECOND, on_check_dt, now()) FROM client_access WHERE client_id=#{clientId}
+	</select>
+	
+	<select id="selectLocalAccessDiffTime" parameterType="String" resultType="String">
+		SELECT timestampdiff(SECOND, local_check_dt, now()) FROM client_access WHERE client_id=#{clientId}
+	</select>
+	
+	<select id="selectNotLoginAccessDiffTime" parameterType="String" resultType="String">
+		SELECT timestampdiff(SECOND, check_dt, now()) FROM client_access WHERE client_id=#{clientId}
+	</select>
+	
+	<insert id="insertJobTrgt" parameterType="map">
+		INSERT INTO job_trgt (client_id,job_no,mod_dtmod_user_id,job_stat)
+		VALUES(#{clientId},#{jobNo},now(),now(6),#{modUserId},#{jobStat})
+	</insert>
+	
+	<select id="selectPollingTimeColumnCntInClientAccess" resultType="int">
+		SELECT count(*)
+		FROM information_schema.columns 
+		WHERE table_name = 'client_access'
+		AND column_name = 'polling_time';
+	</select>
+</mapper>

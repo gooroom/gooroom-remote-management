@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration	PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<properties>
+
+	</properties>
+	
+	<typeAliases>
+		<typeAlias  alias="AuthVO" type="kr.gooroom.gpms.grm.serveragent.service.AuthVO" />
+		<typeAlias  alias="JobVO" type="kr.gooroom.gpms.grm.serveragent.service.JobVO" />
+		<typeAlias  alias="PackageServerVO" type="kr.gooroom.gpms.grm.serveragent.service.PackageServerVO" />
+		<typeAlias  alias="PackageVO" type="kr.gooroom.gpms.grm.serveragent.service.PackageVO" />
+		<typeAlias  alias="LogGeneralVO" type="kr.gooroom.gpms.grm.serveragent.service.LogGeneralVO" />
+		
+		<typeAlias alias="ctrlItemVO" type="kr.gooroom.gpms.grm.serveragent.service.CtrlItemVO"/>
+		<typeAlias alias="ctrlPropVO" type="kr.gooroom.gpms.grm.serveragent.service.CtrlPropVO"/>
+		<typeAlias alias="SchedInfoVO" type="kr.gooroom.gpms.grm.serveragent.service.SchedInfoVO"/>
+		<typeAlias alias="NotiVO" type="kr.gooroom.gpms.grm.serveragent.service.NotiVO"/>
+	</typeAliases>
+	
+</configuration>
