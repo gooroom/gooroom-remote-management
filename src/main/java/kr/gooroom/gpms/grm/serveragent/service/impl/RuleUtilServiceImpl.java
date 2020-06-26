@@ -1006,86 +1006,81 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 	    }
 
 	    if (resultVO != null && resultVO.getData() != null) {
-		CtrlItemVO[] data = (CtrlItemVO[]) resultVO.getData();
-		if (data != null && data.length > 0) {
+			CtrlItemVO[] data = (CtrlItemVO[]) resultVO.getData();
+			if (data != null && data.length > 0) {
 
-		    // set version
-		    String siteVersion = ruleUtilDAO.selectSiteVersion();
-		    networkHashMap.put("version", siteVersion);
+			    // set version
+			    String siteVersion = ruleUtilDAO.selectSiteVersion();
+			    networkHashMap.put("version", siteVersion);
 
-		    CtrlPropVO[] props = data[0].getPropArray();
+			    CtrlPropVO[] props = data[0].getPropArray();
 
-		    for (CtrlPropVO vo : props) {
-			switch (vo.getPropNm()) {
-			case GPMSConstants.NETWORK_GLOVAL_STATE:
-			    networkHashMap.put("state", vo.getPropValue());
-			    break;
-			case GPMSConstants.NETWORK_ITEM_FIREWALL:
-			    String[] val = vo.getPropValue().split("\\|");
+				for (CtrlPropVO vo : props) {
+					switch (vo.getPropNm()) {
+						case GPMSConstants.NETWORK_GLOVAL_STATE:
+							networkHashMap.put("state", vo.getPropValue());
+							break;
+						case GPMSConstants.NETWORK_ITEM_FIREWALL:
+							String[] val = vo.getPropValue().split("\\|");
 
-			    NetworkPropVO networkVO = new NetworkPropVO();
-			    if (val != null && val.length > 6) {
-				networkVO.setDirection(val[1]);
-				networkVO.setProtocol(val[2]);
-				networkVO.setIpaddress(val[3]);
-				networkVO.setSrc_ports(val[4]);
-				networkVO.setDst_ports(val[5]);
-				networkVO.setState(val[6]);
-			    }
+							NetworkPropVO networkVO = new NetworkPropVO();
+							if (val != null && val.length > 6) {
+								networkVO.setDirection(val[1]);
+								networkVO.setProtocol(val[2]);
+								networkVO.setIpaddress(val[3]);
+								networkVO.setSrc_ports(val[4]);
+								networkVO.setDst_ports(val[5]);
+								networkVO.setState(val[6]);
+							}
 
-			    ArrayList<NetworkPropVO> tempNetworks = (ArrayList<NetworkPropVO>) networkHashMap.get("rules");
-			    if (tempNetworks != null) {
-				tempNetworks.add(networkVO);
-				networkHashMap.put("rules", tempNetworks);
-			    } else {
-				tempNetworks = new ArrayList<NetworkPropVO>();
-				tempNetworks.add(networkVO);
-				
-				networkHashMap.put("rules", tempNetworks);
-			    }
-			    break;
-			default:
-			    break;
-			}
-		    }
-		    ArrayList<NetworkPropVO> tempNetworks = (ArrayList<NetworkPropVO>) networkHashMap.get("rules");
-		    if (tempNetworks != null) {
-				ArrayList<NetworkPropVO> revNetworks = new ArrayList<NetworkPropVO>();
-				for(int i = tempNetworks.size(); i > 0; i--) {
-					revNetworks.add(tempNetworks.get(i-1));
+							ArrayList<NetworkPropVO> revNetworks = (ArrayList<NetworkPropVO>) networkHashMap.get("rules");
+							if (revNetworks != null) {
+								revNetworks.add(networkVO);
+								networkHashMap.put("rules", revNetworks);
+							} else {
+								revNetworks = new ArrayList<NetworkPropVO>();
+								revNetworks.add(networkVO);
+								networkHashMap.put("rules", revNetworks);
+							}
+							break;
+						default:
+							break;
+					}
 				}
-				networkHashMap.put("rules", revNetworks);
-		    }
-		}
+			    ArrayList<NetworkPropVO> revNetworks = (ArrayList<NetworkPropVO>) networkHashMap.get("rules");
+			    if (revNetworks != null) {
+					networkHashMap.put("rules", revNetworks);
+			    }
+			}
 	    }
 
 	    if (networkHashMap != null && networkHashMap.size() > 0) {
-		resultHashMap.clear();
-		resultHashMap.put("network", networkHashMap);
+			resultHashMap.clear();
+			resultHashMap.put("network", networkHashMap);
 
-		// 매체제어
-		HashMap<String, Object> mediaHm = new HashMap<String, Object>();
-		HashMap<String, String> mediaMap = new HashMap<String, String>();
-		mediaMap.put("userId", userId);
-		mediaMap.put("clientId", clientId);
-		mediaMap.put("confTp", "MEDIARULE");
-		mediaMap.put("defaultConfId", "MCRUDEFAULT");
+			// 매체제어
+			HashMap<String, Object> mediaHm = new HashMap<String, Object>();
+			HashMap<String, String> mediaMap = new HashMap<String, String>();
+			mediaMap.put("userId", userId);
+			mediaMap.put("clientId", clientId);
+			mediaMap.put("confTp", "MEDIARULE");
+			mediaMap.put("defaultConfId", "MCRUDEFAULT");
 
-		String mediaRe = ruleUtilDAO.selectItemIdByMap(mediaMap);
-		if (mediaRe != null && mediaRe.length() > 0) {
-		    mediaHm = readMediaRuleInfo(mediaRe);
-		} else {
-		    // 디폴트 값을 조회
-		    mediaHm = readMediaRuleInfo(
-			    GPMSConstants.CTRL_ITEM_MEDIACTRL_RULE_ABBR + GPMSConstants.MSG_DEFAULT);
-		}
+			String mediaRe = ruleUtilDAO.selectItemIdByMap(mediaMap);
+			if (mediaRe != null && mediaRe.length() > 0) {
+			    mediaHm = readMediaRuleInfo(mediaRe);
+			} else {
+			    // 디폴트 값을 조회
+			    mediaHm = readMediaRuleInfo(
+				    GPMSConstants.CTRL_ITEM_MEDIACTRL_RULE_ABBR + GPMSConstants.MSG_DEFAULT);
+			}
 
-		if (mediaHm != null && mediaHm.size() > 0) {
-		    resultHashMap.putAll(mediaHm);
-		}
+			if (mediaHm != null && mediaHm.size() > 0) {
+			    resultHashMap.putAll(mediaHm);
+			}
 
 	    } else {
-		resultHashMap.clear();
+			resultHashMap.clear();
 	    }
 
 	} catch (Exception ex) {
