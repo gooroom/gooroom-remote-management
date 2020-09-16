@@ -22,6 +22,7 @@ public interface ClientJobService {
 	public int insertClientExtHist(String clientId) throws Exception;
 	public int insertClientSecurityStateHist(String clientId) throws Exception;
 	public String selectOneServerjobDispatchTime(String siteName) throws Exception;
+	public String selectOneServerjobMaxMediaCnt(String siteName) throws Exception;
 	public int insertLogGeneral(List<LogGeneralVO> vos) throws Exception;
 	public String selectClientCertificate(String clientId) throws Exception;
 	public String selectHypervisorOperation(String clientId) throws Exception;
@@ -49,4 +50,13 @@ public interface ClientJobService {
 	public String selectRootUse(String clientId) throws Exception;
 	public String selectSudoUse(String clientId) throws Exception;
 	public String selectPolkitAdmin(String clientId) throws Exception;
+	public int insertUserReqMstr (UserReqVO urVo) throws Exception;
+	public int insertUserReqProp (UserReqVO urVo) throws Exception;
+	public String selectRegisterReqMod(String siteName) throws Exception;
+	public String selectDeleteReqMod(String siteName) throws Exception;
+	public String selectUserReqSeq(UserReqVO urVo) throws Exception;
+	public String selectUserReqPropSeq(UserReqVO urVo) throws Exception;
+	public int deleteUserReqMstr(UserReqVO urVo) throws Exception;
+	public int deleteUserReqProp(UserReqVO urVo) throws Exception;
+
 }

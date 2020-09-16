@@ -9,7 +9,6 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
@@ -19,27 +18,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import kr.gooroom.gpms.grm.serveragent.service.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.core.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import kr.gooroom.gpms.grm.serveragent.service.ClientInfoVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientJobService;
-import kr.gooroom.gpms.grm.serveragent.service.ClientLoginVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientSecurityStateVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogBrowserVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogGeneralVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogSecurity2VO;
-import kr.gooroom.gpms.grm.serveragent.service.LogSecurityVO;
-import kr.gooroom.gpms.grm.serveragent.service.NotiVO;
-import kr.gooroom.gpms.grm.serveragent.service.PackageServerVO;
-import kr.gooroom.gpms.grm.serveragent.service.PackageVO;
-import kr.gooroom.gpms.grm.serveragent.service.PollingTimeVO;
-import kr.gooroom.gpms.grm.serveragent.service.ProfileVO;
-import kr.gooroom.gpms.grm.serveragent.service.RuleUtilService;
-import kr.gooroom.gpms.grm.serveragent.service.SchedInfoVO;
 
 public class Tasker {
     private static final Logger logger = LoggerFactory.getLogger(Tasker.class);
@@ -1223,9 +1205,91 @@ public class Tasker {
 				return String.format("%s=%s", Constant.TASK_GET_POLKIT_ADMIN_CONFIG, e.toString());
 			}
 		}
+		/*
+		 * CLIENT_EVENT_USB_WHITELIST
+		 * 매체제어 USB 등록/삭제/등록취소 요청
+		 */
+		else if (taskName.equals(Constant.TASK_CLIENT_EVENT_USB_WHITELIST)) {
+			try {
+				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get(Constant.J_REQUEST);
+
+				String action = (String)moduleRequest.get("action");
+				String datetime = (String)moduleRequest.get("datetime");
+				String loginId = (String)moduleRequest.get("login_id");
+				String usbName = (String)moduleRequest.get("usb_name");
+				String usbProduct = (String)moduleRequest.get("usb_product");
+				String usbSize = (String)moduleRequest.get("usb_size");
+				String usbVendor = (String)moduleRequest.get("usb_vendor");
+				String usbSerial = (String)moduleRequest.get("usb_serial");
+				String state = "";
+
+				UserReqVO urVo = new UserReqVO();
+				urVo.setClientId(clientId);
+				urVo.setUserId(loginId);
+				urVo.setActionType(action);
+				urVo.setRegDt(datetime);
+				urVo.setUsbName(usbName);
+				urVo.setUsbSerialNo(usbSerial);
+				urVo.setUsbProduct(usbProduct);
+				urVo.setUsbSize(usbSize);
+				urVo.setUsbVendor(usbVendor);
+
+				String registerReqMod = clientJobService.selectRegisterReqMod(Constant.SITE_NAME);
+				String deteleReqMod = clientJobService.selectDeleteReqMod(Constant.SITE_NAME);
+				String modDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+				if (action.equals(Constant.ACTION_REGISTERING)) {
+					//등록 요청
+					urVo.setActionType(Constant.ACTION_REGISTERING);
+					if(registerReqMod.equals(new String("0"))) {
+						urVo.setAdminCheck(Constant.ACTION_APPROVAL);
+						urVo.setModUserId(Constant.H_SYSTEM);
+						urVo.setModDt(modDt);
+						state = Constant.ACTION_REGISTER_APPROVAL;
+					} else {
+						urVo.setAdminCheck(Constant.ACTION_WAITING);
+						state = Constant.ACTION_REGISTERING;
+					}
+					//매체 등록 요청 저장
+					clientJobService.insertUserReqMstr(urVo);
+					urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
+					clientJobService.insertUserReqProp(urVo);
+				} else if (action.equals(Constant.ACTION_UNREGISTERING)) {
+					//삭제 요청
+					urVo.setActionType(Constant.ACTION_UNREGISTERING);
+					if(deteleReqMod.equals(new String("0"))) {
+						urVo.setAdminCheck(Constant.ACTION_APPROVAL);
+						urVo.setModUserId(Constant.H_SYSTEM);
+						urVo.setModDt(modDt);
+						state = Constant.ACTION_REGISTER_DENY;
+					} else {
+						urVo.setAdminCheck(Constant.ACTION_WAITING);
+						state = Constant.ACTION_REGISTERING;
+					}
+					//매체 삭제 요청 저장
+					clientJobService.insertUserReqMstr(urVo);
+					urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
+					clientJobService.insertUserReqProp(urVo);
+				} else if (action.equals(Constant.ACTION_REGISTERING_CANCEL)) {
+					//등록 요청 취소
+					state = Constant.ACTION_REGISTERING_CANCEL;
+					//매체 요청 정보 삭제
+					urVo.setReqSeq(clientJobService.selectUserReqPropSeq(urVo));
+					clientJobService.deleteUserReqProp(urVo);
+					clientJobService.deleteUserReqMstr(urVo);
+				}
+
+				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				jRes.put("state", state);
+				task.put(Constant.J_RESPONSE, jRes);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return String.format("%s=%s", Constant.TASK_CLIENT_EVENT_USB_WHITELIST, e.toString());
+			}
+		}
 		return Constant.TR_OK;
 	}
-
 	
 	/**
 	 * 브라우저 정책 조회
@@ -1452,7 +1516,7 @@ public class Tasker {
 	public String clientSync(
 			ClientJobService clientJobService,
 			RuleUtilService ruleUtilService,
-			String clientId, 
+			String clientId,
 			String clientIp, 
 			HashMap<String,Object> task) {
 		
@@ -1497,10 +1561,23 @@ public class Tasker {
 				jRes.put("dispatch_time", "");
 			}
 			/*
+			 * 매체 등록 개수
+			 */
+			try {
+				String maxMediaCnt = clientJobService.selectOneServerjobMaxMediaCnt(Constant.SITE_NAME);
+				if (maxMediaCnt == null) {
+					maxMediaCnt = "";
+				}
+				jRes.put("usb_whitelist_max", maxMediaCnt);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				jRes.put("usb_whitelist_max", "");
+			}
+			/*
 			 * HOSTS 정보
 			 */
 			try {
-				
 				String etcHosts = clientJobService.selectEtcHostsContents(clientId);
 				fileNameList.add(Constant.HOSTS_PATH);
 				fileContentsList.add(etcHosts);

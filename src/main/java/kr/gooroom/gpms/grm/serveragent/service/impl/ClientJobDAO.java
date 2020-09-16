@@ -13,6 +13,7 @@ import kr.gooroom.gpms.grm.serveragent.service.LogGeneralVO;
 import kr.gooroom.gpms.grm.serveragent.service.LogSecurity2VO;
 import kr.gooroom.gpms.grm.serveragent.service.LogSecurityVO;
 import kr.gooroom.gpms.grm.serveragent.service.LogUpdateVO;
+import kr.gooroom.gpms.grm.serveragent.service.UserReqVO;
 import kr.gooroom.gpms.grm.serveragent.service.NotiVO;
 import kr.gooroom.gpms.grm.serveragent.service.PackageServerVO;
 import kr.gooroom.gpms.grm.serveragent.service.PackageVO;
@@ -223,6 +224,39 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 */
 	public String selectOneServerjobDispatchTime(String siteName) throws Exception {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectOneServerjobDispatchTime", siteName);
+	}
+
+	/**
+	 * 매체 등록 개수 설정 검색
+	 *
+	 * @param String
+	 * @return String
+	 * @throws Exception
+	 */
+	public String selectOneServerjobMaxMediaCnt(String siteName) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectOneServerjobMaxMediaCnt", siteName);
+	}
+
+	/**
+	 * 매체 등록 요청 승인 설정 (1:수동, 0:자동)
+	 *
+	 * @param String
+	 * @return String
+	 * @throws Exception
+	 */
+	public String selectRegisterReqMod(String siteName) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectOneServerJobRegisterReqMod", siteName);
+	}
+
+	/**
+	 * 매체 삭제 요청 승인 설정 (1:수동, 0:자동)
+	 *
+	 * @param String
+	 * @return String
+	 * @throws Exception
+	 */
+	public String selectDeleteReqMod(String siteName) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectOneServerjobDeleteReqMod", siteName);
 	}
 	
 	/**
@@ -495,6 +529,26 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	public String selectSudoUse(String clientId) throws Exception {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectSudoUse", clientId);
 	}
+
+	/**
+	 * 매체 등록, 삭제 요청의 reqSeq 검색
+	 * @param urmVo
+	 * @return
+	 * @throws Exception
+	 */
+	public String selectUserReqSeq(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectUserReqSeq", urmVo);
+	}
+
+	/**
+	 * 매체 요청 상세 정보의 reqSeq 검색
+	 * @param urmVo
+	 * @return
+	 * @throws Exception
+	 */
+	public String selectUserReqPropSeq(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectUserReqPropSeq", urmVo);
+	}
 	
 	/**
 	 * 폴킷 관리자 조회
@@ -504,5 +558,49 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 */
 	public String selectPolkitAdmin(String clientId) throws Exception {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectPolkitAdmin", clientId);
+	}
+
+	/**
+	 * 매체 등록/삭제/취소 요청 저장
+	 *
+	 * @param urmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int insertUserReqMstr(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.insert("ClientJobManagerDAO.insertUserReqMstr", urmVo);
+	}
+
+	/**
+	 * 매체 정보 저장
+	 *
+	 * @param urVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int insertUserReqProp(UserReqVO urVo) throws Exception {
+		return sqlSessionMeta.insert("ClientJobManagerDAO.insertUserReqProp", urVo);
+	}
+
+	/**
+	 * 매체 등록 요청 취소(삭제)
+	 *
+	 * @param urmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteUserReqMstr(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.delete("ClientJobManagerDAO.deleteUserReqMstr",urmVo);
+	}
+
+	/**
+	 * 매체 등록 요청 정보 취소(삭제)
+	 *
+	 * @param urmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteUserReqProp(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.delete("ClientJobManagerDAO.deleteUserReqProp",urmVo);
 	}
 }

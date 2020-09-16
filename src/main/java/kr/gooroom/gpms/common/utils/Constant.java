@@ -55,6 +55,17 @@ public class Constant {
 	
 	public static final String TR_NO_AGENT_DATA = "noagentdata";
 	public static final String TR_OK = "ok";
+
+	public static final String ACTION_REGISTERING = "registering";
+	public static final String ACTION_REGISTERING_CANCEL = "registering-cancel";
+	public static final String ACTION_UNREGISTERING = "unregistering";
+	public static final String ACTION_REGISTER_APPROVAL = "register-approval";
+	public static final String ACTION_REGISTER_DENY = "register-deny";
+	public static final String ACTION_UNREGISTER_APPROVAL = "unregister-approval";
+	public static final String ACTION_APPROVAL = "approval";
+	public static final String ACTION_DENY = "deny";
+	public static final String ACTION_WAITING = "waiting";
+
 	
 	public static final String JOB_STAT_SUCCESS = "C";
 	public static final String JOB_STAT_FAIL = "E";
@@ -94,6 +105,7 @@ public class Constant {
 	public static final String H_TOKEN = "gooroom-client-token";
 	public static final String H_REALIP = "gooroom-real-ip";
 	public static final String H_VERSION = "version";
+	public static final String H_SYSTEM = "system";
 	
 	public static final String TASK_INSTALLED_PACKAGE_LIST = "installed_package_list";
 	public static final String TASK_GRM_HEARTBEAT = "grm_heartbit";
@@ -140,6 +152,7 @@ public class Constant {
 	public static final String TASK_GET_ACCOUNT_CONFIG = "get_account_config";
 	public static final String TASK_SET_AUTHORITY_CONFIG_LOCAL = "set_authority_config_local";
 	public static final String TASK_GET_POLKIT_ADMIN_CONFIG = "get_polkit_admin_config";
+	public static final String TASK_CLIENT_EVENT_USB_WHITELIST = "client_event_usb_whitelist";
 	
 	public static final String SOURCESLIST_PATH = prop.getProperty("gooroom.sourceslist.path");
 	public static final String PREFERENCES_PATH = prop.getProperty("gooroom.preferences.path");

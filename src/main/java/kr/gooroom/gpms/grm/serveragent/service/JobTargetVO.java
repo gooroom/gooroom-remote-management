@@ -13,9 +13,7 @@ public class JobTargetVO implements Serializable{
 	String modUserId;
 	String jobStat;
 	
-	public String getClientId() {
-		return clientId;
-	}
+	public String getClientId() { return clientId; }
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
@@ -31,9 +29,7 @@ public class JobTargetVO implements Serializable{
 	public void setResultData(String resultData) {
 		this.resultData = resultData;
 	}
-	public String getModDt() {
-		return modDt;
-	}
+	public String getModDt() { return modDt; }
 	public void setModDt(String modDt) {
 		this.modDt = modDt;
 	}

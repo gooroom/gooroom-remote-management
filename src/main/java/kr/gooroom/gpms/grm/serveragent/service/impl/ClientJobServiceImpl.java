@@ -4,23 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import org.springframework.stereotype.Service;
 
-import kr.gooroom.gpms.grm.serveragent.service.ClientInfoVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientJobService;
-import kr.gooroom.gpms.grm.serveragent.service.ClientLoginVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientSecurityStateVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogBrowserVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogGeneralVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogSecurityVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogSecurity2VO;
-import kr.gooroom.gpms.grm.serveragent.service.LogUpdateVO;
-import kr.gooroom.gpms.grm.serveragent.service.NotiVO;
-import kr.gooroom.gpms.grm.serveragent.service.PackageServerVO;
-import kr.gooroom.gpms.grm.serveragent.service.PackageVO;
-import kr.gooroom.gpms.grm.serveragent.service.PollingTimeVO;
-import kr.gooroom.gpms.grm.serveragent.service.ProfileVO;
-import kr.gooroom.gpms.grm.serveragent.service.SchedInfoVO;
+import kr.gooroom.gpms.grm.serveragent.service.*;
+import org.springframework.stereotype.Service;
 
 @Service("clientJobService")
 public class ClientJobServiceImpl implements ClientJobService {
@@ -111,6 +97,21 @@ public class ClientJobServiceImpl implements ClientJobService {
 	@Override
 	public String selectOneServerjobDispatchTime(String siteName) throws Exception {
 		return clientJobDAO.selectOneServerjobDispatchTime(siteName);
+	}
+
+	@Override
+	public String selectOneServerjobMaxMediaCnt(String siteName) throws Exception {
+		return clientJobDAO.selectOneServerjobMaxMediaCnt(siteName);
+	}
+
+	@Override
+	public String selectRegisterReqMod(String siteName) throws Exception {
+		return clientJobDAO.selectRegisterReqMod(siteName);
+	}
+
+	@Override
+	public String selectDeleteReqMod(String siteName) throws Exception {
+		return clientJobDAO.selectDeleteReqMod(siteName);
 	}
 
 	@Override
@@ -247,4 +248,35 @@ public class ClientJobServiceImpl implements ClientJobService {
 	public String selectPolkitAdmin(String clientId) throws Exception {
 		return clientJobDAO.selectPolkitAdmin(clientId);
 	}
+
+	@Override
+	public int insertUserReqMstr(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.insertUserReqMstr(urmVo);
+	}
+
+	@Override
+	public int insertUserReqProp(UserReqVO urVo) throws Exception {
+		return clientJobDAO.insertUserReqProp(urVo);
+	}
+
+	@Override
+	public String selectUserReqSeq(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectUserReqSeq(urmVo);
+	}
+
+	@Override
+	public String selectUserReqPropSeq(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectUserReqPropSeq(urmVo);
+	}
+
+	@Override
+	public int deleteUserReqMstr(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.deleteUserReqMstr(urmVo);
+	}
+
+	@Override
+	public int deleteUserReqProp(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.deleteUserReqProp(urmVo);
+	}
+
 }

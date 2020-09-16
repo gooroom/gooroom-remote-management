@@ -32,9 +32,7 @@ public class JobVO implements Serializable{
 	public String getJob() {
 		return job;
 	}
-	public void setJob(String job) {
-		this.job = job;
-	}
+	public void setJob(String job) { this.job = job; }
 	
 
 		
