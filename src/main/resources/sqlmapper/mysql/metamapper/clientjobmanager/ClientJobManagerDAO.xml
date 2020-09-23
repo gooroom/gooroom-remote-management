@@ -23,6 +23,22 @@
 		<result property="title" column="title"/>
 		<result property="viewType" column="view_type"/>
 	</resultMap>
+
+	<resultMap type="userReqVO" id="userReqInfo">
+		<result property="reqSeq" column="REQ_SEQ"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="clientId" column="CLIENT_ID"/>
+		<result property="regDt" column="REG_DT"/>
+		<result property="actionType" column="ACTION_TYPE"/>
+		<result property="adminCheck" column="ADMIN_CHECK"/>
+		<result property="modDt" column="MOD_DT"/>
+		<result property="modUserId" column="MOD_USER_ID"/>
+		<result property="usbName" column="USB_NAME"/>
+		<result property="usbSerialNo" column="USB_SERIAL_NO"/>
+		<result property="usbProduct" column="USB_PRODUCT"/>
+		<result property="usbSize" column="USB_SIZE"/>
+		<result property="usbVendor" column="USB_VENDOR"/>
+	</resultMap>
 	
 	<insert id="insertLogUpdate" parameterType="map">
 		INSERT INTO log_update (client_id,user_id,log_item,basis_value,log_value,extra_info,reg_dt) 
@@ -707,5 +723,21 @@
 		DELETE FROM user_req_prop
 		WHERE user_id=#{userId} AND usb_serial_no=#{usbSerialNo}
 	</delete>
-	
+
+	<select id="selectUserUsbMediaList" parameterType="hashmap" resultMap="userReqInfo">
+		SELECT URP.USB_SERIAL_NO,
+		URM.MOD_DT,
+		URM.ADMIN_CHECK,
+		URP.USB_NAME,
+		URP.USB_PRODUCT,
+		URP.USB_SIZE,
+		URP.USB_VENDOR
+		FROM USER_REQ_MSTR URM
+		LEFT JOIN
+		USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URM.CLIENT_ID = #{clientId} AND URM.ACTION_TYPE = #{actionType}
+	</select>
+
+
 </mapper>

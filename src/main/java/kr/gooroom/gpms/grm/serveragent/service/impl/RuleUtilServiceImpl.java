@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import kr.gooroom.gpms.grm.serveragent.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.gooroom.gpms.common.service.ResultVO;
 import kr.gooroom.gpms.common.service.StatusVO;
 import kr.gooroom.gpms.common.utils.GPMSConstants;
-import kr.gooroom.gpms.grm.serveragent.service.CtrlItemVO;
-import kr.gooroom.gpms.grm.serveragent.service.CtrlPropVO;
-import kr.gooroom.gpms.grm.serveragent.service.NetworkPropVO;
-import kr.gooroom.gpms.grm.serveragent.service.RuleUtilService;
 
 /**
  * @Class Name : CtrlMstServiceImpl.java
@@ -41,6 +38,9 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 
     @Resource(name = "ruleUtilDAO")
     private RuleUtilDAO ruleUtilDAO;
+
+	@Resource(name = "clientJobService")
+	private ClientJobService clientJobService;
 
     private ResultVO readCtrlItem(String objId) throws Exception {
 
@@ -196,11 +196,11 @@ public class RuleUtilServiceImpl implements RuleUtilService {
     /**
      * 매체제어 정책 조회
      * 
-     * @param String objId
+     * @param String objId, String userId, String clientId
      * @return HashMap<String, Object>
      * @throws Exception
      */
-    private HashMap<String, Object> readMediaRuleInfo(String objId) throws Exception {
+    private HashMap<String, Object> readMediaRuleInfo(String objId, String userId, String clientId) throws Exception {
 
 	HashMap<String, Object> hm = new HashMap<String, Object>();
 	ResultVO resultVO = null;
@@ -211,54 +211,72 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 	    CtrlItemVO[] data = (CtrlItemVO[]) resultVO.getData();
 	    if (data != null && data.length > 0) {
 
-		ArrayList<String> mac_addresses = new ArrayList<String>();
-		HashMap<String, Object> bluetooth = new HashMap<String, Object>();
+			ArrayList<String> mac_addresses = new ArrayList<String>();
+			HashMap<String, Object> bluetooth = new HashMap<String, Object>();
+			ArrayList<String> usb_serialno = new ArrayList<String>();
+			HashMap<String, Object> serialno = new HashMap<String, Object>();
 
-		ArrayList<String> usb_serialno = new ArrayList<String>();
-		HashMap<String, Object> serialno = new HashMap<String, Object>();
-
-		CtrlPropVO[] props = data[0].getPropArray();
-		if (props != null && props.length > 0) {
-		    for (CtrlPropVO vo : props) {
-
-			switch (vo.getPropNm()) {
-			case GPMSConstants.MEDIA_ITEM_BLUETOOTH_STATE:
-			    bluetooth.put("state", vo.getPropValue());
-			    break;
-			case GPMSConstants.MEDIA_ITEM_MAC_ADDRESS:
-			    mac_addresses.add(vo.getPropValue());
-			    break;
-			case GPMSConstants.MEDIA_ITEM_USB_MEMORY:
-			    serialno.put("state", vo.getPropValue());
-			    break;
-			case GPMSConstants.MEDIA_ITEM_USB_SERIALNO:
-			    usb_serialno.add(vo.getPropValue());
-			    break;
-			default:
-			    hm.put(vo.getPropNm(), vo.getPropValue());
-			    break;
+			CtrlPropVO[] props = data[0].getPropArray();
+			if (props != null && props.length > 0) {
+				for (CtrlPropVO vo : props) {
+					switch (vo.getPropNm()) {
+						case GPMSConstants.MEDIA_ITEM_BLUETOOTH_STATE:
+							bluetooth.put("state", vo.getPropValue());
+							break;
+						case GPMSConstants.MEDIA_ITEM_MAC_ADDRESS:
+							mac_addresses.add(vo.getPropValue());
+							break;
+						case GPMSConstants.MEDIA_ITEM_USB_MEMORY:
+							serialno.put("state", vo.getPropValue());
+							break;
+						case GPMSConstants.MEDIA_ITEM_USB_SERIALNO:
+							usb_serialno.add(vo.getPropValue());
+							break;
+						default:
+							hm.put(vo.getPropNm(), vo.getPropValue());
+							break;
+					}
+				}
 			}
-		    }
-		}
 
-		if (mac_addresses != null && mac_addresses.size() > 0) {
-		    String[] addrs = new String[mac_addresses.size()];
-		    addrs = mac_addresses.toArray(addrs);
-		    bluetooth.put(GPMSConstants.MEDIA_ITEM_MAC_ADDRESS, addrs);
-		}
+			if (mac_addresses != null && mac_addresses.size() > 0) {
+				String[] addrs = new String[mac_addresses.size()];
+				addrs = mac_addresses.toArray(addrs);
+				bluetooth.put(GPMSConstants.MEDIA_ITEM_MAC_ADDRESS, addrs);
+			}
 
-		if (usb_serialno != null && usb_serialno.size() > 0) {
-		    String[] serials = new String[usb_serialno.size()];
-		    serials = usb_serialno.toArray(serials);
-		    serialno.put(GPMSConstants.MEDIA_ITEM_USB_SERIALNO, serials);
-		}
+			if (usb_serialno != null && usb_serialno.size() > 0) {
+				String[] serials = new String[usb_serialno.size()];
+				serials = usb_serialno.toArray(serials);
+				serialno.put(GPMSConstants.MEDIA_ITEM_USB_SERIALNO, serials);
+			}
 
-		hm.put("bluetooth", bluetooth);
-		hm.put("usb_memory", serialno);
+			hm.put("bluetooth", bluetooth);
+			hm.put("usb_memory", serialno);
+
+			// 등록 승인/등록 거절된 usb 리스트 (usb_status_board)
+			if (userId != "") {
+				//리모트 계정
+				UserReqVO urVo = new UserReqVO();
+				urVo.setClientId(clientId);
+				urVo.setUserId(userId);
+				urVo.setActionType("registering");
+
+				List<UserReqVO> re = clientJobService.selectUserUsbMediaList(urVo);
+				String[] usbReqList = {};
+				if (re != null && re.size() > 0) {
+					usbReqList = new String[re.size()];
+					for (int i = 0; i < re.size(); i++) {
+						usbReqList[i] = re.get(i).getUsbSerialNo()+","+ re.get(i).getModDt()+","+ re.get(i).getAdminCheck()+","+ re.get(i).getUsbName()+","+ re.get(i).getUsbProduct()+","+ re.get(i).getUsbSize()+","+ re.get(i).getUsbVendor();
+					}
+				}
+				hm.put("usb_status_board", usbReqList);
+			} else {
+				//로컬 계정
+				hm.put("usb_status_board", "");
+			}
 	    }
-
 	} catch (Exception e) {
-
 	    hm.clear();
 	}
 
@@ -993,7 +1011,6 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 	    HashMap<String, Object> networkHashMap = new HashMap<String, Object>();
 
 	    // set
-
 	    HashMap<String, String> map = new HashMap<String, String>();
 	    map.put("userId", userId);
 	    map.put("clientId", clientId);
@@ -1002,19 +1019,17 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 
 	    String objId = ruleUtilDAO.selectItemIdByMap(map);
 	    if (objId != null && objId.length() > 0) {
-		resultVO = readCtrlItem(objId);
+			resultVO = readCtrlItem(objId);
 	    }
 
 	    if (resultVO != null && resultVO.getData() != null) {
 			CtrlItemVO[] data = (CtrlItemVO[]) resultVO.getData();
 			if (data != null && data.length > 0) {
-
 			    // set version
 			    String siteVersion = ruleUtilDAO.selectSiteVersion();
 			    networkHashMap.put("version", siteVersion);
 
 			    CtrlPropVO[] props = data[0].getPropArray();
-
 				for (CtrlPropVO vo : props) {
 					switch (vo.getPropNm()) {
 						case GPMSConstants.NETWORK_GLOVAL_STATE:
@@ -1068,23 +1083,20 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 
 			String mediaRe = ruleUtilDAO.selectItemIdByMap(mediaMap);
 			if (mediaRe != null && mediaRe.length() > 0) {
-			    mediaHm = readMediaRuleInfo(mediaRe);
+			    mediaHm = readMediaRuleInfo(mediaRe, userId, clientId);
 			} else {
 			    // 디폴트 값을 조회
 			    mediaHm = readMediaRuleInfo(
-				    GPMSConstants.CTRL_ITEM_MEDIACTRL_RULE_ABBR + GPMSConstants.MSG_DEFAULT);
+				    GPMSConstants.CTRL_ITEM_MEDIACTRL_RULE_ABBR + GPMSConstants.MSG_DEFAULT, userId, clientId);
 			}
-
 			if (mediaHm != null && mediaHm.size() > 0) {
 			    resultHashMap.putAll(mediaHm);
 			}
-
 	    } else {
 			resultHashMap.clear();
 	    }
 
 	} catch (Exception ex) {
-
 	    resultHashMap.clear();
 	    logger.error("RuleUtilServiceImpl.getNetworkRuleJson Exception occurred. ", ex);
 	}
@@ -1092,21 +1104,19 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 	if (resultHashMap != null && resultHashMap.size() > 0) {
 	    StringWriter outputWriter = new StringWriter();
 	    try {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.writeValue(outputWriter, resultHashMap);
-		return outputWriter.toString();
-
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.writeValue(outputWriter, resultHashMap);
+			return outputWriter.toString();
 	    } catch (Exception ex) {
-		logger.error("RuleUtilServiceImpl.getNetworkAndMediaRuleJson (writeValueAsString) Exception occurred. ",
-			ex);
+		  	logger.error("RuleUtilServiceImpl.getNetworkAndMediaRuleJson (writeValueAsString) Exception occurred. ", ex);
 	    } finally {
-		try {
-		    if (outputWriter != null) {
-			outputWriter.close();
-		    }
-		} catch (Exception ex) {
-
-		}
+			try {
+		    	if (outputWriter != null) {
+				outputWriter.close();
+		    	}
+			} catch (Exception ex) {
+				logger.error("RuleUtilServiceImpl.getNetworkAndMediaRuleJson (outputWriter.close) Exception occurred. ", ex);
+			}
 	    }
 	}
 

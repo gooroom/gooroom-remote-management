@@ -58,5 +58,6 @@ public interface ClientJobService {
 	public String selectUserReqPropSeq(UserReqVO urVo) throws Exception;
 	public int deleteUserReqMstr(UserReqVO urVo) throws Exception;
 	public int deleteUserReqProp(UserReqVO urVo) throws Exception;
+	public List<UserReqVO> selectUserUsbMediaList(UserReqVO urmVo) throws Exception;
 
 }

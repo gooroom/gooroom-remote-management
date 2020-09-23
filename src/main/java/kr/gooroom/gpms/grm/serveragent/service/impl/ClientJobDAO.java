@@ -603,4 +603,14 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	public int deleteUserReqProp(UserReqVO urmVo) throws Exception {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.deleteUserReqProp",urmVo);
 	}
+
+	/**
+	 * 사용자의 승인/반려된 usb 등록 요청 리스트
+	 * @param urmVo
+	 * @return
+	 * @throws Exception
+	 */
+	public List<UserReqVO> selectUserUsbMediaList(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectUserUsbMediaList", urmVo);
+	}
 }

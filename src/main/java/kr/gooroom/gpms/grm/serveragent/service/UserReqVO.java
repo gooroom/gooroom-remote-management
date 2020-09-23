@@ -25,7 +25,7 @@ public class UserReqVO implements Serializable {
     public void setReqSeq(String reqSeq) {
         this.reqSeq = reqSeq;
     }
-    public String getUserId(String userId) { return userId; }
+    public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
     public String getClientId() { return clientId; }
     public void setClientId(String clientId) {
@@ -39,6 +39,7 @@ public class UserReqVO implements Serializable {
         return actionType;
     }
     public void setActionType(String actionType) { this.actionType = actionType; }
+    public String getUsbName() { return usbName; }
     public void setUsbName(String usbName) { this.usbName = usbName; }
     public String getUsbSerialNo() { return usbSerialNo; }
     public void setUsbSerialNo(String usbSerialNo) { this.usbSerialNo = usbSerialNo; }
