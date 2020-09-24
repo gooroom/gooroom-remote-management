@@ -57,16 +57,19 @@ public class Constant {
 	public static final String TR_OK = "ok";
 
 	public static final String ACTION_REGISTERING = "registering";
+	public static final String ACTION_REGISTER_DENY_ITEM_REMOVE = "register-deny-item-remove";
 	public static final String ACTION_REGISTERING_CANCEL = "registering-cancel";
-	public static final String ACTION_UNREGISTERING = "unregistering";
 	public static final String ACTION_REGISTER_APPROVAL = "register-approval";
 	public static final String ACTION_REGISTER_DENY = "register-deny";
+	public static final String ACTION_UNREGISTERING = "unregistering";
 	public static final String ACTION_UNREGISTER_APPROVAL = "unregister-approval";
 	public static final String ACTION_APPROVAL = "approval";
 	public static final String ACTION_DENY = "deny";
 	public static final String ACTION_WAITING = "waiting";
 
-	
+	public static final String STS_USABLE = "usable";
+	public static final String STS_EXPIRE = "expire";
+
 	public static final String JOB_STAT_SUCCESS = "C";
 	public static final String JOB_STAT_FAIL = "E";
 	

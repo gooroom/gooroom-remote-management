@@ -613,4 +613,15 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	public List<UserReqVO> selectUserUsbMediaList(UserReqVO urmVo) throws Exception {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectUserUsbMediaList", urmVo);
 	}
+
+	/**
+	 * 등록 요청  USB 상태 정보 업데이트
+	 *
+	 * @param urmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int updateUserReqProp(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.delete("ClientJobManagerDAO.updateUserReqProp",urmVo);
+	}
 }

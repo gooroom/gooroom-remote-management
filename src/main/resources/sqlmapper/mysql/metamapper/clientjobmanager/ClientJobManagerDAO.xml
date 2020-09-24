@@ -725,7 +725,8 @@
 	</delete>
 
 	<select id="selectUserUsbMediaList" parameterType="hashmap" resultMap="userReqInfo">
-		SELECT URP.USB_SERIAL_NO,
+		SELECT URM.REQ_SEQ,
+		URP.USB_SERIAL_NO,
 		URM.MOD_DT,
 		URM.ADMIN_CHECK,
 		URP.USB_NAME,
@@ -736,8 +737,12 @@
 		LEFT JOIN
 		USER_REQ_PROP URP
 		ON URM.REQ_SEQ = URP.REQ_SEQ
-		WHERE URM.USER_ID = #{userId} AND URM.CLIENT_ID = #{clientId} AND URM.ACTION_TYPE = #{actionType}
+		WHERE URM.USER_ID = #{userId} AND URM.ACTION_TYPE = #{actionType} AND URP.STATUS = #{status}
 	</select>
 
+	<update id="updateUserReqProp" parameterType="UserReqVO">
+		UPDATE USER_REQ_PROP SET STATUS = #{status}
+		WHERE REQ_SEQ = #{reqSeq};
+	</update>
 
 </mapper>

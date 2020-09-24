@@ -1221,6 +1221,7 @@ public class Tasker {
 				String usbSize = (String)moduleRequest.get("usb_size");
 				String usbVendor = (String)moduleRequest.get("usb_vendor");
 				String usbSerial = (String)moduleRequest.get("usb_serial");
+				String reqSeq = (String)moduleRequest.get("reqSeq");
 				String state = "";
 
 				UserReqVO urVo = new UserReqVO();
@@ -1233,6 +1234,7 @@ public class Tasker {
 				urVo.setUsbProduct(usbProduct);
 				urVo.setUsbSize(usbSize);
 				urVo.setUsbVendor(usbVendor);
+				urVo.setStatus(Constant.STS_EXPIRE);
 
 				String registerReqMod = clientJobService.selectRegisterReqMod(Constant.SITE_NAME);
 				String deteleReqMod = clientJobService.selectDeleteReqMod(Constant.SITE_NAME);
@@ -1277,6 +1279,12 @@ public class Tasker {
 					urVo.setReqSeq(clientJobService.selectUserReqPropSeq(urVo));
 					clientJobService.deleteUserReqProp(urVo);
 					clientJobService.deleteUserReqMstr(urVo);
+				} else if (action.equals(Constant.ACTION_REGISTER_DENY_ITEM_REMOVE)) {
+					//등록 거절 항목 제거 요청
+					state = Constant.ACTION_REGISTER_DENY_ITEM_REMOVE;
+					urVo.setReqSeq(reqSeq);
+					//매체 정보 업데이트
+					clientJobService.updateUserReqProp(urVo);
 				}
 
 				HashMap<String, Object> jRes = new HashMap<String, Object>();
@@ -1462,7 +1470,7 @@ public class Tasker {
 			ArrayList<String> fileContentsList,
 			ArrayList<String> signatureList) throws Exception {
 		
-		//GRAC 
+		//GRAC
 		String gracConfig = ruleUtilService.getNetworkAndMediaRuleJson(loginId, clientId);
 		if (gracConfig != null && gracConfig.length() != 0) {
 			fileNameList.add(Constant.GRAC_PATH);

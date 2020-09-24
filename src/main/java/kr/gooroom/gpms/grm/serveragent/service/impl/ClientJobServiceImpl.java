@@ -284,4 +284,9 @@ public class ClientJobServiceImpl implements ClientJobService {
 		return clientJobDAO.selectUserUsbMediaList(urmVo);
 	}
 
+	@Override
+	public int updateUserReqProp(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.updateUserReqProp(urmVo);
+	}
+
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import kr.gooroom.gpms.common.utils.Constant;
 import kr.gooroom.gpms.grm.serveragent.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,11 +197,11 @@ public class RuleUtilServiceImpl implements RuleUtilService {
     /**
      * 매체제어 정책 조회
      * 
-     * @param String objId, String userId, String clientId
+     * @param String objId, String userId
      * @return HashMap<String, Object>
      * @throws Exception
      */
-    private HashMap<String, Object> readMediaRuleInfo(String objId, String userId, String clientId) throws Exception {
+    private HashMap<String, Object> readMediaRuleInfo(String objId, String userId) throws Exception {
 
 	HashMap<String, Object> hm = new HashMap<String, Object>();
 	ResultVO resultVO = null;
@@ -239,6 +240,30 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 				}
 			}
 
+			// 등록 승인/등록 거절된 usb 리스트 (usb_status_board)
+			if (userId != "") {
+				//리모트 계정
+				UserReqVO urVo = new UserReqVO();
+				urVo.setUserId(userId);
+				urVo.setStatus(Constant.STS_USABLE);
+				urVo.setActionType(Constant.ACTION_REGISTERING);
+
+				List<UserReqVO> re = clientJobService.selectUserUsbMediaList(urVo);
+				String[] usbReqList = {};
+				if (re != null && re.size() > 0) {
+					usbReqList = new String[re.size()];
+					for (int i = 0; i < re.size(); i++) {
+						usbReqList[i] = re.get(i).getUsbSerialNo()+","+ re.get(i).getModDt()+","+ re.get(i).getAdminCheck()+","+ re.get(i).getUsbName()+
+								        ","+ re.get(i).getUsbProduct()+","+ re.get(i).getUsbSize()+","+ re.get(i).getUsbVendor()+","+ re.get(i).getReqSeq();
+						usb_serialno.add(re.get(i).getUsbSerialNo());
+					}
+				}
+				hm.put("usb_status_board", usbReqList);
+			} else {
+				//로컬 계정
+				hm.put("usb_status_board", "");
+			}
+
 			if (mac_addresses != null && mac_addresses.size() > 0) {
 				String[] addrs = new String[mac_addresses.size()];
 				addrs = mac_addresses.toArray(addrs);
@@ -254,27 +279,6 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 			hm.put("bluetooth", bluetooth);
 			hm.put("usb_memory", serialno);
 
-			// 등록 승인/등록 거절된 usb 리스트 (usb_status_board)
-			if (userId != "") {
-				//리모트 계정
-				UserReqVO urVo = new UserReqVO();
-				urVo.setClientId(clientId);
-				urVo.setUserId(userId);
-				urVo.setActionType("registering");
-
-				List<UserReqVO> re = clientJobService.selectUserUsbMediaList(urVo);
-				String[] usbReqList = {};
-				if (re != null && re.size() > 0) {
-					usbReqList = new String[re.size()];
-					for (int i = 0; i < re.size(); i++) {
-						usbReqList[i] = re.get(i).getUsbSerialNo()+","+ re.get(i).getModDt()+","+ re.get(i).getAdminCheck()+","+ re.get(i).getUsbName()+","+ re.get(i).getUsbProduct()+","+ re.get(i).getUsbSize()+","+ re.get(i).getUsbVendor();
-					}
-				}
-				hm.put("usb_status_board", usbReqList);
-			} else {
-				//로컬 계정
-				hm.put("usb_status_board", "");
-			}
 	    }
 	} catch (Exception e) {
 	    hm.clear();
@@ -1083,11 +1087,11 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 
 			String mediaRe = ruleUtilDAO.selectItemIdByMap(mediaMap);
 			if (mediaRe != null && mediaRe.length() > 0) {
-			    mediaHm = readMediaRuleInfo(mediaRe, userId, clientId);
+			    mediaHm = readMediaRuleInfo(mediaRe, userId);
 			} else {
 			    // 디폴트 값을 조회
 			    mediaHm = readMediaRuleInfo(
-				    GPMSConstants.CTRL_ITEM_MEDIACTRL_RULE_ABBR + GPMSConstants.MSG_DEFAULT, userId, clientId);
+				    GPMSConstants.CTRL_ITEM_MEDIACTRL_RULE_ABBR + GPMSConstants.MSG_DEFAULT, userId);
 			}
 			if (mediaHm != null && mediaHm.size() > 0) {
 			    resultHashMap.putAll(mediaHm);
