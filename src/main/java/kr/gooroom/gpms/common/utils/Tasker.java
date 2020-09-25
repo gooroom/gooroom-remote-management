@@ -1234,7 +1234,6 @@ public class Tasker {
 				urVo.setUsbProduct(usbProduct);
 				urVo.setUsbSize(usbSize);
 				urVo.setUsbVendor(usbVendor);
-				urVo.setStatus(Constant.STS_EXPIRE);
 
 				String registerReqMod = clientJobService.selectRegisterReqMod(Constant.SITE_NAME);
 				String deteleReqMod = clientJobService.selectDeleteReqMod(Constant.SITE_NAME);
@@ -1247,6 +1246,7 @@ public class Tasker {
 						urVo.setAdminCheck(Constant.ACTION_APPROVAL);
 						urVo.setModUserId(Constant.H_SYSTEM);
 						urVo.setModDt(modDt);
+						urVo.setStatus(Constant.STS_REVOKE);
 						state = Constant.ACTION_REGISTER_APPROVAL;
 					} else {
 						urVo.setAdminCheck(Constant.ACTION_WAITING);
@@ -1263,6 +1263,7 @@ public class Tasker {
 						urVo.setAdminCheck(Constant.ACTION_APPROVAL);
 						urVo.setModUserId(Constant.H_SYSTEM);
 						urVo.setModDt(modDt);
+						urVo.setStatus(Constant.STS_USABLE);
 						state = Constant.ACTION_REGISTER_DENY;
 					} else {
 						urVo.setAdminCheck(Constant.ACTION_WAITING);
@@ -1283,6 +1284,7 @@ public class Tasker {
 					//등록 거절 항목 제거 요청
 					state = Constant.ACTION_REGISTER_DENY_ITEM_REMOVE;
 					urVo.setReqSeq(reqSeq);
+					urVo.setStatus(Constant.STS_EXPIRE);
 					//매체 정보 업데이트
 					clientJobService.updateUserReqProp(urVo);
 				}

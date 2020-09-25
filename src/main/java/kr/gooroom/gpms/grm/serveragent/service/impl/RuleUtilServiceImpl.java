@@ -245,7 +245,7 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 				//리모트 계정
 				UserReqVO urVo = new UserReqVO();
 				urVo.setUserId(userId);
-				urVo.setStatus(Constant.STS_USABLE);
+				urVo.setStatus(Constant.STS_EXPIRE);
 				urVo.setActionType(Constant.ACTION_REGISTERING);
 
 				List<UserReqVO> re = clientJobService.selectUserUsbMediaList(urVo);

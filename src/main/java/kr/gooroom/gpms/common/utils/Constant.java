@@ -69,6 +69,7 @@ public class Constant {
 
 	public static final String STS_USABLE = "usable";
 	public static final String STS_EXPIRE = "expire";
+	public static final String STS_REVOKE = "revoke";
 
 	public static final String JOB_STAT_SUCCESS = "C";
 	public static final String JOB_STAT_FAIL = "E";

@@ -737,7 +737,7 @@
 		LEFT JOIN
 		USER_REQ_PROP URP
 		ON URM.REQ_SEQ = URP.REQ_SEQ
-		WHERE URM.USER_ID = #{userId} AND URM.ACTION_TYPE = #{actionType} AND URP.STATUS = #{status}
+		WHERE URM.USER_ID = #{userId} AND URM.ACTION_TYPE = #{actionType} AND URP.STATUS != #{status}
 	</select>
 
 	<update id="updateUserReqProp" parameterType="UserReqVO">
