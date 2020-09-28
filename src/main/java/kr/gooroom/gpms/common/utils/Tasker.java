@@ -1243,12 +1243,13 @@ public class Tasker {
 					//등록 요청
 					urVo.setActionType(Constant.ACTION_REGISTERING);
 					if(registerReqMod.equals(new String("0"))) {
-						urVo.setAdminCheck(Constant.ACTION_APPROVAL);
+						urVo.setAdminCheck(Constant.ACTION_REGISTER_APPROVAL);
 						urVo.setModUserId(Constant.H_SYSTEM);
 						urVo.setModDt(modDt);
-						urVo.setStatus(Constant.STS_REVOKE);
+						urVo.setStatus(Constant.STS_USABLE);
 						state = Constant.ACTION_REGISTER_APPROVAL;
 					} else {
+						urVo.setStatus(Constant.STS_REVOKE);
 						urVo.setAdminCheck(Constant.ACTION_WAITING);
 						state = Constant.ACTION_REGISTERING;
 					}
@@ -1256,16 +1257,17 @@ public class Tasker {
 					clientJobService.insertUserReqMstr(urVo);
 					urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
 					clientJobService.insertUserReqProp(urVo);
-				} else if (action.equals(Constant.ACTION_UNREGISTERING)) {
+				} else if (action.equals(Constant.ACTION_UNREGISTER_APPROVAL)) {
 					//삭제 요청
 					urVo.setActionType(Constant.ACTION_UNREGISTERING);
 					if(deteleReqMod.equals(new String("0"))) {
 						urVo.setAdminCheck(Constant.ACTION_APPROVAL);
 						urVo.setModUserId(Constant.H_SYSTEM);
 						urVo.setModDt(modDt);
-						urVo.setStatus(Constant.STS_USABLE);
+						urVo.setStatus(Constant.STS_REVOKE);
 						state = Constant.ACTION_REGISTER_DENY;
 					} else {
+						urVo.setStatus(Constant.STS_USABLE);
 						urVo.setAdminCheck(Constant.ACTION_WAITING);
 						state = Constant.ACTION_REGISTERING;
 					}
