@@ -60,5 +60,7 @@ public interface ClientJobService {
 	public int deleteUserReqProp(UserReqVO urVo) throws Exception;
 	public List<UserReqVO> selectUserUsbMediaList(UserReqVO urmVo) throws Exception;
 	public int updateUserReqProp(UserReqVO urVo) throws Exception;
+	public String selectExistMediaRegisterReq(UserReqVO urVo) throws Exception;
+	public String selectExistMediaUnRegisterReq(UserReqVO urVo) throws Exception;
 
 }

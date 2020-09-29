@@ -624,4 +624,26 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	public int updateUserReqProp(UserReqVO urmVo) throws Exception {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.updateUserReqProp",urmVo);
 	}
+
+	/**
+	 * 이미 등록 요청한 장비인지 확인
+	 *
+	 * @param urmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public String selectExistMediaRegisterReq(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.selectOne("selectExistMediaRegisterReq", urmVo);
+	}
+
+	/**
+	 * 이미 삭제 요청한 장비인지 확인
+	 *
+	 * @param urmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public String selectExistMediaUnRegisterReq(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.selectOne("selectExistMediaUnRegisterReq", urmVo);
+	}
 }

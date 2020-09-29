@@ -1211,7 +1211,9 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_CLIENT_EVENT_USB_WHITELIST)) {
 			try {
+
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get(Constant.J_REQUEST);
+				String modDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
 				String action = (String)moduleRequest.get("action");
 				String datetime = (String)moduleRequest.get("datetime");
@@ -1235,12 +1237,12 @@ public class Tasker {
 				urVo.setUsbSize(usbSize);
 				urVo.setUsbVendor(usbVendor);
 
-				String registerReqMod = clientJobService.selectRegisterReqMod(Constant.SITE_NAME);
-				String deteleReqMod = clientJobService.selectDeleteReqMod(Constant.SITE_NAME);
-				String modDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+				String isRegisterReqExist = clientJobService.selectExistMediaRegisterReq(urVo);
+				String isUnRegisterReqExist = clientJobService.selectExistMediaUnRegisterReq(urVo);
 
-				if (action.equals(Constant.ACTION_REGISTERING)) {
+				if (action.equals(Constant.ACTION_REGISTERING) && isRegisterReqExist == null) {
 					//등록 요청
+					String registerReqMod = clientJobService.selectRegisterReqMod(Constant.SITE_NAME);
 					urVo.setActionType(Constant.ACTION_REGISTERING);
 					if(registerReqMod.equals(new String("0"))) {
 						urVo.setAdminCheck(Constant.ACTION_REGISTER_APPROVAL);
@@ -1257,8 +1259,9 @@ public class Tasker {
 					clientJobService.insertUserReqMstr(urVo);
 					urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
 					clientJobService.insertUserReqProp(urVo);
-				} else if (action.equals(Constant.ACTION_UNREGISTER_APPROVAL)) {
+				} else if (action.equals(Constant.ACTION_UNREGISTER_APPROVAL) && isUnRegisterReqExist == null) {
 					//삭제 요청
+					String deteleReqMod = clientJobService.selectDeleteReqMod(Constant.SITE_NAME);
 					urVo.setActionType(Constant.ACTION_UNREGISTERING);
 					if(deteleReqMod.equals(new String("0"))) {
 						urVo.setAdminCheck(Constant.ACTION_APPROVAL);
@@ -1289,6 +1292,10 @@ public class Tasker {
 					urVo.setStatus(Constant.STS_EXPIRE);
 					//매체 정보 업데이트
 					clientJobService.updateUserReqProp(urVo);
+				} else if (isRegisterReqExist != null || isUnRegisterReqExist != null) {
+					//중복된 추가/삭제 요청일 경우
+					String message = "Duplicate request";
+					return message;
 				}
 
 				HashMap<String, Object> jRes = new HashMap<String, Object>();

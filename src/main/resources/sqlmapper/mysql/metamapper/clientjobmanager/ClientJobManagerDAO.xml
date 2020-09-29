@@ -745,4 +745,20 @@
 		WHERE REQ_SEQ = #{reqSeq};
 	</update>
 
+	<select id="selectExistMediaRegisterReq" resultType="String" parameterType="String">
+		SELECT URM.REQ_SEQ
+		FROM USER_REQ_MSTR URM
+		JOIN USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo} AND URM.ADMIN_CHECK = 'waiting' AND URM.ACTION_TYPE = 'registering'
+	</select>
+
+	<select id="selectExistMediaUnRegisterReq" resultType="String" parameterType="String">
+		SELECT URM.REQ_SEQ
+		FROM USER_REQ_MSTR URM
+		JOIN USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo} AND URM.ADMIN_CHECK = 'register-approval' AND URM.ACTION_TYPE = 'unregistering'
+	</select>
+
 </mapper>

@@ -289,4 +289,14 @@ public class ClientJobServiceImpl implements ClientJobService {
 		return clientJobDAO.updateUserReqProp(urmVo);
 	}
 
+	@Override
+	public String selectExistMediaRegisterReq(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectExistMediaRegisterReq(urmVo);
+	}
+
+	@Override
+	public String selectExistMediaUnRegisterReq(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectExistMediaUnRegisterReq(urmVo);
+	}
+
 }
