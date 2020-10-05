@@ -1223,6 +1223,7 @@ public class Tasker {
 				String usbSize = (String)moduleRequest.get("usb_size");
 				String usbVendor = (String)moduleRequest.get("usb_vendor");
 				String usbSerial = (String)moduleRequest.get("usb_serial");
+				String usbModel = (String)moduleRequest.get("usb_model");
 				String reqSeq = (String)moduleRequest.get("reqSeq");
 				String state = "";
 
@@ -1236,6 +1237,7 @@ public class Tasker {
 				urVo.setUsbProduct(usbProduct);
 				urVo.setUsbSize(usbSize);
 				urVo.setUsbVendor(usbVendor);
+				urVo.setUsbModel(usbModel);
 
 				String isRegisterReqExist = clientJobService.selectExistMediaRegisterReq(urVo);
 				String isUnRegisterReqExist = clientJobService.selectExistMediaUnRegisterReq(urVo);

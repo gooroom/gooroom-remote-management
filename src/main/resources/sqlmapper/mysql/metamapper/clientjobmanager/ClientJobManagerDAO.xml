@@ -38,6 +38,7 @@
 		<result property="usbProduct" column="USB_PRODUCT"/>
 		<result property="usbSize" column="USB_SIZE"/>
 		<result property="usbVendor" column="USB_VENDOR"/>
+		<result property="usbModel" column="USB_MODEL"/>
 	</resultMap>
 	
 	<insert id="insertLogUpdate" parameterType="map">
@@ -710,8 +711,8 @@
 	</insert>
 
 	<insert id="insertUserReqProp" parameterType="map">
-		INSERT INTO USER_REQ_PROP (req_seq, user_id, usb_name, usb_serial_no, usb_product, usb_size, usb_vendor, status)
-		VALUES (#{reqSeq},#{userId},#{usbName},#{usbSerialNo},#{usbProduct},#{usbSize},#{usbVendor},#{status})
+		INSERT INTO USER_REQ_PROP (req_seq, user_id, usb_name, usb_serial_no, usb_product, usb_size, usb_vendor, usb_model, status)
+		VALUES (#{reqSeq}, #{userId}, #{usbName}, #{usbSerialNo}, #{usbProduct}, #{usbSize}, #{usbVendor}, #{usbModel} ,#{status})
 	</insert>
 
 	<delete id="deleteUserReqMstr" parameterType="map">

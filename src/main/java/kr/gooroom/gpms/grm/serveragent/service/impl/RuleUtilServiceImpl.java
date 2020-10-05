@@ -254,7 +254,7 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 					usbReqList = new String[re.size()];
 					for (int i = 0; i < re.size(); i++) {
 						usbReqList[i] = re.get(i).getUsbSerialNo()+","+ re.get(i).getModDt()+","+ re.get(i).getAdminCheck()+","+ re.get(i).getUsbName()+
-								        ","+ re.get(i).getUsbProduct()+","+ re.get(i).getUsbSize()+","+ re.get(i).getUsbVendor()+","+ re.get(i).getReqSeq();
+								        ","+ re.get(i).getUsbProduct()+","+ re.get(i).getUsbSize()+","+ re.get(i).getUsbVendor()+","+ re.get(i).getUsbModel()+","+ re.get(i).getReqSeq();
 						usb_serialno.add(re.get(i).getUsbSerialNo());
 					}
 				}
