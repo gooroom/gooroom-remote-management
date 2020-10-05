@@ -58,6 +58,7 @@ public class GPMSConstants {
 	// 매체제어 항목정의
 	public static final String MEDIA_ITEM_USB_MEMORY = "usb_memory";
 	public static final String MEDIA_ITEM_USB_SERIALNO = "usb_serialno";
+	public static final String MEDIA_ITEM_USB_STATUS_BOARD = "usb_status_board";
 	public static final String MEDIA_ITEM_CD_DVD = "cd_dvd";
 	public static final String MEDIA_ITEM_PRINTER = "printer";
 	//public static final String MEDIA_ITEM_SCREEN_CAPTURE = "screen_capture";

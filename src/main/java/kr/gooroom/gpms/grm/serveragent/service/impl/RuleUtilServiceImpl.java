@@ -212,6 +212,7 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 	    CtrlItemVO[] data = (CtrlItemVO[]) resultVO.getData();
 	    if (data != null && data.length > 0) {
 
+
 			ArrayList<String> mac_addresses = new ArrayList<String>();
 			HashMap<String, Object> bluetooth = new HashMap<String, Object>();
 			ArrayList<String> usb_serialno = new ArrayList<String>();
@@ -241,6 +242,7 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 			}
 
 			// 등록 승인/등록 거절된 usb 리스트 (usb_status_board)
+			String[] usbReqList = {};
 			if (userId != "") {
 				//리모트 계정
 				UserReqVO urVo = new UserReqVO();
@@ -249,31 +251,31 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 				urVo.setActionType(Constant.ACTION_REGISTERING);
 
 				List<UserReqVO> re = clientJobService.selectUserUsbMediaList(urVo);
-				String[] usbReqList = {};
 				if (re != null && re.size() > 0) {
 					usbReqList = new String[re.size()];
 					for (int i = 0; i < re.size(); i++) {
-						usbReqList[i] = re.get(i).getUsbSerialNo()+","+ re.get(i).getModDt()+","+ re.get(i).getAdminCheck()+","+ re.get(i).getUsbName()+
-								        ","+ re.get(i).getUsbProduct()+","+ re.get(i).getUsbSize()+","+ re.get(i).getUsbVendor()+","+ re.get(i).getUsbModel()+","+ re.get(i).getReqSeq();
+						String state = re.get(i).getAdminCheck();
+						if (state.equals(Constant.ACTION_WAITING)) {
+							state = "registering";
+						}
+						usbReqList[i] = re.get(i).getUsbSerialNo()+","+ re.get(i).getModDt()+","+ state+","+ re.get(i).getUsbName()+
+								","+ re.get(i).getUsbProduct()+","+ re.get(i).getUsbSize()+","+ re.get(i).getUsbVendor()+","+ re.get(i).getUsbModel()+","+ re.get(i).getReqSeq();
 						usb_serialno.add(re.get(i).getUsbSerialNo());
 					}
 				}
-				hm.put("usb_status_board", usbReqList);
-			} else {
-				//로컬 계정
-				hm.put("usb_status_board", "");
-			}
-
-			if (mac_addresses != null && mac_addresses.size() > 0) {
-				String[] addrs = new String[mac_addresses.size()];
-				addrs = mac_addresses.toArray(addrs);
-				bluetooth.put(GPMSConstants.MEDIA_ITEM_MAC_ADDRESS, addrs);
 			}
 
 			if (usb_serialno != null && usb_serialno.size() > 0) {
 				String[] serials = new String[usb_serialno.size()];
 				serials = usb_serialno.toArray(serials);
 				serialno.put(GPMSConstants.MEDIA_ITEM_USB_SERIALNO, serials);
+				serialno.put(GPMSConstants.MEDIA_ITEM_USB_STATUS_BOARD, usbReqList);
+			}
+
+			if (mac_addresses != null && mac_addresses.size() > 0) {
+				String[] addrs = new String[mac_addresses.size()];
+				addrs = mac_addresses.toArray(addrs);
+				bluetooth.put(GPMSConstants.MEDIA_ITEM_MAC_ADDRESS, addrs);
 			}
 
 			hm.put("bluetooth", bluetooth);
