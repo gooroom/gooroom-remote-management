@@ -201,7 +201,7 @@ public class RuleUtilServiceImpl implements RuleUtilService {
      * @return HashMap<String, Object>
      * @throws Exception
      */
-    private HashMap<String, Object> readMediaRuleInfo(String objId, String userId) throws Exception {
+    private HashMap<String, Object> readMediaRuleInfo(boolean init, String objId, String userId) throws Exception {
 
 	HashMap<String, Object> hm = new HashMap<String, Object>();
 	ResultVO resultVO = null;
@@ -270,7 +270,9 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 				String[] serials = new String[usb_serialno.size()];
 				serials = usb_serialno.toArray(serials);
 				serialno.put(GPMSConstants.MEDIA_ITEM_USB_SERIALNO, serials);
-				serialno.put(GPMSConstants.MEDIA_ITEM_USB_STATUS_BOARD, usbReqList);
+				if (init == true) {
+					serialno.put(GPMSConstants.MEDIA_ITEM_USB_STATUS_BOARD, usbReqList);
+				}
 			}
 
 			if (mac_addresses != null && mac_addresses.size() > 0) {
@@ -1007,7 +1009,7 @@ public class RuleUtilServiceImpl implements RuleUtilService {
      * @throws Exception
      */
     @Override
-    public String getNetworkAndMediaRuleJson(String userId, String clientId) throws Exception {
+    public String getNetworkAndMediaRuleJson(boolean init, String userId, String clientId) throws Exception {
 
 	HashMap<String, Object> resultHashMap = new HashMap<String, Object>();
 	HashMap<String, Object> hm = new HashMap<String, Object>();
@@ -1090,10 +1092,10 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 
 			String mediaRe = ruleUtilDAO.selectItemIdByMap(mediaMap);
 			if (mediaRe != null && mediaRe.length() > 0) {
-			    mediaHm = readMediaRuleInfo(mediaRe, userId);
+			    mediaHm = readMediaRuleInfo(init, mediaRe, userId);
 			} else {
 			    // 디폴트 값을 조회
-			    mediaHm = readMediaRuleInfo(
+			    mediaHm = readMediaRuleInfo(init,
 				    GPMSConstants.CTRL_ITEM_MEDIACTRL_RULE_ABBR + GPMSConstants.MSG_DEFAULT, userId);
 			}
 			if (mediaHm != null && mediaHm.size() > 0) {

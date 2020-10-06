@@ -297,9 +297,10 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_GET_MEDIA_CONFIG)) {
 			try {
+				boolean init = false;
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				String loginId = (String)moduleRequest.get("login_id");
-				String gracConfig = ruleUtilService.getNetworkAndMediaRuleJson(loginId, clientId);	
+				String gracConfig = ruleUtilService.getNetworkAndMediaRuleJson(init, loginId, clientId);
 				String signature = signing(gracConfig);
 				String fileName = Constant.GRAC_PATH;
 				
@@ -700,6 +701,7 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_SET_AUTHORITY_CONFIG)) {
 			try {
+				boolean init = true;
 				ArrayList<String> fileNameList = new ArrayList<String>();
 				ArrayList<String> fileContentsList = new ArrayList<String>();
 				ArrayList<String> signatureList = new ArrayList<String>();
@@ -708,7 +710,7 @@ public class Tasker {
 				String loginId = (String)moduleRequest.get("login_id");
 				HashMap<String, Object> jRes = new HashMap<String, Object>();
 				
-				securityConfig(ruleUtilService, loginId, clientId, fileNameList, fileContentsList, signatureList);
+				securityConfig(ruleUtilService, init, loginId, clientId, fileNameList, fileContentsList, signatureList);
 				
 				/*
 				 * 폴킷 정책
@@ -1224,7 +1226,7 @@ public class Tasker {
 				String usbVendor = (String)moduleRequest.get("usb_vendor");
 				String usbSerial = (String)moduleRequest.get("usb_serial");
 				String usbModel = (String)moduleRequest.get("usb_model");
-				String reqSeq = (String)moduleRequest.get("reqSeq");
+				String reqSeq = (String)moduleRequest.get("req_seq");
 				String state = "";
 
 				UserReqVO urVo = new UserReqVO();
@@ -1261,7 +1263,7 @@ public class Tasker {
 					clientJobService.insertUserReqMstr(urVo);
 					urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
 					clientJobService.insertUserReqProp(urVo);
-				} else if (action.equals(Constant.ACTION_UNREGISTER_APPROVAL) && isUnRegisterReqExist == null) {
+				} else if (action.equals(Constant.ACTION_UNREGISTERING) && isUnRegisterReqExist == null) {
 					//삭제 요청
 					String deteleReqMod = clientJobService.selectDeleteReqMod(Constant.SITE_NAME);
 					urVo.setActionType(Constant.ACTION_UNREGISTERING);
@@ -1274,7 +1276,7 @@ public class Tasker {
 					} else {
 						urVo.setStatus(Constant.STS_USABLE);
 						urVo.setAdminCheck(Constant.ACTION_WAITING);
-						state = Constant.ACTION_REGISTERING;
+						state = Constant.ACTION_UNREGISTERING;
 					}
 					//매체 삭제 요청 저장
 					clientJobService.insertUserReqMstr(urVo);
@@ -1476,7 +1478,8 @@ public class Tasker {
 	 * @throws Exception
 	 */
 	private void securityConfig(			
-			RuleUtilService ruleUtilService, 
+			RuleUtilService ruleUtilService,
+			boolean init,
 			String loginId,
 			String clientId,
 			ArrayList<String> fileNameList,
@@ -1484,7 +1487,7 @@ public class Tasker {
 			ArrayList<String> signatureList) throws Exception {
 		
 		//GRAC
-		String gracConfig = ruleUtilService.getNetworkAndMediaRuleJson(loginId, clientId);
+		String gracConfig = ruleUtilService.getNetworkAndMediaRuleJson(init, loginId, clientId);
 		if (gracConfig != null && gracConfig.length() != 0) {
 			fileNameList.add(Constant.GRAC_PATH);
 			fileContentsList.add(gracConfig);
@@ -1736,6 +1739,7 @@ public class Tasker {
 			HashMap<String, Object> jRes = new HashMap<String, Object>();
 			HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get(Constant.J_REQUEST);
 			String loginId = (String)moduleRequest.get("login_id");
+			boolean init = false;
 			
 			/*
 			 * 보안기술요소 설정
@@ -1745,7 +1749,7 @@ public class Tasker {
 				ArrayList<String> fileContentsList = new ArrayList<String>();
 				ArrayList<String> signatureList = new ArrayList<String>();
 
-				securityConfig(ruleUtilService, loginId, clientId, fileNameList, fileContentsList, signatureList);
+				securityConfig(ruleUtilService, init, loginId, clientId, fileNameList, fileContentsList, signatureList);
 				
 				/*
 				 * 폴킷 정책
