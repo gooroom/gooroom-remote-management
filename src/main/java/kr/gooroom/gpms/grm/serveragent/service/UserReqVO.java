@@ -18,6 +18,7 @@ public class UserReqVO implements Serializable {
     private String adminCheck;
     private String modDt;
     private String modUserId;
+    private String regUserId;
     private String status;
 
 
@@ -63,6 +64,8 @@ public class UserReqVO implements Serializable {
     public void setModDt(String modDt) { this.modDt = modDt; }
     public String getModUserId() { return modUserId; }
     public void setModUserId(String modUserId) { this.modUserId = modUserId; }
+    public String getRegUserId() { return regUserId; }
+    public void setRegUserId(String regUserId) { this.regUserId = regUserId; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 

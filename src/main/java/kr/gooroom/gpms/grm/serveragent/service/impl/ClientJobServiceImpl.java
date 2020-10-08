@@ -1,5 +1,6 @@
 package kr.gooroom.gpms.grm.serveragent.service.impl;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -297,6 +298,36 @@ public class ClientJobServiceImpl implements ClientJobService {
 	@Override
 	public String selectExistMediaUnRegisterReq(UserReqVO urmVo) throws Exception {
 		return clientJobDAO.selectExistMediaUnRegisterReq(urmVo);
+	}
+
+	@Override
+	public String selectExistMedia(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectExistMedia(urmVo);
+	}
+
+	@Override
+	public String selectRegisteredReqSeq(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectRegisteredReqSeq(urmVo);
+	}
+
+	@Override
+	public int updateReqProp(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.updateReqProp(urmVo);
+	}
+
+	@Override
+	public int updateReqMstr(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.updateReqMstr(urmVo);
+	}
+
+	@Override
+	public UserReqVO selectUserReq(String reqSeq) throws Exception {
+		return clientJobDAO.selectUserReq(reqSeq);
+	}
+
+	@Override
+	public int insertUserReqHist(UserReqVO vo) throws Exception {
+		return clientJobDAO.insertUserReqHist(vo);
 	}
 
 }

@@ -197,7 +197,7 @@ public class RuleUtilServiceImpl implements RuleUtilService {
     /**
      * 매체제어 정책 조회
      * 
-     * @param String objId, String userId
+     * @param String init, String objId, String userId
      * @return HashMap<String, Object>
      * @throws Exception
      */
@@ -211,7 +211,6 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 
 	    CtrlItemVO[] data = (CtrlItemVO[]) resultVO.getData();
 	    if (data != null && data.length > 0) {
-
 
 			ArrayList<String> mac_addresses = new ArrayList<String>();
 			HashMap<String, Object> bluetooth = new HashMap<String, Object>();
@@ -241,7 +240,7 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 				}
 			}
 
-			// 등록 승인/등록 거절된 usb 리스트 (usb_status_board)
+			//등록신청/ 등록거절/ 대기중/ 권한회수 항목 리스트(usb_status_board)
 			String[] usbReqList = {};
 			if (userId != "") {
 				//리모트 계정
@@ -255,22 +254,32 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 					usbReqList = new String[re.size()];
 					for (int i = 0; i < re.size(); i++) {
 						String state = re.get(i).getAdminCheck();
-						if (state.equals(Constant.ACTION_WAITING)) {
-							state = "registering";
-						} else if (state.equals(Constant.ACTION_REGISTER_APPROVAL)) {
+						String actionType = re.get(i).getActionType();
+						String date = re.get(i).getModDt();
+						String status = re.get(i).getStatus();
+						if (state.equals(Constant.ACTION_WAITING) && actionType.equals(Constant.ACTION_REGISTERING)) {
+							state = Constant.ACTION_REGISTERING;
+						} else if (state.equals(Constant.ACTION_WAITING) && actionType.equals(Constant.ACTION_UNREGISTERING)) {
+							state = Constant.ACTION_UNREGISTERING;
+						} else if (status.equals(Constant.STS_USABLE)) {
 							usb_serialno.add(re.get(i).getUsbSerialNo());
 						}
-						usbReqList[i] = re.get(i).getUsbSerialNo()+","+ re.get(i).getModDt()+","+ state+","+ re.get(i).getUsbName()+
+						if (date == null) {
+							date = re.get(i).getRegDt();
+						}
+						usbReqList[i] = re.get(i).getUsbSerialNo()+","+ date+","+ state+","+ re.get(i).getUsbName()+
 								","+ re.get(i).getUsbProduct()+","+ re.get(i).getUsbSize()+","+ re.get(i).getUsbVendor()+","+ re.get(i).getUsbModel()+","+ re.get(i).getReqSeq();
 					}
 				}
 			}
 
-			if (usb_serialno != null && usb_serialno.size() > 0) {
+			if (usb_serialno != null || usbReqList != null) {
 				String[] serials = new String[usb_serialno.size()];
 				serials = usb_serialno.toArray(serials);
-				serialno.put(GPMSConstants.MEDIA_ITEM_USB_SERIALNO, serials);
-				if (init == true) {
+				if (serials.length != 0){
+					serialno.put(GPMSConstants.MEDIA_ITEM_USB_SERIALNO, serials);
+				}
+				if (init == true && usbReqList.length != 0) {
 					serialno.put(GPMSConstants.MEDIA_ITEM_USB_STATUS_BOARD, usbReqList);
 				}
 			}

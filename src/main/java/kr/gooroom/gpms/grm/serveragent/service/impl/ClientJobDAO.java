@@ -646,4 +646,70 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	public String selectExistMediaUnRegisterReq(UserReqVO urmVo) throws Exception {
 		return sqlSessionMeta.selectOne("selectExistMediaUnRegisterReq", urmVo);
 	}
+
+	/**
+	 * 이미 승인된 장비인지 확인
+	 *
+	 * @param urmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public String selectExistMedia(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.selectOne("selectExistMedia", urmVo);
+	}
+
+	/**
+	 * 이전에 요청이 있던 USB 매체인지 확인
+	 * @param urmVo
+	 * @return
+	 * @throws Exception
+	 */
+	public String selectRegisteredReqSeq(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectRegisteredReqSeq", urmVo);
+	}
+
+	/**
+	 * 사용자 요청 정보 prop 업데이트
+	 *
+	 * @param urmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int updateReqProp(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.delete("ClientJobManagerDAO.updateReqProp",urmVo);
+	}
+
+	/**
+	 * 사용자 요청 정보 mstr 업데이트
+	 *
+	 * @param urmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int updateReqMstr(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.delete("ClientJobManagerDAO.updateReqMstr",urmVo);
+	}
+
+	/**
+	 * reqSeq로 해당 요청 검색
+	 *
+	 * @param reqSeq
+	 * @return int
+	 * @throws Exception
+	 */
+	public UserReqVO selectUserReq(String reqSeq) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectUserReq",reqSeq);
+	}
+
+	/**
+	 * UserReq 이력 생성
+	 *
+	 * @param urVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int insertUserReqHist(UserReqVO urVo) throws Exception {
+		return sqlSessionMeta.insert("ClientJobManagerDAO.insertUserReqHist", urVo);
+	}
+
 }

@@ -1208,6 +1208,22 @@ public class Tasker {
 			}
 		}
 		/*
+		 * GET_USB_WHITELIST_MAX
+		 * 사용자 매체 최대 등록 개수 설정
+		 */
+		else if (taskName.equals(Constant.TASK_GET_USB_WHITELIST_MAX_CONFIG)) {
+			try {
+				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				String maxMediaCnt = clientJobService.selectOneServerjobMaxMediaCnt(Constant.SITE_NAME);
+				jRes.put("usb_whitelist_max", maxMediaCnt);
+				task.put(Constant.J_RESPONSE, jRes);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return String.format("%s=%s", Constant.TASK_GET_USB_WHITELIST_MAX_CONFIG, e.toString());
+			}
+		}
+		/*
 		 * CLIENT_EVENT_USB_WHITELIST
 		 * 매체제어 USB 등록/삭제/등록취소 요청
 		 */
@@ -1228,6 +1244,7 @@ public class Tasker {
 				String usbModel = (String)moduleRequest.get("usb_model");
 				String reqSeq = (String)moduleRequest.get("req_seq");
 				String state = "";
+				String message = "";
 
 				UserReqVO urVo = new UserReqVO();
 				urVo.setClientId(clientId);
@@ -1240,53 +1257,77 @@ public class Tasker {
 				urVo.setUsbSize(usbSize);
 				urVo.setUsbVendor(usbVendor);
 				urVo.setUsbModel(usbModel);
+				urVo.setReqSeq(reqSeq);
 
 				String isRegisterReqExist = clientJobService.selectExistMediaRegisterReq(urVo);
 				String isUnRegisterReqExist = clientJobService.selectExistMediaUnRegisterReq(urVo);
+				String isRegisterExist = clientJobService.selectExistMedia(urVo);
+				String req_seq = clientJobService.selectRegisteredReqSeq(urVo);
 
-				if (action.equals(Constant.ACTION_REGISTERING) && isRegisterReqExist == null) {
+				if (action.equals(Constant.ACTION_REGISTERING) && isRegisterReqExist == null && isRegisterExist == null) {
 					//등록 요청
 					String registerReqMod = clientJobService.selectRegisterReqMod(Constant.SITE_NAME);
 					urVo.setActionType(Constant.ACTION_REGISTERING);
-					if(registerReqMod.equals(new String("0"))) {
+					if(registerReqMod.equals(new String("1"))) {
+						//register_req 칼럼 값이 1(자동)일 경우
 						urVo.setAdminCheck(Constant.ACTION_REGISTER_APPROVAL);
-						urVo.setModUserId(Constant.H_SYSTEM);
+						urVo.setRegUserId(Constant.H_SYSTEM);
 						urVo.setModDt(modDt);
 						urVo.setStatus(Constant.STS_USABLE);
 						state = Constant.ACTION_REGISTER_APPROVAL;
 					} else {
+						//register_req 칼럼 값이 0(수동)일 경우
 						urVo.setStatus(Constant.STS_REVOKE);
 						urVo.setAdminCheck(Constant.ACTION_WAITING);
 						state = Constant.ACTION_REGISTERING;
 					}
-					//매체 등록 요청 저장
-					clientJobService.insertUserReqMstr(urVo);
-					urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
-					clientJobService.insertUserReqProp(urVo);
+					if (req_seq != null) {
+						// 기존 요청에 업데이트
+						urVo.setReqSeq(req_seq);
+						clientJobService.updateReqProp(urVo);
+						clientJobService.updateReqMstr(urVo);
+					} else {
+						// 새로운 요청으로 등록
+						clientJobService.insertUserReqMstr(urVo);
+						urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
+						clientJobService.insertUserReqProp(urVo);
+					}
 				} else if (action.equals(Constant.ACTION_UNREGISTERING) && isUnRegisterReqExist == null) {
 					//삭제 요청
 					String deteleReqMod = clientJobService.selectDeleteReqMod(Constant.SITE_NAME);
 					urVo.setActionType(Constant.ACTION_UNREGISTERING);
-					if(deteleReqMod.equals(new String("0"))) {
+					if(deteleReqMod.equals(new String("1"))) {
+						//delete_req 칼럼 값이 1(자동)일 경우
 						urVo.setAdminCheck(Constant.ACTION_APPROVAL);
 						urVo.setModUserId(Constant.H_SYSTEM);
 						urVo.setModDt(modDt);
 						urVo.setStatus(Constant.STS_REVOKE);
 						state = Constant.ACTION_REGISTER_DENY;
 					} else {
+						//delete_req 칼럼 값이 0(수동)일 경우
 						urVo.setStatus(Constant.STS_USABLE);
 						urVo.setAdminCheck(Constant.ACTION_WAITING);
 						state = Constant.ACTION_UNREGISTERING;
 					}
-					//매체 삭제 요청 저장
-					clientJobService.insertUserReqMstr(urVo);
-					urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
-					clientJobService.insertUserReqProp(urVo);
+					if (req_seq != null) {
+						// 기존 요청에 업데이트
+						urVo.setReqSeq(req_seq);
+						clientJobService.updateReqProp(urVo);
+						clientJobService.updateReqMstr(urVo);
+					} else {
+						// 새로운 요청으로 등록
+						clientJobService.insertUserReqMstr(urVo);
+						urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
+						clientJobService.insertUserReqProp(urVo);
+					}
 				} else if (action.equals(Constant.ACTION_REGISTERING_CANCEL)) {
 					//등록 요청 취소
 					state = Constant.ACTION_REGISTERING_CANCEL;
+					//이력(user_req_hist) 생성
+					UserReqVO re = clientJobService.selectUserReq(req_seq);
+					re.setRegUserId(Constant.H_SYSTEM);
+					clientJobService.insertUserReqHist(re);
 					//매체 요청 정보 삭제
-					urVo.setReqSeq(clientJobService.selectUserReqPropSeq(urVo));
 					clientJobService.deleteUserReqProp(urVo);
 					clientJobService.deleteUserReqMstr(urVo);
 				} else if (action.equals(Constant.ACTION_REGISTER_DENY_ITEM_REMOVE)) {
@@ -1294,15 +1335,19 @@ public class Tasker {
 					state = Constant.ACTION_REGISTER_DENY_ITEM_REMOVE;
 					urVo.setReqSeq(reqSeq);
 					urVo.setStatus(Constant.STS_EXPIRE);
-					//매체 정보 업데이트
+					//매체 상태(ststus)값 업데이트
 					clientJobService.updateUserReqProp(urVo);
 				} else if (isRegisterReqExist != null || isUnRegisterReqExist != null) {
-					//중복된 추가/삭제 요청일 경우
-					String message = "Duplicate request";
-					return message;
+					//관리자 대기중(waiting)인 상태에, 같은 매체의 추가/삭제 요청이 중복으로 온 경우
+					message = Constant.MSG_DUPLICATE_REQ;
+					state = Constant.MSG_ERROR;
+				} else if (isRegisterExist != null) {
+					//이미 등록 승인된 매체에, 등록 신청이 중복으로 온 경우
+					message = Constant.MSG_ALREADY_REG_EQUIPMENT;
+					state = Constant.MSG_ERROR;
 				}
-
 				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				jRes.put("message", message);
 				jRes.put("state", state);
 				task.put(Constant.J_RESPONSE, jRes);
 			}

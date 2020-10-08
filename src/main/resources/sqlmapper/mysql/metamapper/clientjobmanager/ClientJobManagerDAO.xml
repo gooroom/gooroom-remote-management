@@ -39,6 +39,7 @@
 		<result property="usbSize" column="USB_SIZE"/>
 		<result property="usbVendor" column="USB_VENDOR"/>
 		<result property="usbModel" column="USB_MODEL"/>
+		<result property="regUserId" column="REG_USER_ID"/>
 	</resultMap>
 	
 	<insert id="insertLogUpdate" parameterType="map">
@@ -717,28 +718,32 @@
 
 	<delete id="deleteUserReqMstr" parameterType="map">
 		DELETE FROM user_req_mstr
-		WHERE client_id=#{clientId} AND user_id=#{userId}
+		WHERE req_seq = #{reqSeq}
 	</delete>
 
 	<delete id="deleteUserReqProp" parameterType="map">
 		DELETE FROM user_req_prop
-		WHERE user_id=#{userId} AND usb_serial_no=#{usbSerialNo}
+		WHERE req_seq = #{reqSeq}
 	</delete>
 
 	<select id="selectUserUsbMediaList" parameterType="hashmap" resultMap="userReqInfo">
 		SELECT URM.REQ_SEQ,
-		URP.USB_SERIAL_NO,
+		URM.ACTION_TYPE,
 		URM.MOD_DT,
+		URM.REG_DT,
 		URM.ADMIN_CHECK,
+		URP.USB_SERIAL_NO,
 		URP.USB_NAME,
 		URP.USB_PRODUCT,
 		URP.USB_SIZE,
-		URP.USB_VENDOR
+		URP.USB_VENDOR,
+		URP.USB_MODEL,
+		URP.STATUS
 		FROM USER_REQ_MSTR URM
 		LEFT JOIN
 		USER_REQ_PROP URP
 		ON URM.REQ_SEQ = URP.REQ_SEQ
-		WHERE URM.USER_ID = #{userId} AND URM.ACTION_TYPE = #{actionType} AND URP.STATUS != #{status}
+		WHERE URM.USER_ID = #{userId} AND URP.STATUS != #{status}
 	</select>
 
 	<update id="updateUserReqProp" parameterType="UserReqVO">
@@ -761,5 +766,58 @@
 		ON URM.REQ_SEQ = URP.REQ_SEQ
 		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo} AND URM.ADMIN_CHECK = 'register-approval' AND URM.ACTION_TYPE = 'unregistering'
 	</select>
+
+	<select id="selectExistMedia" resultType="String" parameterType="String">
+		SELECT URM.REQ_SEQ
+		FROM USER_REQ_MSTR URM
+		JOIN USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo} AND URM.ADMIN_CHECK = 'register-approval' AND URM.ACTION_TYPE = 'registering'
+	</select>
+
+	<select id="selectRegisteredReqSeq" resultType="String" parameterType="String">
+		SELECT URM.REQ_SEQ
+		FROM USER_REQ_MSTR URM
+		JOIN USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo}
+	</select>
+
+	<update id="updateReqProp" parameterType="UserReqVO">
+		UPDATE USER_REQ_PROP SET STATUS = #{status}
+		WHERE REQ_SEQ = #{reqSeq};
+	</update>
+
+	<update id="updateReqMstr" parameterType="UserReqVO">
+		UPDATE USER_REQ_MSTR SET REG_DT = #{regDt}, ADMIN_CHECK = #{adminCheck}, CLIENT_ID = #{clientId}, ACTION_TYPE = #{actionType}, MOD_DT = #{modDt}, MOD_USER_ID = #{modUserId}
+		WHERE REQ_SEQ = #{reqSeq};
+	</update>
+
+	<select id="selectUserReq" parameterType="String" resultMap="userReqInfo">
+		SELECT URM.REQ_SEQ,
+		URM.USER_ID,
+		URM.ACTION_TYPE,
+		URM.CLIENT_ID,
+		URM.REG_DT,
+		URP.USB_NAME,
+		URP.USB_SERIAL_NO,
+		URP.USB_PRODUCT,
+		URP.USB_SIZE,
+		URP.USB_VENDOR, URP.USB_MODEL,
+		URM.MOD_DT,
+		URM.MOD_USER_ID,
+		URM.ADMIN_CHECK,
+		URP.STATUS
+		FROM USER_REQ_MSTR URM
+		LEFT JOIN
+		USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.REQ_SEQ = #{reqSeq}
+	</select>
+
+	<insert id="insertUserReqHist" parameterType="hashmap">
+		INSERT INTO USER_REQ_HIST (REQ_SEQ, USER_ID, USB_SERIAL_NO, CLIENT_ID, ACTION_TYPE, ADMIN_CHECK, REG_USER_ID, REG_DT)
+		VALUES ((SELECT GRNEXTVAL('USERREQUESTHIST_SEQ')), #{userId}, #{usbSerialNo}, #{clientId}, #{actionType}, #{adminCheck}, #{regUserId}, now())
+	</insert>
 
 </mapper>

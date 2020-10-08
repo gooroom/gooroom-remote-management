@@ -71,6 +71,10 @@ public class Constant {
 	public static final String STS_EXPIRE = "expire";
 	public static final String STS_REVOKE = "revoke";
 
+	public static final String MSG_DUPLICATE_REQ = "Duplicate request";
+	public static final String MSG_ALREADY_REG_EQUIPMENT = "Already registered equipment";
+	public static final String MSG_ERROR = "ERROR";
+
 	public static final String JOB_STAT_SUCCESS = "C";
 	public static final String JOB_STAT_FAIL = "E";
 	
@@ -157,6 +161,7 @@ public class Constant {
 	public static final String TASK_SET_AUTHORITY_CONFIG_LOCAL = "set_authority_config_local";
 	public static final String TASK_GET_POLKIT_ADMIN_CONFIG = "get_polkit_admin_config";
 	public static final String TASK_CLIENT_EVENT_USB_WHITELIST = "client_event_usb_whitelist";
+	public static final String TASK_GET_USB_WHITELIST_MAX_CONFIG = "get_usb_whitelist_max";
 	
 	public static final String SOURCESLIST_PATH = prop.getProperty("gooroom.sourceslist.path");
 	public static final String PREFERENCES_PATH = prop.getProperty("gooroom.preferences.path");
