@@ -330,4 +330,9 @@ public class ClientJobServiceImpl implements ClientJobService {
 		return clientJobDAO.insertUserReqHist(vo);
 	}
 
+	@Override
+	public String selectReqSeqNo(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectReqSeqNo(urmVo);
+	}
+
 }

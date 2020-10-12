@@ -1299,11 +1299,11 @@ public class Tasker {
 					urVo.setActionType(Constant.ACTION_UNREGISTERING);
 					if(deteleReqMod.equals(new String("1"))) {
 						//delete_req 칼럼 값이 1(자동)일 경우
-						urVo.setAdminCheck(Constant.ACTION_APPROVAL);
+						urVo.setAdminCheck(Constant.ACTION_UNREGISTER_APPROVAL);
 						urVo.setModUserId(Constant.H_SYSTEM);
 						urVo.setModDt(modDt);
 						urVo.setStatus(Constant.STS_REVOKE);
-						state = Constant.ACTION_REGISTER_DENY;
+						state = Constant.ACTION_UNREGISTER_APPROVAL;
 					} else {
 						//delete_req 칼럼 값이 0(수동)일 경우
 						urVo.setStatus(Constant.STS_USABLE);
@@ -1328,6 +1328,7 @@ public class Tasker {
 					UserReqVO re = clientJobService.selectUserReq(req_seq);
 					re.setRegUserId(Constant.H_SYSTEM);
 					clientJobService.insertUserReqHist(re);
+
 					//매체 요청 정보 삭제
 					clientJobService.deleteUserReqProp(urVo);
 					clientJobService.deleteUserReqMstr(urVo);
@@ -1349,11 +1350,15 @@ public class Tasker {
 					state = Constant.MSG_ERROR;
 					errorcode = Constant.ERROR_CODE_ALREADY_REG_EQUIPMENT;
 				}
+				//등록된 모든 요청의 req_seq 정보를 agent에 전달
+				String seqNo = clientJobService.selectReqSeqNo(urVo);
+
 				HashMap<String, Object> jRes = new HashMap<String, Object>();
 				if(message != null) {
 					jRes.put("message", message);
 					jRes.put("errorcode", errorcode);
 				}
+				jRes.put("req_seq", seqNo);
 				jRes.put("state", state);
 				task.put(Constant.J_RESPONSE, jRes);
 			}

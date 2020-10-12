@@ -712,4 +712,14 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertUserReqHist", urVo);
 	}
 
+	/**
+	 * 사용자 요청에 대한 seq 검색
+	 * @param urmVo
+	 * @return
+	 * @throws Exception
+	 */
+	public String selectReqSeqNo(UserReqVO urmVo) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectReqSeqNo", urmVo);
+	}
+
 }

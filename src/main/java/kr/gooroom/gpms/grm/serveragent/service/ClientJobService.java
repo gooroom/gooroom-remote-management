@@ -62,5 +62,11 @@ public interface ClientJobService {
 	public int updateUserReqProp(UserReqVO urVo) throws Exception;
 	public String selectExistMediaRegisterReq(UserReqVO urVo) throws Exception;
 	public String selectExistMediaUnRegisterReq(UserReqVO urVo) throws Exception;
-
+	public String selectExistMedia(UserReqVO urVo) throws Exception;
+	public String selectRegisteredReqSeq(UserReqVO urVo) throws Exception;
+	public int updateReqProp(UserReqVO urVo) throws Exception;
+	public int updateReqMstr(UserReqVO urVo) throws Exception;
+	public UserReqVO selectUserReq(String reqSeq) throws Exception;
+	public int insertUserReqHist(UserReqVO urVo) throws Exception;
+	public String selectReqSeqNo(UserReqVO urVo) throws Exception;
 }
