@@ -77,6 +77,11 @@ public class Constant {
 
 	public static final String JOB_STAT_SUCCESS = "C";
 	public static final String JOB_STAT_FAIL = "E";
+
+	//errorcode
+	public static final String ERROR_CODE_DUPLICATE_REQ = "601";
+	public static final String ERROR_CODE_ALREADY_REG_EQUIPMENT = "602";
+
 	
 	//agent의 agent_define.py에 정의되어 있는 템플릿 엘리먼트명 정의와 일치해야한다.
 	public static final String J_OB = "job";

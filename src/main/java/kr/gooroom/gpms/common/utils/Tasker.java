@@ -1245,6 +1245,7 @@ public class Tasker {
 				String reqSeq = (String)moduleRequest.get("req_seq");
 				String state = "";
 				String message = "";
+				String errorcode = "";
 
 				UserReqVO urVo = new UserReqVO();
 				urVo.setClientId(clientId);
@@ -1341,13 +1342,18 @@ public class Tasker {
 					//관리자 대기중(waiting)인 상태에, 같은 매체의 추가/삭제 요청이 중복으로 온 경우
 					message = Constant.MSG_DUPLICATE_REQ;
 					state = Constant.MSG_ERROR;
+					errorcode = Constant.ERROR_CODE_DUPLICATE_REQ;
 				} else if (isRegisterExist != null) {
 					//이미 등록 승인된 매체에, 등록 신청이 중복으로 온 경우
 					message = Constant.MSG_ALREADY_REG_EQUIPMENT;
 					state = Constant.MSG_ERROR;
+					errorcode = Constant.ERROR_CODE_ALREADY_REG_EQUIPMENT;
 				}
 				HashMap<String, Object> jRes = new HashMap<String, Object>();
-				jRes.put("message", message);
+				if(message != null) {
+					jRes.put("message", message);
+					jRes.put("errorcode", errorcode);
+				}
 				jRes.put("state", state);
 				task.put(Constant.J_RESPONSE, jRes);
 			}
