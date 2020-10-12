@@ -1272,7 +1272,7 @@ public class Tasker {
 					if(registerReqMod.equals(new String("1"))) {
 						//register_req 칼럼 값이 1(자동)일 경우
 						urVo.setAdminCheck(Constant.ACTION_REGISTER_APPROVAL);
-						urVo.setRegUserId(Constant.H_SYSTEM);
+						urVo.setModUserId(Constant.H_SYSTEM);
 						urVo.setModDt(modDt);
 						urVo.setStatus(Constant.STS_USABLE);
 						state = Constant.ACTION_REGISTER_APPROVAL;
