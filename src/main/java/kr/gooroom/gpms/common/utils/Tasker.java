@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import kr.gooroom.gpms.common.service.ResultVO;
 import kr.gooroom.gpms.grm.serveragent.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -1229,7 +1230,6 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_CLIENT_EVENT_USB_WHITELIST)) {
 			try {
-
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get(Constant.J_REQUEST);
 				String modDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
@@ -1276,6 +1276,8 @@ public class Tasker {
 						urVo.setModDt(modDt);
 						urVo.setStatus(Constant.STS_USABLE);
 						state = Constant.ACTION_REGISTER_APPROVAL;
+						//job 생성
+						JobMaker.createJobForClientSetupWithClients(clientJobService, Constant.TASK_GET_MEDIA_CONFIG, null, urVo.getClientId());
 					} else {
 						//register_req 칼럼 값이 0(수동)일 경우
 						urVo.setStatus(Constant.STS_REVOKE);
@@ -1304,6 +1306,8 @@ public class Tasker {
 						urVo.setModDt(modDt);
 						urVo.setStatus(Constant.STS_REVOKE);
 						state = Constant.ACTION_UNREGISTER_APPROVAL;
+						//job 생성
+						JobMaker.createJobForClientSetupWithClients(clientJobService, Constant.TASK_GET_MEDIA_CONFIG, null, urVo.getClientId());
 					} else {
 						//delete_req 칼럼 값이 0(수동)일 경우
 						urVo.setStatus(Constant.STS_USABLE);
@@ -1350,9 +1354,9 @@ public class Tasker {
 					state = Constant.MSG_ERROR;
 					errorcode = Constant.ERROR_CODE_ALREADY_REG_EQUIPMENT;
 				}
+
 				//등록된 모든 요청의 req_seq 정보를 agent에 전달
 				String seqNo = clientJobService.selectReqSeqNo(urVo);
-
 				HashMap<String, Object> jRes = new HashMap<String, Object>();
 				if(message != null) {
 					jRes.put("message", message);

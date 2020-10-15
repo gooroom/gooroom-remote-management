@@ -335,4 +335,18 @@ public class ClientJobServiceImpl implements ClientJobService {
 		return clientJobDAO.selectReqSeqNo(urmVo);
 	}
 
+	@Override
+	public String selectOnlineClientIdInClientId(String reqSeq) throws Exception {
+		return clientJobDAO.selectOnlineClientIdInClientId(reqSeq);
+	}
+
+	@Override
+	public long createJobMaster(JobVO jobVO) throws SQLException {
+		return clientJobDAO.createJobMaster(jobVO);
+	}
+
+	@Override
+	public long createJobTarget(JobVO jobVO) throws SQLException {
+		return clientJobDAO.createJobTarget(jobVO);
+	}
 }

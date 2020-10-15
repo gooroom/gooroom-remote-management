@@ -69,4 +69,8 @@ public interface ClientJobService {
 	public UserReqVO selectUserReq(String reqSeq) throws Exception;
 	public int insertUserReqHist(UserReqVO urVo) throws Exception;
 	public String selectReqSeqNo(UserReqVO urVo) throws Exception;
+	public String selectOnlineClientIdInClientId(String reqSeq) throws Exception;
+	public long createJobMaster(JobVO jobVO) throws Exception;
+	public long createJobTarget(JobVO jobVO) throws Exception;
+
 }

@@ -1,25 +1,12 @@
 package kr.gooroom.gpms.grm.serveragent.service.impl;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import kr.gooroom.gpms.grm.serveragent.service.*;
 import org.springframework.stereotype.Repository;
 import kr.gooroom.gpms.common.service.dao.SqlSessionMetaDAO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientInfoVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientLoginVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientSecurityStateVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogBrowserVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogGeneralVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogSecurity2VO;
-import kr.gooroom.gpms.grm.serveragent.service.LogSecurityVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogUpdateVO;
-import kr.gooroom.gpms.grm.serveragent.service.UserReqVO;
-import kr.gooroom.gpms.grm.serveragent.service.NotiVO;
-import kr.gooroom.gpms.grm.serveragent.service.PackageServerVO;
-import kr.gooroom.gpms.grm.serveragent.service.PackageVO;
-import kr.gooroom.gpms.grm.serveragent.service.PollingTimeVO;
-import kr.gooroom.gpms.grm.serveragent.service.ProfileVO;
-import kr.gooroom.gpms.grm.serveragent.service.SchedInfoVO;
 
 /**
  * @Class Name : ClientJobDAO.java
@@ -720,6 +707,39 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 */
 	public String selectReqSeqNo(UserReqVO urmVo) throws Exception {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectReqSeqNo", urmVo);
+	}
+
+	/**
+	 * reqSeq로 해당 요청 검색
+	 *
+	 * @param reqSeq
+	 * @return int
+	 * @throws Exception
+	 */
+	public String selectOnlineClientIdInClientId(String reqSeq) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectOnlineClientIdInClientId",reqSeq);
+	}
+
+	/**
+	 * create job master by job data bean.
+	 *
+	 * @param jobVO JobVO job configuration data bean.
+	 * @return long data insert result count.
+	 * @throws SQLException
+	 */
+	public long createJobMaster(JobVO jobVO) throws SQLException {
+		return (long) sqlSessionMeta.insert("ClientJobManagerDAO.insertJobMaster", jobVO);
+	}
+
+	/**
+	 * create job target by job data bean.
+	 *
+	 * @param jobVO JobVO job configuration data bean.
+	 * @return long data insert result count.
+	 * @throws SQLException
+	 */
+	public long createJobTarget(JobVO jobVO) throws SQLException {
+		return (long) sqlSessionMeta.insert("ClientJobManagerDAO.insertJobTarget", jobVO);
 	}
 
 }

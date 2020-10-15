@@ -41,7 +41,32 @@
 		<result property="usbModel" column="USB_MODEL"/>
 		<result property="regUserId" column="REG_USER_ID"/>
 	</resultMap>
-	
+
+	<resultMap type="jobVO" id="jobInfo">
+
+		<result property="jobNo" column="JOB_NO" />
+		<result property="jobName" column="JOB_NM" />
+
+		<result property="jobStatus" column="JOB_STATUS" />
+		<result property="jobData" column="JOB_DATA" />
+
+		<result property="regDate" column="REG_DT" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+		<result property="regUserId" column="REG_USER_ID" />
+		<result property="endDate" column="END_DT" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+
+		<result property="runAmount" column="RUN_AMOUNT" />
+
+		<result property="clientId" column="CLIENT_ID" />
+
+		<result property="clientCount" column="CLIENT_COUNT" />
+		<result property="compCount" column="COMP_COUNT" />
+		<result property="errorCount" column="ERROR_COUNT" />
+		<result property="runCount" column="RUN_COUNT" />
+		<result property="runCount" column="RUN_COUNT" />
+		<result property="cancelCount" column="CANCEL_COUNT" />
+
+	</resultMap>
+
 	<insert id="insertLogUpdate" parameterType="map">
 		INSERT INTO log_update (client_id,user_id,log_item,basis_value,log_value,extra_info,reg_dt) 
 			VALUES (#{clientId},#{userId},#{logItem},#{basisValue},#{logValue},#{extraInfo},now())
@@ -784,7 +809,7 @@
 	</select>
 
 	<update id="updateReqProp" parameterType="UserReqVO">
-		UPDATE USER_REQ_PROP SET STATUS = #{status}
+		UPDATE USER_REQ_PROP SET STATUS = #{status}, USB_NAME = #{usbName}, USB_PRODUCT = #{usbProduct}, USB_SIZE = #{usbSize}, USB_VENDOR = #{usbVendor}, USB_MODEL = #{usbModel}
 		WHERE REQ_SEQ = #{reqSeq};
 	</update>
 
@@ -827,4 +852,40 @@
 		ON URM.REQ_SEQ = URP.REQ_SEQ
 		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo} AND URM.REG_DT = #{regDt}
 	</select>
+
+	<select id="selectOnlineClientIdInClientId" resultType="String" parameterType="String">
+		SELECT T.CLIENT_ID
+		FROM CLIENT_MSTR T
+		LEFT JOIN CLIENT_ACCESS CA ON T.CLIENT_ID = CA.CLIENT_ID
+		WHERE T.STATUS_CD = 'STAT010' AND T.CLIENT_ID = #{clientId}
+		AND CAST(COALESCE(TIMESTAMPDIFF(SECOND,CA.CHECK_DT,NOW()), '360') AS UNSIGNED) &lt; (CA.POLLING_TIME+10)
+	</select>
+
+	<insert id="insertJobMaster" parameterType="jobVO">
+		<selectKey keyProperty="jobNo" resultType="string" order="BEFORE">
+			SELECT GRNEXTVAL('JOBNO_SEQ')
+		</selectKey>
+		INSERT INTO JOB_MSTR
+		(JOB_NO, JOB_NM, JOB_TP, JOB_DATA, REG_USER_ID, REG_DT)
+		VALUES (
+		#{jobNo},
+		#{jobName},
+		'',
+		#{jobData},
+		#{regUserId},
+		now(6)
+		);
+	</insert>
+
+	<insert id="insertJobTarget" parameterType="jobVO">
+		INSERT INTO JOB_TRGT
+		(JOB_NO, CLIENT_ID, JOB_STAT, MOD_USER_ID, MOD_DT)
+		VALUES (
+		#{jobNo},
+		#{clientId},
+		'R',
+		#{regUserId},
+		now(6)
+		);
+	</insert>
 </mapper>

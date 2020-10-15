@@ -7,7 +7,7 @@ public class JobTargetVO implements Serializable{
 	private static final long serialVersionUID = -668431984943160940L;
 	
 	String clientId;
-	int jobNo;
+	String jobNo;
 	String resultData;
 	String modDt;
 	String modUserId;
@@ -17,12 +17,10 @@ public class JobTargetVO implements Serializable{
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
-	public int getJobNo() {
+	public String getJobNo() {
 		return jobNo;
 	}
-	public void setJobNo(int jobNo) {
-		this.jobNo = jobNo;
-	}
+	public void setJobNo(String jobNo) { this.jobNo = jobNo;}
 	public String getResultData() {
 		return resultData;
 	}
