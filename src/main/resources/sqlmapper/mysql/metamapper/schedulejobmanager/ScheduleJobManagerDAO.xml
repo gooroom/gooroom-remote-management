@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ScheduleJobManagerDAO">
+	<insert id="copyAllFinishedJobTrgtToBk" parameterType="map">
+		INSERT INTO JOB_TRGT_BK (JOB_NO, CLIENT_ID, MOD_DT, JOB_STAT, MOD_USER_ID, RESULT_DATA)
+		SELECT AA.JOB_NO, AA.CLIENT_ID, AA.MOD_DT, AA.JOB_STAT, AA.MOD_USER_ID, AA.RESULT_DATA
+		FROM JOB_TRGT AA WHERE AA.JOB_NO IN (
+		SELECT TOTAL.JOB_NO
+		FROM
+		 (SELECT JOB_NO, COUNT(*) CNT FROM JOB_TRGT GROUP BY JOB_NO) TOTAL
+		 JOIN
+		 (SELECT JOB_NO, COUNT(JOB_NO) CNT
+		     FROM JOB_TRGT
+		     WHERE    (   JOB_STAT = 'C'
+		               OR JOB_STAT = 'E'
+		               OR JOB_STAT = 'Q'
+		               OR SUBSTRING(JOB_STAT, -1) = 'K')
+		           OR (JOB_STAT = 'D' AND DATEDIFF(NOW(), MOD_DT) &gt; #{doingPeriod})
+		           OR (JOB_STAT = 'R' AND DATEDIFF(NOW(), MOD_DT) &gt; #{readyPeriod})
+		     GROUP BY JOB_NO
+		 ) COMPLETE
+		 ON TOTAL.JOB_NO = COMPLETE.JOB_NO AND TOTAL.CNT = COMPLETE.CNT
+		)
+	</insert>
+	
+	<delete id="deleteAllFinishedJobTrgt" parameterType="map">
+		DELETE FROM JOB_TRGT WHERE JOB_NO IN (
+		SELECT TOTAL.JOB_NO
+		FROM
+		 (SELECT JOB_NO, COUNT(*) CNT FROM JOB_TRGT GROUP BY JOB_NO) TOTAL
+		 JOIN
+		 (SELECT JOB_NO, COUNT(JOB_NO) CNT
+		     FROM JOB_TRGT
+		     WHERE    (   JOB_STAT = 'C'
+		               OR JOB_STAT = 'E'
+		               OR JOB_STAT = 'Q'
+		               OR SUBSTRING(JOB_STAT, -1) = 'K')
+		           OR (JOB_STAT = 'D' AND DATEDIFF(NOW(), MOD_DT) &gt; #{doingPeriod})
+		           OR (JOB_STAT = 'R' AND DATEDIFF(NOW(), MOD_DT) &gt; #{readyPeriod})
+		     GROUP BY JOB_NO
+		 ) COMPLETE
+		 ON TOTAL.JOB_NO = COMPLETE.JOB_NO AND TOTAL.CNT = COMPLETE.CNT
+		)
+	</delete>
+    
+    <insert id="copyFinishedJobTrgtToHist" parameterType="int">
+	    INSERT INTO job_trgt_bk (job_no,client_id,mod_dt,job_stat,mod_user_id,result_data) 
+			SELECT jt.job_no,jt.client_id,jt.mod_dt,jt.job_stat,jt.mod_user_id,jt.result_data
+	  		FROM job_trgt jt 
+	  		WHERE (jt.job_stat = 'C' OR jt.job_stat = 'E' OR jt.job_stat = 'Q' OR job_stat = 'CK' OR job_stat = 'EK' OR job_stat = 'QK')
+	  			OR (jt.job_stat = 'D' AND DATEDIFF(now(),jt.mod_dt) &gt; #{storagePeriod})
+    </insert>
+    
+    <delete id="deleteFinishedJobTrgt" parameterType="int">
+    	DELETE FROM job_trgt 
+	  	WHERE (job_stat = 'C' OR job_stat = 'E' OR job_stat = 'Q' OR job_stat = 'CK' OR job_stat = 'EK' OR job_stat = 'QK')
+	  		OR (job_stat = 'D' AND DATEDIFF(now(),mod_dt) &gt; #{storagePeriod})
+    </delete>
+    
+    <insert id="copyAbnormalClientJobTrgtToHist">
+	    INSERT INTO job_trgt_bk (job_no,client_id,mod_dt,job_stat,mod_user_id,result_data) 
+	  		SELECT jt.job_no,jt.client_id,jt.mod_dt,jt.job_stat,jt.mod_user_id,jt.result_data
+	    	FROM job_trgt jt, client_mstr cm 
+	    	WHERE jt.client_id = cm.client_id
+	          	AND (cm.status_cd = 'STAT021' OR cm.status_cd = 'STAT022')
+    </insert>
+    
+    <delete id="deleteAbnormalClientJobTrgt">
+	    DELETE jt.* 
+			FROM job_trgt jt, client_mstr cm 
+			WHERE jt.client_id = cm.client_id 
+	      		AND (cm.status_cd = 'STAT021' OR cm.status_cd = 'STAT022')
+    </delete>
+    
+    <insert id="copyFinishedJobMstrToHist">
+	    INSERT INTO job_mstr_bk (job_no,reg_dt,reg_user_id,job_data,job_tp,job_nm)
+	  		SELECT job_no,reg_dt,reg_user_id,job_data,job_tp,job_nm
+	  		FROM job_mstr 
+	  		WHERE job_no not in (SELECT job_no FROM job_trgt GROUP BY job_no)
+    </insert>
+    
+    <delete id="deleteFinishedJobMstr">
+    	DELETE FROM job_mstr WHERE job_no not in (SELECT job_no FROM job_trgt GROUP BY job_no)
+    </delete>
+    
+    <delete id="deleteExpiredSchedJobTrgt">
+    	DELETE FROM sched_job_trgt WHERE sched_no in (SELECT sched_no FROM sched_job_mstr WHERE sched_stat = 'run-complete' OR sched_stat = 'cancel-complete' OR sched_stat = 'error')
+    </delete>
+    
+    <delete id="deleteExpiredSchedJobMstr">
+    	DELETE FROM sched_job_mstr WHERE sched_stat = 'run-complete' OR sched_stat = 'cancel-complete' OR sched_stat = 'error'
+    </delete>
+</mapper>

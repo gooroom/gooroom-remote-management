@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AuthManagerDAO">
+
+	<resultMap id="ResultMapAuthList" type="AuthVO" >
+		<result property="trmutId" column="client_id"/>
+		<result property="trmutNm" column="client_nm"/>
+		<result property="keyInfo" column="cert_info"/>
+		<result property="trmutStat" column="status_cd"/>
+	</resultMap>
+	
+    <select id="selectTrmut" parameterType="map" resultMap="ResultMapAuthList">
+       SELECT client_id,client_nm,cert_info,status_cd
+       FROM client_mstr
+       WHERE client_id = #{trmutId}       
+    </select>
+
+</mapper>

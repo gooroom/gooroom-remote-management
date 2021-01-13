@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ClientJobManagerDAO">
+	<resultMap id="ResultMapPackageServer" type="PackageServerVO" >
+		<result property="mainOsRepo" column="main_os_repo"/>
+		<result property="baseOsRepo" column="base_os_repo"/>
+		<result property="repoPreference" column="repo_preference"/>
+	</resultMap>
+	
+	<resultMap id="ResultSchedInfo" type="SchedInfoVO">
+		<result property="clientId" column="client_id"/>
+		<result property="innerIp" column="inner_ip"/>
+		<result property="outerIp" column="outer_ip"/>
+		<result property="mac" column="mac"/>
+		<result property="banjang" column="banjang"/>
+		<result property="regDt" column="reg_dt"/>
+		<result property="modDt" column="mod_dt"/>
+	</resultMap>
+	
+	<resultMap id="ResultNoti" type="NotiVO">
+		<result property="url" column="url"/>
+		<result property="title" column="title"/>
+		<result property="viewType" column="view_type"/>
+	</resultMap>
+	
+	<insert id="insertLogUpdate" parameterType="map">
+		INSERT INTO log_update (client_id,user_id,log_item,basis_value,log_value,extra_info,reg_dt) 
+			VALUES (#{clientId},#{userId},#{logItem},#{basisValue},#{logValue},#{extraInfo},now())
+	</insert>
+	
+	<insert id="insertOrUpdateClientExt" parameterType="map">
+		INSERT INTO client_ext (client_id,prod_no,ip,os,kernel,mod_dt,safe_score,local_ip,strg_size, strg_use) 
+		VALUES(#{clientId},#{mac1},#{ip},#{os},#{kernel},now(),#{score},#{localIp},#{strgSize},#{strgUse})
+		ON DUPLICATE KEY UPDATE prod_no=#{mac1},ip=#{ip},os=#{os},kernel=#{kernel},mod_dt=now(),safe_score=#{score},local_ip=#{localIp},strg_size=#{strgSize},strg_use=#{strgUse}
+	</insert>
+	
+	<select id="selectUpdateServerFiles" resultMap="ResultMapPackageServer" parameterType="String">
+		SELECT
+		    GROUP_CONCAT(IF(AA.PROP_NM = 'MAINOS', AA.PROP_VALUE, NULL)) AS 'MAIN_OS_REPO',
+		    GROUP_CONCAT(IF(AA.PROP_NM = 'EXTOS', AA.PROP_VALUE, NULL)) AS 'BASE_OS_REPO',
+		    GROUP_CONCAT(IF(AA.PROP_NM = 'PRIORITIES', AA.PROP_VALUE, NULL)) AS 'REPO_PREFERENCE'
+		FROM (
+		    SELECT PROP_NM, PROP_VALUE
+		   FROM CTRL_ITEM_PROP
+		    WHERE OBJ_ID=(SELECT IFNULL(MIN(CONF_ID), 'USCFDEFAULT')
+		                    FROM GR_GROUP_RULE_CONF
+		                    WHERE GRP_ID=(SELECT IFNULL(MIN(GRP_ID), 'CGRPDEFAULT')
+		                                    FROM CLIENT_MSTR
+		                                    WHERE CLIENT_ID=#{clientId}
+		                         ) AND CONF_TP='UPDATESERVERCONF'
+		                 )
+		        AND (PROP_NM='MAINOS' OR PROP_NM='EXTOS' OR PROP_NM='PRIORITIES')
+		) AA
+	</select>
+	
+	<select id="selectEtcHostsContents" resultType="String" parameterType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+		FROM CTRL_ITEM_PROP CIP JOIN (
+		    SELECT IFNULL(MIN(RC.CONF_ID), 'HOCFDEFAULT') AS CONF_ID
+		   FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+		   WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='HOSTNAMECONF'
+		    ) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='HOSTS'
+	</select>
+	
+    <select id="selectCert" parameterType="String" resultType="String">
+       SELECT cert_info
+       FROM client_mstr
+       WHERE client_id = #{clientId}       
+    </select>
+    
+    <insert id="insertOrUpdatePackage" parameterType="List">
+		INSERT INTO client_package (client_id,package_id,package_arch,install_ver,package_last_ver,mod_dt) 
+		VALUES
+		<foreach collection="list" item="packageVo" separator=",">
+		(#{packageVo.clientId},#{packageVo.packageId},#{packageVo.packageArch},#{packageVo.installVer},#{packageVo.packageLastVer},now())
+		</foreach>
+		ON DUPLICATE KEY UPDATE package_arch=values(package_arch),install_ver=values(install_ver),package_last_ver=values(package_last_ver),mod_dt=now()
+	</insert>
+	
+	<insert id="insertOrUpdatePackageState" parameterType="String">
+		INSERT INTO client_package_state(client_id,
+		                                 total_cnt,
+		                                 update_target_cnt,
+		                                 update_mainos_cnt,
+		                                 mod_dt)
+		   SELECT a.client_id,
+		          count(*)            n_total_cnt,
+		          sum(a.diff_value)   n_update_target_cnt,
+		          sum(a.gooroom_repo) n_update_mainos_cnt,
+		          now()
+		   FROM (SELECT cp.client_id,
+		                pm.package_id,
+		                pm.repo_label,
+		                CASE WHEN pm.repo_label = 'Gooroom' and cp.install_ver != cp.package_last_ver THEN 1 ELSE 0 END
+		                   gooroom_repo,
+		                CASE
+		                   WHEN cp.install_ver != cp.package_last_ver THEN 1
+		                   ELSE 0
+		                END
+		                   diff_value
+		         FROM client_package      cp
+		              JOIN package_mstr pm ON cp.package_id = pm.package_id
+		         WHERE cp.client_id = #{clientId}) a
+		   GROUP BY a.client_id
+		ON DUPLICATE KEY UPDATE mod_dt = now(),
+		                        total_cnt =   values(total_cnt)
+		            , update_target_cnt = values(update_target_cnt)
+		            , update_mainos_cnt = values(update_mainos_cnt)
+	</insert>
+	
+	<delete id="deletePackage" parameterType="map">
+		DELETE FROM client_package 
+		WHERE client_id=#{clientId} AND package_id=#{packageId}
+	</delete>
+	
+	<delete id="deletePackageMstr">
+		DELETE FROM package_mstr
+	</delete>
+	
+	<insert id="insertPackageMstr" parameterType="List">
+		INSERT INTO package_mstr (package_id,package_arch,repo_label,package_ver,reg_dt) 
+		VALUES
+		<foreach collection="list" item="packageVo" separator=",">
+		(#{packageVo.packageId},#{packageVo.packageArch},#{packageVo.repoLabel},#{packageVo.packageLastVer},now())
+		</foreach>
+		ON DUPLICATE KEY UPDATE reg_dt=now()
+	</insert>
+	
+	<insert id="insertOrUpdateClientSecurityState" parameterType="map">
+		INSERT INTO client_security_state
+			(
+				<if test="osStatus == '취약'">os_protector_dt,</if>
+				<if test="exeStatus == '취약'">exe_protector_dt,</if>
+				<if test="bootStatus == '취약'">boot_protector_dt,</if>
+				<if test="mediaStatus == '취약'">media_protector_dt,</if>
+				<if test="osStatus == '취약'">os_protector_cnt,</if>
+				<if test="exeStatus == '취약'">exe_protector_cnt,</if>
+				<if test="bootStatus == '취약'">boot_protector_cnt,</if>
+				<if test="mediaStatus == '취약'">media_protector_cnt,</if>
+				<if test="osRun == '동작'">os_protector_act_stop_dt,</if>
+				<if test="exeRun == '동작'">exe_protector_act_stop_dt,</if>
+				<if test="bootRun == '동작'">boot_protector_act_stop_dt,</if>
+				<if test="mediaRun == '동작'">media_protector_act_stop_dt,</if>
+				<if test="osRun != '동작'">os_protector_act_stop_dt,</if>
+				<if test="exeRun != '동작'">exe_protector_act_stop_dt,</if>
+				<if test="bootRun != '동작'">boot_protector_act_stop_dt,</if>
+				<if test="mediaRun != '동작'">media_protector_act_stop_dt,</if>
+				client_id,client_check_dt,mod_dt
+			)
+		VALUES 
+			(
+				<if test="osStatus == '취약'">now(),</if>
+				<if test="exeStatus == '취약'">now(),</if>
+				<if test="bootStatus == '취약'">now(),</if>
+				<if test="mediaStatus == '취약'">now(),</if>
+				<if test="osStatus == '취약'">1,</if>
+				<if test="exeStatus == '취약'">1,</if>
+				<if test="bootStatus == '취약'">1,</if>
+				<if test="mediaStatus == '취약'">1,</if>
+				<if test="osRun == '동작'">null,</if>
+				<if test="exeRun == '동작'">null,</if>
+				<if test="bootRun == '동작'">null,</if>
+				<if test="mediaRun == '동작'">null,</if>
+				<if test="osRun != '동작'">now(),</if>
+				<if test="exeRun != '동작'">now(),</if>
+				<if test="bootRun != '동작'">now(),</if>
+				<if test="mediaRun != '동작'">now(),</if>
+				#{clientId},now(),now()
+			)
+		ON DUPLICATE KEY UPDATE 
+			<if test="osStatus == '취약'">os_protector_dt=now(),</if>
+			<if test="exeStatus == '취약'">exe_protector_dt=now(),</if>
+			<if test="bootStatus == '취약'">boot_protector_dt=now(),</if>
+			<if test="mediaStatus == '취약'">media_protector_dt=now(),</if>
+			<if test="osStatus == '취약'">os_protector_cnt=os_protector_cnt + 1,</if>
+			<if test="exeStatus == '취약'">exe_protector_cnt=exe_protector_cnt + 1,</if>
+			<if test="bootStatus == '취약'">boot_protector_cnt=boot_protector_cnt + 1,</if>
+			<if test="mediaStatus == '취약'">media_protector_cnt=media_protector_cnt + 1,</if>
+			<if test="osRun == '동작'">os_protector_act_stop_dt=null,</if>
+			<if test="exeRun == '동작'">exe_protector_act_stop_dt=null,</if>
+			<if test="bootRun == '동작'">boot_protector_act_stop_dt=null,</if>
+			<if test="mediaRun == '동작'">media_protector_act_stop_dt=null,</if>
+			<if test="osRun != '동작'">os_protector_act_stop_dt=now(),</if>
+			<if test="exeRun != '동작'">exe_protector_act_stop_dt=now(),</if>
+			<if test="bootRun != '동작'">boot_protector_act_stop_dt=now(),</if>
+			<if test="mediaRun != '동작'">media_protector_act_stop_dt=now(),</if>
+			client_check_dt = now(),
+			mod_dt = now()
+	</insert>
+	
+	<insert id="insertOrUpdateClientSecurityStateClear" parameterType="map">
+		INSERT INTO client_security_state
+			(
+				os_protector_dt,
+				exe_protector_dt,
+				boot_protector_dt,
+				media_protector_dt,
+				os_protector_cnt,
+				exe_protector_cnt,
+				boot_protector_cnt,
+				media_protector_cnt,
+				client_id,client_check_dt,mod_dt
+			)
+		VALUES 
+			(
+				null,
+				null,
+				null,
+				null,
+				0,
+				0,
+				0,
+				0,
+				#{clientId},now(),now()
+			)
+		ON DUPLICATE KEY UPDATE 
+			os_protector_dt=null,
+			exe_protector_dt=null,
+			boot_protector_dt=null,
+			media_protector_dt=null,
+			os_protector_cnt=0,
+			exe_protector_cnt=0,
+			boot_protector_cnt=0,
+			media_protector_cnt=0,
+			client_check_dt = now(),
+			mod_dt = now()
+	</insert>
+	
+	<insert id="insertLogSecurity" parameterType="List">
+		INSERT INTO log_security
+			(LOG_SEQ,client_id,user_id,log_item,log_tp,log_value,reg_dt)
+		VALUES
+			<foreach collection="list" item="logSecurityVo" separator=",">
+			((SELECT GRNEXTVAL('LOGSECURITY_SEQ')),#{logSecurityVo.clientId},#{logSecurityVo.userId},
+			#{logSecurityVo.logItem},#{logSecurityVo.logTp},#{logSecurityVo.logValue},now())
+			</foreach>
+	</insert>
+	
+	<insert id="insertLogSecurity2" parameterType="List">
+		INSERT INTO log_security
+			(LOG_SEQ,client_id,user_id,log_item,log_tp,log_value,reg_dt,log_dt,log_level,log_code,eval_level)
+		VALUES
+			<foreach collection="list" item="logSecurityVo" separator=",">
+			((SELECT GRNEXTVAL('LOGSECURITY_SEQ')),#{logSecurityVo.clientId},#{logSecurityVo.userId},#{logSecurityVo.logItem},
+			#{logSecurityVo.logTp},#{logSecurityVo.logValue},now(),#{logSecurityVo.logDt},
+			#{logSecurityVo.logLevel},#{logSecurityVo.logCode},#{logSecurityVo.evalLevel})
+
+			</foreach>
+	</insert>
+	
+	<insert id="insertClientSecurityStateHist" parameterType="String">
+		INSERT INTO client_security_state_hist
+		  (
+		    client_id,
+		    confirm_user_id, 
+		    confirm_dt,
+		    client_check_dt,
+		    mod_dt,
+		    media_protector_act_stop_dt,  
+		    os_protector_act_stop_dt, 
+		    exe_protector_act_stop_dt, 
+		    boot_protector_act_stop_dt, 
+		    media_protector_dt, 
+		    os_protector_dt, 
+		    exe_protector_dt, 
+		    boot_protector_dt 
+		  )
+		  SELECT 
+		    STATE.client_id,
+		    STATE.confirm_user_id, 
+		    STATE.confirm_dt,
+		    STATE.client_check_dt,
+		    STATE.mod_dt,
+		    STATE.media_protector_act_stop_dt,  
+		    STATE.os_protector_act_stop_dt, 
+		    STATE.exe_protector_act_stop_dt, 
+		    STATE.boot_protector_act_stop_dt, 
+		    STATE.media_protector_dt, 
+		    STATE.os_protector_dt, 
+		    STATE.exe_protector_dt, 
+		    STATE.boot_protector_dt 
+		    FROM 
+		      (SELECT
+		        client_id,
+		        confirm_user_id, 
+		        confirm_dt,
+		        client_check_dt,
+		        mod_dt,
+		        media_protector_act_stop_dt,  
+		        os_protector_act_stop_dt, 
+		        exe_protector_act_stop_dt, 
+		        boot_protector_act_stop_dt, 
+		        media_protector_dt, 
+		        os_protector_dt, 
+		        exe_protector_dt, 
+		        boot_protector_dt 
+		        FROM client_security_state WHERE client_id=#{clientId}) STATE
+		        
+		      ,(SELECT  
+	            	count(*) cnt,
+	            	AA.*
+            	FROM (
+            		SELECT 
+				        client_id,
+				        confirm_user_id, 
+				        confirm_dt,
+				        client_check_dt,
+				        mod_dt,
+				        media_protector_act_stop_dt,  
+				        os_protector_act_stop_dt, 
+				        exe_protector_act_stop_dt, 
+				        boot_protector_act_stop_dt, 
+				        media_protector_dt, 
+				        os_protector_dt, 
+				        exe_protector_dt, 
+				        boot_protector_dt 
+				        FROM client_security_state_hist WHERE client_id=#{clientId} ORDER BY mod_dt DESC) AA
+				     LIMIT 1) HIST
+		      
+		    WHERE
+          HIST.cnt = 0 OR (
+  		      IFNULL(STATE.media_protector_dt,'NONE') != IFNULL(HIST.media_protector_dt,'NONE')
+  		      OR IFNULL(STATE.os_protector_dt,'NONE') != IFNULL(HIST.os_protector_dt,'NONE')
+  		      OR IFNULL(STATE.exe_protector_dt,'NONE') != IFNULL(HIST.exe_protector_dt,'NONE')
+  		      OR IFNULL(STATE.boot_protector_dt,'NONE') != IFNULL(HIST.boot_protector_dt,'NONE'))
+	</insert>
+	
+	<insert id="insertClientExtHist" parameterType="String">
+		INSERT INTO client_ext_hist
+	  (
+	    client_id,
+	    prod_no,
+	    ip,
+	    os,
+	    kernel,
+	    mod_dt,
+	    safe_score
+	  )
+	  SELECT 
+	    EXT.client_id,
+	    EXT.prod_no,
+	    EXT.ip,
+	    EXT.os,
+	    EXT.kernel,
+	    EXT.mod_dt,
+	    EXT.safe_score
+	    FROM 
+	      (SELECT
+	        client_id,
+	        prod_no,
+	        ip,
+	        os,
+	        kernel,
+	        mod_dt,
+	        safe_score 
+	        FROM client_ext WHERE client_id=#{clientId}) EXT
+	        
+	      ,(SELECT  
+	        count(*) cnt, AA.*
+	        FROM (
+	        	SELECT
+			        client_id,
+			        prod_no,
+			        ip,
+			        os,
+			        kernel,
+			        mod_dt,
+			        safe_score
+			        FROM client_ext_hist WHERE client_id=#{clientId} ORDER BY mod_dt DESC) AA
+			    LIMIT 1) HIST
+	      
+	    WHERE
+	      HIST.cnt = 0 OR (
+		      EXT.prod_no != HIST.prod_no
+		      OR EXT.ip != HIST.ip
+		      OR EXT.os != HIST.os
+		      OR EXT.kernel != HIST.kernel
+		      OR EXT.safe_score != HIST.safe_score)
+	</insert>
+	
+	<resultMap id="ResultMapNtpList" type="PackageServerVO" >
+		<result property="mainOsRepo" column="main_os_repo"/>
+		<result property="baseOsRepo" column="base_os_repo"/>
+		<result property="repoPreference" column="repo_preference"/>
+	</resultMap>
+	
+	<select id="selectOneServerjobDispatchTime" resultType="String" parameterType="String">
+		SELECT polling_cycle FROM site_mstr WHERE site_name=#{siteName}
+	</select>
+	
+	<insert id="insertLogGeneral" parameterType="list">
+		INSERT INTO log_general (LOG_SEQ,client_id, user_id, log_item, log_value, log_tp, reg_dt)
+		VALUES
+		<foreach collection="list" item="logGeneralVo" separator=",">
+		((SELECT GRNEXTVAL('LOGGENERAL_SEQ')), #{logGeneralVo.clientId},#{logGeneralVo.userId},
+		#{logGeneralVo.logItem},#{logGeneralVo.logValue},#{logGeneralVo.logTp},now())
+		</foreach>
+	</insert>
+
+	<select id="selectClientCertificate" parameterType="String" resultType="String">
+		SELECT cert_info FROM client_mstr WHERE clinet_id=#{clientId}
+	</select>
+	
+	<select id="selectHypervisorOperation" parameterType="String" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+		FROM CTRL_ITEM_PROP CIP JOIN (
+		    SELECT IFNULL(MIN(RC.CONF_ID), 'CLCFDEFAULT') AS CONF_ID
+		   FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+		   WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='CLIENTCONF'
+		    ) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='USEHYPERVISOR'
+	</select>
+
+	<select id="selectUpdateOperation" parameterType="map" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+		FROM CTRL_ITEM_PROP CIP JOIN (
+		 SELECT CONF_ID FROM (
+		 SELECT CONF_ID
+		 FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+		 WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='SECURITYRULE'
+		 UNION
+		 SELECT CONF_ID
+		 FROM GR_USER_RULE_CONF RC
+		 WHERE RC.USER_ID=#{loginId} AND RC.CONF_TP='SECURITYRULE'
+		 UNION
+		 SELECT CONF_ID
+		 FROM GR_DEPT_RULE_CONF RC JOIN USER_MSTR UM ON RC.DEPT_CD = UM.DEPT_CD
+		 WHERE UM.USER_ID=#{loginId} AND RC.CONF_TP='SECURITYRULE'
+		 UNION
+		 SELECT 'GSRUDEFAULT' AS CONF_ID FROM DUAL
+		 ) AM LIMIT 1
+		) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='package_handle'
+	</select>
+	
+	<select id="selectPackageList" parameterType="String" resultType="String">
+		SELECT package_id FROM client_package WHERE client_id=#{clientId}
+	</select>
+	
+	<select id="selectProfilingPackageList" parameterType="String" resultType="String">
+		SELECT package_id FROM client_profile_data WHERE profile_no=#{profileNo}
+	</select>
+	
+	<insert id="insertProfilingPackage" parameterType="List">
+		INSERT INTO client_profile_data (profile_no, package_id) 
+		VALUES
+		<foreach collection="list" item="profileVo" separator=",">
+		(#{profileVo.profileNo},#{profileVo.packageId})
+		</foreach>
+	</insert>
+	
+	<select id="selectServerVersion" parameterType="String" resultType="String">
+		SELECT server_version FROM site_mstr WHERE site_name=#{siteName}
+	</select>
+	
+	<select id="selectAppBlackList" parameterType="map" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+		FROM CTRL_ITEM_PROP CIP JOIN (
+		 SELECT CONF_ID FROM (
+		 SELECT CONF_ID
+		 FROM GR_USER_RULE_CONF RC
+		 WHERE RC.USER_ID=#{loginId} AND RC.CONF_TP='FILTEREDSWRULE'
+		 UNION
+		 SELECT CONF_ID
+		 FROM GR_DEPT_RULE_CONF RC JOIN USER_MSTR UM ON RC.DEPT_CD = UM.DEPT_CD
+		 WHERE UM.USER_ID=#{loginId} AND RC.CONF_TP='FILTEREDSWRULE'
+		 UNION
+		 SELECT CONF_ID
+		 FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+		 WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='FILTEREDSWRULE'
+		 UNION
+		 SELECT 'GSFIDEFAULT' AS CONF_ID FROM DUAL
+		 ) AM LIMIT 1
+		) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='filtered_software'
+	</select>
+
+	<select id="selectHomefolderOperation" parameterType="String" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+		FROM CTRL_ITEM_PROP CIP JOIN (
+		   SELECT IFNULL(MIN(RC.CONF_ID), 'CLCFDEFAULT') AS CONF_ID
+		  FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+		  WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='CLIENTCONF'
+		   ) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='USEHOMERESET'
+	</select>
+	
+	<select id="selectScreenTime" parameterType="map" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+		FROM CTRL_ITEM_PROP CIP JOIN (
+		 SELECT CONF_ID FROM (
+		 SELECT CONF_ID
+		 FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+		 WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='SECURITYRULE'
+		 UNION
+		 SELECT CONF_ID
+		 FROM GR_USER_RULE_CONF RC
+		 WHERE RC.USER_ID=#{loginId} AND RC.CONF_TP='SECURITYRULE'
+		 UNION
+		 SELECT CONF_ID
+		 FROM GR_DEPT_RULE_CONF RC JOIN USER_MSTR UM ON RC.DEPT_CD = UM.DEPT_CD
+		 WHERE UM.USER_ID=#{loginId} AND RC.CONF_TP='SECURITYRULE'
+		 UNION
+		 SELECT 'GSRUDEFAULT' AS CONF_ID FROM DUAL
+		 ) AM LIMIT 1
+		) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='screen_time'
+	</select>
+	
+	<select id="selectPasswordCycle" parameterType="map" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+		FROM CTRL_ITEM_PROP CIP JOIN (
+		 SELECT CONF_ID FROM (
+		 SELECT CONF_ID
+		 FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+		 WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='SECURITYRULE'
+		 UNION
+		 SELECT CONF_ID
+		 FROM GR_USER_RULE_CONF RC
+		 WHERE RC.USER_ID=#{loginId} AND RC.CONF_TP='SECURITYRULE'
+		 UNION
+		 SELECT CONF_ID
+		 FROM GR_DEPT_RULE_CONF RC JOIN USER_MSTR UM ON RC.DEPT_CD = UM.DEPT_CD
+		 WHERE UM.USER_ID=#{loginId} AND RC.CONF_TP='SECURITYRULE'
+		 UNION
+		 SELECT 'GSRUDEFAULT' AS CONF_ID FROM DUAL
+		 ) AM LIMIT 1
+		) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='password_time'
+	</select>
+	
+	<select id="selectIpWhiteList" parameterType="String" resultType="String">
+		SELECT
+		 CASE
+		   WHEN CIP.PROP_NM = 'WHITEIPALL' AND CIP.PROP_VALUE = "true" THEN "allow"
+		   WHEN CIP.PROP_NM = 'WHITEIPALL' AND CIP.PROP_VALUE = "false" THEN "disallow"
+		   WHEN CIP.PROP_NM = 'WHITEIPS' THEN CIP.PROP_VALUE
+		 END AS PROP_VALUE
+		FROM CTRL_ITEM_PROP CIP JOIN (
+		  SELECT IFNULL(MIN(RC.CONF_ID), 'CLCFDEFAULT') AS CONF_ID
+		 FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+		 WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='CLIENTCONF'
+		  ) GD ON CIP.OBJ_ID = GD.CONF_ID AND (CIP.PROP_NM='WHITEIPS' OR CIP.PROP_NM='WHITEIPALL')
+		  ORDER BY CIP.PROP_NM
+	</select>
+	
+	<select id="selectSchedInfo" parameterType="String" resultMap="ResultSchedInfo">
+		SELECT client_id,inner_ip,outer_ip,mac,banjang,reg_dt,mod_dt FROM sched_info WHERE client_id=#{clientId}
+	</select>
+	
+	<insert id="insertSchedInfo" parameterType="map">
+		INSERT INTO sched_info (client_id,inner_ip,outer_ip,mac,banjang,reg_dt,mod_dt) 
+		VALUES (#{clientId},#{innerIp},#{outerIp},#{mac},#{banjang},now(),now())
+	</insert>
+	
+	<update id="updateSchedInfo" parameterType="List">
+		<foreach collection="list" item="schedInfo" separator=";">
+		 UPDATE sched_info SET banjang = #{schedInfo.banjang}, mod_dt = now()
+		 WHERE mac = #{schedInfo.mac} AND inner_ip = #{schedInfo.innerIp} AND outer_ip= #{schedInfo.outerIp}
+		</foreach>
+	</update>
+	
+	<select id="selectNoti" parameterType="map" resultMap="ResultNoti">
+		SELECT np.notice_publish_id url, nm.title title, np.view_type view_type
+		FROM 
+		  (SELECT DISTINCT notice_publish_id
+		  FROM notice_publish_target 
+		  WHERE 
+		    (target_type = 2 AND target_id = #{clientId})
+		    OR (target_type = 3 AND target_id = (SELECT grp_id FROM client_mstr WHERE client_id = #{clientId}))
+		    OR (target_type = 0 AND target_id = #{loginId})
+		    OR (target_type = 1 AND target_id = (SELECT dept_cd FROM user_mstr WHERE user_id = #{loginId}))) npt
+		  ,notice_publish np
+		  ,notice_mstr nm
+		WHERE npt.notice_publish_id = np.notice_publish_id
+		  AND np.notice_id = nm.notice_id
+		  AND np.status_cd = 'STAT010'
+		  AND nm.status_cd = 'STAT010'
+		  AND np.open_dt <![CDATA[ <= ]]> NOW()
+		  AND CASE 
+		      WHEN np.close_dt IS NULL THEN 1=1
+		      WHEN np.close_dt = '0000-00-00 00:00:00' THEN 1=1
+		      ELSE NOW() <![CDATA[ <= ]]>  np.close_dt 
+		      END
+	</select>
+	
+	<select id="selectInstanceNoti" parameterType="map" resultMap="ResultNoti">
+		SELECT np.notice_publish_id url, nm.title title, np.view_type view_type
+		FROM 
+		  (SELECT DISTINCT notice_publish_id
+		  FROM notice_publish_target 
+		  WHERE 
+		    (target_type = 2 AND target_id = #{clientId})
+		    OR (target_type = 3 AND target_id = (SELECT grp_id FROM client_mstr WHERE client_id = #{clientId}))
+		    OR (target_type = 0 AND target_id = #{loginId})
+		    OR (target_type = 1 AND target_id = (SELECT dept_cd FROM user_mstr WHERE user_id = #{loginId}))) npt
+		  ,notice_publish np
+		  ,notice_mstr nm
+		WHERE npt.notice_publish_id = np.notice_publish_id
+		  AND np.notice_publish_id = #{noticePublishId}
+		  AND nm.notice_id = np.notice_id
+	</select>
+	
+	<select id="selectDefaultNotiDomain" resultType="String">
+		SELECT CONCAT("https://", pm_url, "/gpms/notice") FROM mg_server
+	</select>
+	
+	<insert id="insertLogBrowser" parameterType="List">
+		INSERT INTO log_browser(client_id, user_id, log_dt, log_tp, url, reg_dt) 
+		VALUES
+		<foreach collection="list" item="logBrowserVo" separator=",">
+		(#{logBrowserVo.clientId}, #{logBrowserVo.userId}, #{logBrowserVo.logDt}, #{logBrowserVo.logTp}, #{logBrowserVo.url}, NOW())
+		</foreach>
+	</insert>
+	
+	<delete id="deleteClientPackage" parameterType="String">
+		DELETE FROM client_package WHERE client_id=#{clientId}
+	</delete>
+	
+	<select id="selectAllClients" resultType="String">
+		SELECT client_id FROM client_mstr
+	</select>
+	
+	<select id="selectControlcenterItems" parameterType="map" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+	    FROM CTRL_ITEM_PROP CIP JOIN (
+	     SELECT CONF_ID FROM (
+	     SELECT CONF_ID
+	     FROM GR_USER_RULE_CONF RC
+	     WHERE RC.USER_ID=#{loginId} AND RC.CONF_TP='CTRLCENTERITEMRULE'
+	     UNION
+	     SELECT CONF_ID
+	     FROM GR_DEPT_RULE_CONF RC JOIN USER_MSTR UM ON RC.DEPT_CD = UM.DEPT_CD
+	     WHERE UM.USER_ID=#{loginId} AND RC.CONF_TP='CTRLCENTERITEMRULE'
+	     UNION
+	     SELECT CONF_ID
+	     FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+	     WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='CTRLCENTERITEMRULE'
+	     UNION
+	     SELECT 'CTCIDEFAULT' AS CONF_ID FROM DUAL
+	     ) AM LIMIT 1
+	    ) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='ctrlcenter_items'
+	</select>
+	
+	<update id="updatePollingTime" parameterType="map">
+		UPDATE CLIENT_ACCESS SET polling_time=#{pollingTime} WHERE client_id=#{clientId}
+	</update>
+	
+	<select id="selectRootUse" parameterType="String" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+        FROM CTRL_ITEM_PROP CIP JOIN (
+           SELECT IFNULL(MIN(RC.CONF_ID), 'CLCFDEFAULT') AS CONF_ID
+          FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+          WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='CLIENTCONF'
+           ) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='ROOTALLOW'
+	</select>
+	
+	<select id="selectSudoUse" parameterType="String" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+        FROM CTRL_ITEM_PROP CIP JOIN (
+           SELECT IFNULL(MIN(RC.CONF_ID), 'CLCFDEFAULT') AS CONF_ID
+          FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+          WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='CLIENTCONF'
+           ) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='SUDOALLOW' 
+	</select>
+
+	<select id="selectPolkitAdmin" parameterType="String" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+        FROM CTRL_ITEM_PROP CIP JOIN (
+           SELECT IFNULL(MIN(RC.CONF_ID), 'CLCFDEFAULT') AS CONF_ID
+          FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+          WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='CLIENTCONF'
+           ) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='policykitUser' 
+	</select>
+	
+</mapper>
