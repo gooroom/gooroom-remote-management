@@ -1009,137 +1009,153 @@ public class RuleUtilServiceImpl implements RuleUtilService {
 	return hm;
     }
 
-    /**
-     * 네트워크(단말기보안정책) 부분과 매체제어정채을 합한 JSON 조회 - JSON STRING
-     * 
-     * @param String userId
-     * @param String clientId
-     * @return String
-     * @throws Exception
-     */
-    @Override
-    public String getNetworkAndMediaRuleJson(boolean init, String userId, String clientId) throws Exception {
+	/**
+	 * 네트워크(단말기보안정책) 부분과 매체제어정채을 합한 JSON 조회 - JSON STRING
+	 *
+	 * @param String userId
+	 * @param String clientId
+	 * @return String
+	 * @throws Exception
+	 */
+	@Override
+	public String getNetworkAndMediaRuleJson(boolean init, String userId, String clientId) throws Exception {
 
-	HashMap<String, Object> resultHashMap = new HashMap<String, Object>();
-	HashMap<String, Object> hm = new HashMap<String, Object>();
-	ResultVO resultVO = null;
+		HashMap<String, Object> resultHashMap = new HashMap<String, Object>();
+		HashMap<String, Object> hm = new HashMap<String, Object>();
+		ResultVO resultVO = null;
 
-	try {
+		try {
+			HashMap<String, Object> networkHashMap = new HashMap<String, Object>();
 
-	    HashMap<String, Object> networkHashMap = new HashMap<String, Object>();
+			// set
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("userId", userId);
+			map.put("clientId", clientId);
+			map.put("confTp", "SECURITYRULE");
+			map.put("defaultConfId", "GSRUDEFAULT");
 
-	    // set
-	    HashMap<String, String> map = new HashMap<String, String>();
-	    map.put("userId", userId);
-	    map.put("clientId", clientId);
-	    map.put("confTp", "SECURITYRULE");
-	    map.put("defaultConfId", "GSRUDEFAULT");
+			String objId = ruleUtilDAO.selectItemIdByMap(map);
+			if (objId != null && objId.length() > 0) {
+				resultVO = readCtrlItem(objId);
+			}
 
-	    String objId = ruleUtilDAO.selectItemIdByMap(map);
-	    if (objId != null && objId.length() > 0) {
-			resultVO = readCtrlItem(objId);
-	    }
+			if (resultVO != null && resultVO.getData() != null) {
+				CtrlItemVO[] data = (CtrlItemVO[]) resultVO.getData();
+				if (data != null && data.length > 0) {
 
-	    if (resultVO != null && resultVO.getData() != null) {
-			CtrlItemVO[] data = (CtrlItemVO[]) resultVO.getData();
-			if (data != null && data.length > 0) {
-			    // set version
-			    String siteVersion = ruleUtilDAO.selectSiteVersion();
-			    networkHashMap.put("version", siteVersion);
+					// set version
+					String siteVersion = ruleUtilDAO.selectSiteVersion();
+					networkHashMap.put("version", siteVersion);
 
-			    CtrlPropVO[] props = data[0].getPropArray();
-				for (CtrlPropVO vo : props) {
-					switch (vo.getPropNm()) {
-						case GPMSConstants.NETWORK_GLOVAL_STATE:
-							networkHashMap.put("state", vo.getPropValue());
-							break;
-						case GPMSConstants.NETWORK_ITEM_FIREWALL:
-							String[] val = vo.getPropValue().split("\\|");
+					CtrlPropVO[] props = data[0].getPropArray();
 
-							NetworkPropVO networkVO = new NetworkPropVO();
-							if (val != null && val.length > 6) {
-								networkVO.setDirection(val[1]);
-								networkVO.setProtocol(val[2]);
-								networkVO.setIpaddress(val[3]);
-								networkVO.setSrc_ports(val[4]);
-								networkVO.setDst_ports(val[5]);
-								networkVO.setState(val[6]);
-							}
+					for (CtrlPropVO vo : props) {
+						switch (vo.getPropNm()) {
+							case GPMSConstants.NETWORK_GLOVAL_STATE:
+								networkHashMap.put("state", vo.getPropValue());
+								break;
+							case GPMSConstants.NETWORK_ITEM_FIREWALL:
+								String[] val = vo.getPropValue().split("\\|");
+								if(val[1].equals("basic")) {
+									NetworkPropVO networkVO = new NetworkPropVO();
+									if (val != null) {
+										networkVO.setSeq(val[0]);
+										networkVO.setDirection(val[2]);
+										networkVO.setProtocol(val[3]);
+										networkVO.setIpaddress(val[4]);
+										networkVO.setSrc_ports(val[5]);
+										networkVO.setDst_ports(val[6]);
+										networkVO.setState(val[7]);
+									}
 
-							ArrayList<NetworkPropVO> revNetworks = (ArrayList<NetworkPropVO>) networkHashMap.get("rules");
-							if (revNetworks != null) {
-								revNetworks.add(networkVO);
-								networkHashMap.put("rules", revNetworks);
-							} else {
-								revNetworks = new ArrayList<NetworkPropVO>();
-								revNetworks.add(networkVO);
-								networkHashMap.put("rules", revNetworks);
-							}
-							break;
-						default:
-							break;
+									ArrayList<NetworkPropVO> revNetworks = (ArrayList<NetworkPropVO>) networkHashMap.get("rules");
+									if (revNetworks != null) {
+										revNetworks.add(networkVO);
+										networkHashMap.put("rules", revNetworks);
+									} else {
+										revNetworks = new ArrayList<NetworkPropVO>();
+										revNetworks.add(networkVO);
+										networkHashMap.put("rules", revNetworks);
+									}
+								} else {
+									if (val != null) {
+										NetworkAdvancedPropVO networkAdvancedVO = new NetworkAdvancedPropVO();
+										networkAdvancedVO.setSeq(val[0]);
+										networkAdvancedVO.setCmd(val[2]);
+
+										ArrayList<NetworkAdvancedPropVO> revNetworks = (ArrayList<NetworkAdvancedPropVO>) networkHashMap.get("rules_raw");
+										if (revNetworks != null) {
+											revNetworks.add(networkAdvancedVO);
+											networkHashMap.put("rules_raw", revNetworks);
+										} else {
+											revNetworks = new ArrayList<NetworkAdvancedPropVO>();
+											revNetworks.add(networkAdvancedVO);
+											networkHashMap.put("rules_raw", revNetworks);
+										}
+									}
+								}
+								break;
+							default:
+								break;
+						}
 					}
 				}
-			    ArrayList<NetworkPropVO> revNetworks = (ArrayList<NetworkPropVO>) networkHashMap.get("rules");
-			    if (revNetworks != null) {
-					networkHashMap.put("rules", revNetworks);
-			    }
 			}
-	    }
 
-	    if (networkHashMap != null && networkHashMap.size() > 0) {
-			resultHashMap.clear();
-			resultHashMap.put("network", networkHashMap);
+			if (networkHashMap != null && networkHashMap.size() > 0) {
+				resultHashMap.clear();
+				resultHashMap.put("network", networkHashMap);
 
-			// 매체제어
-			HashMap<String, Object> mediaHm = new HashMap<String, Object>();
-			HashMap<String, String> mediaMap = new HashMap<String, String>();
-			mediaMap.put("userId", userId);
-			mediaMap.put("clientId", clientId);
-			mediaMap.put("confTp", "MEDIARULE");
-			mediaMap.put("defaultConfId", "MCRUDEFAULT");
+				// 매체제어
+				HashMap<String, Object> mediaHm = new HashMap<String, Object>();
+				HashMap<String, String> mediaMap = new HashMap<String, String>();
+				mediaMap.put("userId", userId);
+				mediaMap.put("clientId", clientId);
+				mediaMap.put("confTp", "MEDIARULE");
+				mediaMap.put("defaultConfId", "MCRUDEFAULT");
 
-			String mediaRe = ruleUtilDAO.selectItemIdByMap(mediaMap);
-			if (mediaRe != null && mediaRe.length() > 0) {
-			    mediaHm = readMediaRuleInfo(init, mediaRe, userId);
+				String mediaRe = ruleUtilDAO.selectItemIdByMap(mediaMap);
+				if (mediaRe != null && mediaRe.length() > 0) {
+					mediaHm = readMediaRuleInfo(init, mediaRe, userId);
+				} else {
+					// 디폴트 값을 조회
+					mediaHm = readMediaRuleInfo(init,
+							GPMSConstants.CTRL_ITEM_MEDIACTRL_RULE_ABBR + GPMSConstants.MSG_DEFAULT, userId);
+				}
+
+				if (mediaHm != null && mediaHm.size() > 0) {
+					resultHashMap.putAll(mediaHm);
+				}
+
 			} else {
-			    // 디폴트 값을 조회
-			    mediaHm = readMediaRuleInfo(init,
-				    GPMSConstants.CTRL_ITEM_MEDIACTRL_RULE_ABBR + GPMSConstants.MSG_DEFAULT, userId);
+				resultHashMap.clear();
 			}
-			if (mediaHm != null && mediaHm.size() > 0) {
-			    resultHashMap.putAll(mediaHm);
-			}
-	    } else {
+
+		} catch (Exception ex) {
 			resultHashMap.clear();
-	    }
+			logger.error("RuleUtilServiceImpl.getNetworkRuleJson Exception occurred. ", ex);
+		}
 
-	} catch (Exception ex) {
-	    resultHashMap.clear();
-	    logger.error("RuleUtilServiceImpl.getNetworkRuleJson Exception occurred. ", ex);
-	}
-
-	if (resultHashMap != null && resultHashMap.size() > 0) {
-	    StringWriter outputWriter = new StringWriter();
-	    try {
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.writeValue(outputWriter, resultHashMap);
-			return outputWriter.toString();
-	    } catch (Exception ex) {
-		  	logger.error("RuleUtilServiceImpl.getNetworkAndMediaRuleJson (writeValueAsString) Exception occurred. ", ex);
-	    } finally {
+		if (resultHashMap != null && resultHashMap.size() > 0) {
+			StringWriter outputWriter = new StringWriter();
 			try {
-		    	if (outputWriter != null) {
-				outputWriter.close();
-		    	}
+				ObjectMapper mapper = new ObjectMapper();
+				mapper.writeValue(outputWriter, resultHashMap);
+				return outputWriter.toString();
 			} catch (Exception ex) {
-				logger.error("RuleUtilServiceImpl.getNetworkAndMediaRuleJson (outputWriter.close) Exception occurred. ", ex);
-			}
-	    }
-	}
+				logger.error("RuleUtilServiceImpl.getNetworkAndMediaRuleJson (writeValueAsString) Exception occurred. ", ex);
+			} finally {
+				try {
+					if (outputWriter != null) {
+						outputWriter.close();
+					}
+				} catch (Exception ex) {
 
-	return "";
-    }
+				}
+			}
+		}
+		return "";
+	}
 
     /**
      * Policy Kit 정책을 위한 JSON 조회 - JSON STRING
