@@ -5,6 +5,8 @@ import java.util.Date;
 
 public class ClientVO implements Serializable {
 
+    private static final long serialVersionUID = -8809342824624988098L;
+
     // view
     private String nullColumn = "";
 

@@ -226,8 +226,8 @@ public class ClientJobController {
 		/*
 		 * 클라이언트의 JOB을 조회 후 JOB상태를 ready에서 doing으로 업데이트.
 		 */
-		List<JobVO> resultList = 
-				(List<JobVO>) serverJobService.selectListForClientReady(clientId);
+		List<JobVO> resultList =
+				serverJobService.selectListForClientReady(clientId);
 		if (resultList.size() != 0) {
 			for (JobVO vo: resultList) {
 				HashMap<String, Object> param = new HashMap<String, Object>();
