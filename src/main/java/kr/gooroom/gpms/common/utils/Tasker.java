@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import kr.gooroom.gpms.common.service.ResultVO;
 import kr.gooroom.gpms.grm.serveragent.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -1173,7 +1172,24 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_UPDATE_POLLING_TIME, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_ACCOUNT_CONFIG, e.toString());
+			}
+		}
+		/*
+		 * GET_CLEANMODE_CONFIG
+		 * 클린모드 활성화/비활성화
+		 * ALLOW / DISALLOW
+		 */
+		else if (taskName.equals(Constant.TASK_SET_CLEANMODE_CONFIG)) {
+			try {
+				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				String cleanModeUse = clientJobService.selectCleanModeUse(clientId);
+				jRes.put("cleanmode_use", cleanModeUse);
+				task.put(Constant.J_RESPONSE, jRes);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return String.format("%s=%s", Constant.TASK_SET_CLEANMODE_CONFIG, e.toString());
 			}
 		}
 		/*
@@ -1756,6 +1772,22 @@ public class Tasker {
 				String sudoUse = clientJobService.selectSudoUse(clientId);
 				jRes.put("root_use", rootUse);
 				jRes.put("sudo_use", sudoUse);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			/*
+			 * CLEANMODEALLOW(클린모드) 활성화/비활성화
+			 */
+			try {
+				String cleanModeUse = clientJobService.selectCleanModeUse(clientId);
+				if (cleanModeUse.equals("true")) {
+					cleanModeUse = "enable";
+				}
+				else {
+					cleanModeUse = "disable";
+				}
+				jRes.put("cleanmode_use", cleanModeUse);
 			}
 			catch (Exception e) {
 				e.printStackTrace();

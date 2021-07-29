@@ -165,6 +165,7 @@ public class Constant {
 	public static final String TASK_GET_ACCOUNT_CONFIG = "get_account_config";
 	public static final String TASK_SET_AUTHORITY_CONFIG_LOCAL = "set_authority_config_local";
 	public static final String TASK_GET_POLKIT_ADMIN_CONFIG = "get_polkit_admin_config";
+	public static final String TASK_SET_CLEANMODE_CONFIG = "set_cleanmode_config";
 	public static final String TASK_CLIENT_EVENT_USB_WHITELIST = "client_event_usb_whitelist";
 	public static final String TASK_GET_USB_WHITELIST_MAX_CONFIG = "get_usb_whitelist_max";
 	

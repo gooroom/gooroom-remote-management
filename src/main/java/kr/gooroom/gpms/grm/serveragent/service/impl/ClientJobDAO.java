@@ -518,6 +518,16 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	}
 
 	/**
+	 * 클린모드 활성화/비활성화
+	 * @param clientId
+	 * @return
+	 * @throws Exception
+	 */
+	public String selectCleanModeUse(String clientId) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectCleanModeUse", clientId);
+	}
+
+	/**
 	 * 매체 등록, 삭제 요청의 reqSeq 검색
 	 * @param urmVo
 	 * @return

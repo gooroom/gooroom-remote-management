@@ -50,6 +50,7 @@ public interface ClientJobService {
 	public String selectRootUse(String clientId) throws Exception;
 	public String selectSudoUse(String clientId) throws Exception;
 	public String selectPolkitAdmin(String clientId) throws Exception;
+	public String selectCleanModeUse(String clientId) throws Exception;
 	public int insertUserReqMstr (UserReqVO urVo) throws Exception;
 	public int insertUserReqProp (UserReqVO urVo) throws Exception;
 	public String selectRegisterReqMod(String siteName) throws Exception;

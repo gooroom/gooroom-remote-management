@@ -251,6 +251,11 @@ public class ClientJobServiceImpl implements ClientJobService {
 	}
 
 	@Override
+	public String selectCleanModeUse(String clientId) throws Exception {
+		return clientJobDAO.selectCleanModeUse(clientId);
+	}
+
+	@Override
 	public int insertUserReqMstr(UserReqVO urmVo) throws Exception {
 		return clientJobDAO.insertUserReqMstr(urmVo);
 	}
