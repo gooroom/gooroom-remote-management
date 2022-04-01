@@ -1,68 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" name="MyApp">
-  <Appenders>
-  
-  	<Console name="console" target="SYSTEM_OUT">
-		<PatternLayout>
-            <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
-        </PatternLayout>
-	</Console>
-    <RollingRandomAccessFile name="LogApp" fileName="logs/app.log" filePattern="app-%d{yyyy-MM-dd_HH}_%i.log" immediateFlush="false" append="true" ignoreExceptions="false">
-        <PatternLayout>
-            <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
-            <SizeBasedTriggeringPolicy size="50 MB"/>
-        </Policies>
-        <DefaultRolloverStrategy max="500"/>
-    </RollingRandomAccessFile>
+    <Appenders>
 
-    <RollingRandomAccessFile name="Exception" fileName="logs/excetpion.log" filePattern="exception-%d{yyyy-MM-dd_HH}_%i.log" immediateFlush="false" append="true" ignoreExceptions="false">
-        <PatternLayout>
-            <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
-            <SizeBasedTriggeringPolicy size="50 MB"/>
-        </Policies>
-        <DefaultRolloverStrategy max="500"/>
-    </RollingRandomAccessFile>
-    <Async name="ASYNC_LogApp" includeLocation="true">
-        <AppenderRef ref="LogApp" />
-    </Async>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+        <RollingRandomAccessFile name="LogApp" fileName="logs/app.log" filePattern="app-%d{yyyy-MM-dd_HH}_%i.log" immediateFlush="false" append="true" ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="500"/>
+        </RollingRandomAccessFile>
 
-    <Async name="ASYNC_Exception" includeLocation="true">
-        <AppenderRef ref="Exception" />
-    </Async>
+        <RollingRandomAccessFile name="Exception" fileName="logs/excetpion.log" filePattern="exception-%d{yyyy-MM-dd_HH}_%i.log" immediateFlush="false" append="true" ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="500"/>
+        </RollingRandomAccessFile>
+        <Async name="ASYNC_LogApp" includeLocation="true">
+            <AppenderRef ref="LogApp" />
+        </Async>
 
-  </Appenders>
+        <Async name="ASYNC_Exception" includeLocation="true">
+            <AppenderRef ref="Exception" />
+        </Async>
 
-  <Loggers>
-    <Logger name="kr.gooroom.gpms" level="debug" additivity="false">
-        <AppenderRef ref="console"/>
-        <AppenderRef ref="ASYNC_LogApp"/>
-    </Logger>
+    </Appenders>
 
-    <NullLogger name="jdbc.sqlonly" level="debug" additivity="false">
-	</NullLogger>
-    <Logger name="jdbc.sqltiming" level="debug" additivity="false">
-	    <AppenderRef ref="console"/>
-	</Logger>
-    <NullLogger name="jdbc.audit" level="debug" additivity="false">
-	    <AppenderRef ref="console"/>
-	</NullLogger>
-    <NullLogger name="jdbc.resultset" level="debug" additivity="false">
-	</NullLogger>
-    <Logger name="jdbc.resultsettable" level="debug" additivity="false">
-	    <AppenderRef ref="console"/>
-	</Logger>
-    <Logger name="jdbc.connection" level="debug" additivity="false">
-	    <AppenderRef ref="console"/>
-	</Logger>
-    <Root level="error">
-		<AppenderRef ref="console"/>
-		<AppenderRef ref="ASYNC_Exception"/>
-    </Root>
-  </Loggers>
+    <Loggers>
+        <Logger name="kr.gooroom.gpms" level="debug" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="ASYNC_LogApp"/>
+        </Logger>
+
+        <NullLogger name="jdbc.sqlonly" level="debug" additivity="false">
+        </NullLogger>
+        <Logger name="jdbc.sqltiming" level="debug" additivity="false">
+            <AppenderRef ref="console"/>
+        </Logger>
+        <NullLogger name="jdbc.audit" level="debug" additivity="false">
+            <AppenderRef ref="console"/>
+        </NullLogger>
+        <NullLogger name="jdbc.resultset" level="debug" additivity="false">
+        </NullLogger>
+        <Logger name="jdbc.resultsettable" level="debug" additivity="false">
+            <AppenderRef ref="console"/>
+        </Logger>
+        <Logger name="jdbc.connection" level="debug" additivity="false">
+            <AppenderRef ref="console"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="ASYNC_Exception"/>
+        </Root>
+    </Loggers>
 </Configuration>

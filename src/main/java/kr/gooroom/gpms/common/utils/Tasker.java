@@ -9,7 +9,6 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
@@ -19,27 +18,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import kr.gooroom.gpms.grm.serveragent.service.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.core.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import kr.gooroom.gpms.grm.serveragent.service.ClientInfoVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientJobService;
-import kr.gooroom.gpms.grm.serveragent.service.ClientLoginVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientSecurityStateVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogBrowserVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogGeneralVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogSecurity2VO;
-import kr.gooroom.gpms.grm.serveragent.service.LogSecurityVO;
-import kr.gooroom.gpms.grm.serveragent.service.NotiVO;
-import kr.gooroom.gpms.grm.serveragent.service.PackageServerVO;
-import kr.gooroom.gpms.grm.serveragent.service.PackageVO;
-import kr.gooroom.gpms.grm.serveragent.service.PollingTimeVO;
-import kr.gooroom.gpms.grm.serveragent.service.ProfileVO;
-import kr.gooroom.gpms.grm.serveragent.service.RuleUtilService;
-import kr.gooroom.gpms.grm.serveragent.service.SchedInfoVO;
 
 public class Tasker {
     private static final Logger logger = LoggerFactory.getLogger(Tasker.class);
@@ -315,9 +297,10 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_GET_MEDIA_CONFIG)) {
 			try {
+				boolean init = false;
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				String loginId = (String)moduleRequest.get("login_id");
-				String gracConfig = ruleUtilService.getNetworkAndMediaRuleJson(loginId, clientId);	
+				String gracConfig = ruleUtilService.getNetworkAndMediaRuleJson(init, loginId, clientId);
 				String signature = signing(gracConfig);
 				String fileName = Constant.GRAC_PATH;
 				
@@ -718,6 +701,7 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_SET_AUTHORITY_CONFIG)) {
 			try {
+				boolean init = true;
 				ArrayList<String> fileNameList = new ArrayList<String>();
 				ArrayList<String> fileContentsList = new ArrayList<String>();
 				ArrayList<String> signatureList = new ArrayList<String>();
@@ -726,7 +710,7 @@ public class Tasker {
 				String loginId = (String)moduleRequest.get("login_id");
 				HashMap<String, Object> jRes = new HashMap<String, Object>();
 				
-				securityConfig(ruleUtilService, loginId, clientId, fileNameList, fileContentsList, signatureList);
+				securityConfig(ruleUtilService, init, loginId, clientId, fileNameList, fileContentsList, signatureList);
 				
 				/*
 				 * 폴킷 정책
@@ -1188,7 +1172,24 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_UPDATE_POLLING_TIME, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_ACCOUNT_CONFIG, e.toString());
+			}
+		}
+		/*
+		 * GET_CLEANMODE_CONFIG
+		 * 클린모드 활성화/비활성화
+		 * ALLOW / DISALLOW
+		 */
+		else if (taskName.equals(Constant.TASK_SET_CLEANMODE_CONFIG)) {
+			try {
+				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				String cleanModeUse = clientJobService.selectCleanModeUse(clientId);
+				jRes.put("cleanmode_use", cleanModeUse);
+				task.put(Constant.J_RESPONSE, jRes);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return String.format("%s=%s", Constant.TASK_SET_CLEANMODE_CONFIG, e.toString());
 			}
 		}
 		/*
@@ -1223,9 +1224,171 @@ public class Tasker {
 				return String.format("%s=%s", Constant.TASK_GET_POLKIT_ADMIN_CONFIG, e.toString());
 			}
 		}
+		/*
+		 * GET_USB_WHITELIST_MAX
+		 * 사용자 매체 최대 등록 개수 설정
+		 */
+		else if (taskName.equals(Constant.TASK_GET_USB_WHITELIST_MAX_CONFIG)) {
+			try {
+				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				String maxMediaCnt = clientJobService.selectOneServerjobMaxMediaCnt(Constant.SITE_NAME);
+				jRes.put("usb_whitelist_max", maxMediaCnt);
+				task.put(Constant.J_RESPONSE, jRes);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return String.format("%s=%s", Constant.TASK_GET_USB_WHITELIST_MAX_CONFIG, e.toString());
+			}
+		}
+		/*
+		 * CLIENT_EVENT_USB_WHITELIST
+		 * 매체제어 USB 등록/삭제/등록취소 요청
+		 */
+		else if (taskName.equals(Constant.TASK_CLIENT_EVENT_USB_WHITELIST)) {
+			try {
+				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get(Constant.J_REQUEST);
+				String modDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+				String action = (String)moduleRequest.get("action");
+				String datetime = (String)moduleRequest.get("datetime");
+				String loginId = (String)moduleRequest.get("login_id");
+				String usbName = (String)moduleRequest.get("usb_name");
+				String usbProduct = (String)moduleRequest.get("usb_product");
+				String usbSize = (String)moduleRequest.get("usb_size");
+				String usbVendor = (String)moduleRequest.get("usb_vendor");
+				String usbSerial = (String)moduleRequest.get("usb_serial");
+				String usbModel = (String)moduleRequest.get("usb_model");
+				String reqSeq = (String)moduleRequest.get("req_seq");
+				String state = "";
+				String message = "";
+				String errorcode = "";
+
+				UserReqVO urVo = new UserReqVO();
+				urVo.setClientId(clientId);
+				urVo.setUserId(loginId);
+				urVo.setActionType(action);
+				urVo.setRegDt(datetime);
+				urVo.setUsbName(usbName);
+				urVo.setUsbSerialNo(usbSerial);
+				urVo.setUsbProduct(usbProduct);
+				urVo.setUsbSize(usbSize);
+				urVo.setUsbVendor(usbVendor);
+				urVo.setUsbModel(usbModel);
+				urVo.setReqSeq(reqSeq);
+
+				String isRegisterReqExist = clientJobService.selectExistMediaRegisterReq(urVo);
+				String isUnRegisterReqExist = clientJobService.selectExistMediaUnRegisterReq(urVo);
+				String isRegisterExist = clientJobService.selectExistMedia(urVo);
+				String req_seq = clientJobService.selectRegisteredReqSeq(urVo);
+
+				if (action.equals(Constant.ACTION_REGISTERING) && isRegisterReqExist == null && isRegisterExist == null) {
+					//등록 요청
+					String registerReqMod = clientJobService.selectRegisterReqMod(Constant.SITE_NAME);
+					urVo.setActionType(Constant.ACTION_REGISTERING);
+					if(registerReqMod.equals(new String("1"))) {
+						//register_req 칼럼 값이 1(자동)일 경우
+						urVo.setAdminCheck(Constant.ACTION_REGISTER_APPROVAL);
+						urVo.setModUserId(Constant.H_SYSTEM);
+						urVo.setModDt(modDt);
+						urVo.setStatus(Constant.STS_USABLE);
+						state = Constant.ACTION_REGISTER_APPROVAL;
+						//job 생성
+						JobMaker.createJobForClientSetupWithClients(clientJobService, Constant.TASK_GET_MEDIA_CONFIG, null, urVo.getClientId());
+					} else {
+						//register_req 칼럼 값이 0(수동)일 경우
+						urVo.setStatus(Constant.STS_REVOKE);
+						urVo.setAdminCheck(Constant.ACTION_WAITING);
+						state = Constant.ACTION_REGISTERING;
+					}
+					if (req_seq != null) {
+						// 기존 요청에 업데이트
+						urVo.setReqSeq(req_seq);
+						clientJobService.updateReqProp(urVo);
+						clientJobService.updateReqMstr(urVo);
+					} else {
+						// 새로운 요청으로 등록
+						clientJobService.insertUserReqMstr(urVo);
+						urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
+						clientJobService.insertUserReqProp(urVo);
+					}
+				} else if (action.equals(Constant.ACTION_UNREGISTERING) && isUnRegisterReqExist == null) {
+					//삭제 요청
+					String deteleReqMod = clientJobService.selectDeleteReqMod(Constant.SITE_NAME);
+					urVo.setActionType(Constant.ACTION_UNREGISTERING);
+					if(deteleReqMod.equals(new String("1"))) {
+						//delete_req 칼럼 값이 1(자동)일 경우
+						urVo.setAdminCheck(Constant.ACTION_UNREGISTER_APPROVAL);
+						urVo.setModUserId(Constant.H_SYSTEM);
+						urVo.setModDt(modDt);
+						urVo.setStatus(Constant.STS_REVOKE);
+						state = Constant.ACTION_UNREGISTER_APPROVAL;
+						//job 생성
+						JobMaker.createJobForClientSetupWithClients(clientJobService, Constant.TASK_GET_MEDIA_CONFIG, null, urVo.getClientId());
+					} else {
+						//delete_req 칼럼 값이 0(수동)일 경우
+						urVo.setStatus(Constant.STS_USABLE);
+						urVo.setAdminCheck(Constant.ACTION_WAITING);
+						state = Constant.ACTION_UNREGISTERING;
+					}
+					if (req_seq != null) {
+						// 기존 요청에 업데이트
+						urVo.setReqSeq(req_seq);
+						clientJobService.updateReqProp(urVo);
+						clientJobService.updateReqMstr(urVo);
+					} else {
+						// 새로운 요청으로 등록
+						clientJobService.insertUserReqMstr(urVo);
+						urVo.setReqSeq(clientJobService.selectUserReqSeq(urVo));
+						clientJobService.insertUserReqProp(urVo);
+					}
+				} else if (action.equals(Constant.ACTION_REGISTERING_CANCEL)) {
+					//등록 요청 취소
+					state = Constant.ACTION_REGISTERING_CANCEL;
+					//이력(user_req_hist) 생성
+					UserReqVO re = clientJobService.selectUserReq(req_seq);
+					re.setRegUserId(Constant.H_SYSTEM);
+					clientJobService.insertUserReqHist(re);
+
+					//매체 요청 정보 삭제
+					clientJobService.deleteUserReqProp(urVo);
+					clientJobService.deleteUserReqMstr(urVo);
+				} else if (action.equals(Constant.ACTION_REGISTER_DENY_ITEM_REMOVE)) {
+					//등록 거절 항목 제거 요청
+					state = Constant.ACTION_REGISTER_DENY_ITEM_REMOVE;
+					urVo.setReqSeq(reqSeq);
+					urVo.setStatus(Constant.STS_EXPIRE);
+					//매체 상태(ststus)값 업데이트
+					clientJobService.updateUserReqProp(urVo);
+				} else if (isRegisterReqExist != null || isUnRegisterReqExist != null) {
+					//관리자 대기중(waiting)인 상태에, 같은 매체의 추가/삭제 요청이 중복으로 온 경우
+					message = Constant.MSG_DUPLICATE_REQ;
+					state = Constant.MSG_ERROR;
+					errorcode = Constant.ERROR_CODE_DUPLICATE_REQ;
+				} else if (isRegisterExist != null) {
+					//이미 등록 승인된 매체에, 등록 신청이 중복으로 온 경우
+					message = Constant.MSG_ALREADY_REG_EQUIPMENT;
+					state = Constant.MSG_ERROR;
+					errorcode = Constant.ERROR_CODE_ALREADY_REG_EQUIPMENT;
+				}
+
+				//등록된 모든 요청의 req_seq 정보를 agent에 전달
+				String seqNo = clientJobService.selectReqSeqNo(urVo);
+				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				if(message != null) {
+					jRes.put("message", message);
+					jRes.put("errorcode", errorcode);
+				}
+				jRes.put("req_seq", seqNo);
+				jRes.put("state", state);
+				task.put(Constant.J_RESPONSE, jRes);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return String.format("%s=%s", Constant.TASK_CLIENT_EVENT_USB_WHITELIST, e.toString());
+			}
+		}
 		return Constant.TR_OK;
 	}
-
 	
 	/**
 	 * 브라우저 정책 조회
@@ -1391,15 +1554,16 @@ public class Tasker {
 	 * @throws Exception
 	 */
 	private void securityConfig(			
-			RuleUtilService ruleUtilService, 
+			RuleUtilService ruleUtilService,
+			boolean init,
 			String loginId,
 			String clientId,
 			ArrayList<String> fileNameList,
 			ArrayList<String> fileContentsList,
 			ArrayList<String> signatureList) throws Exception {
 		
-		//GRAC 
-		String gracConfig = ruleUtilService.getNetworkAndMediaRuleJson(loginId, clientId);
+		//GRAC
+		String gracConfig = ruleUtilService.getNetworkAndMediaRuleJson(init, loginId, clientId);
 		if (gracConfig != null && gracConfig.length() != 0) {
 			fileNameList.add(Constant.GRAC_PATH);
 			fileContentsList.add(gracConfig);
@@ -1452,7 +1616,7 @@ public class Tasker {
 	public String clientSync(
 			ClientJobService clientJobService,
 			RuleUtilService ruleUtilService,
-			String clientId, 
+			String clientId,
 			String clientIp, 
 			HashMap<String,Object> task) {
 		
@@ -1497,10 +1661,23 @@ public class Tasker {
 				jRes.put("dispatch_time", "");
 			}
 			/*
+			 * 매체 등록 개수
+			 */
+			try {
+				String maxMediaCnt = clientJobService.selectOneServerjobMaxMediaCnt(Constant.SITE_NAME);
+				if (maxMediaCnt == null) {
+					maxMediaCnt = "";
+				}
+				jRes.put("usb_whitelist_max", maxMediaCnt);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				jRes.put("usb_whitelist_max", "");
+			}
+			/*
 			 * HOSTS 정보
 			 */
 			try {
-				
 				String etcHosts = clientJobService.selectEtcHostsContents(clientId);
 				fileNameList.add(Constant.HOSTS_PATH);
 				fileContentsList.add(etcHosts);
@@ -1600,6 +1777,22 @@ public class Tasker {
 				e.printStackTrace();
 			}
 			/*
+			 * CLEANMODEALLOW(클린모드) 활성화/비활성화
+			 */
+			try {
+				String cleanModeUse = clientJobService.selectCleanModeUse(clientId);
+				if (cleanModeUse.equals("true")) {
+					cleanModeUse = "enable";
+				}
+				else {
+					cleanModeUse = "disable";
+				}
+				jRes.put("cleanmode_use", cleanModeUse);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			/*
 			 * POLKIT ADMIN CONFIG
 			 */
 			try {
@@ -1638,6 +1831,7 @@ public class Tasker {
 			HashMap<String, Object> jRes = new HashMap<String, Object>();
 			HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get(Constant.J_REQUEST);
 			String loginId = (String)moduleRequest.get("login_id");
+			boolean init = false;
 			
 			/*
 			 * 보안기술요소 설정
@@ -1647,7 +1841,7 @@ public class Tasker {
 				ArrayList<String> fileContentsList = new ArrayList<String>();
 				ArrayList<String> signatureList = new ArrayList<String>();
 
-				securityConfig(ruleUtilService, loginId, clientId, fileNameList, fileContentsList, signatureList);
+				securityConfig(ruleUtilService, init, loginId, clientId, fileNameList, fileContentsList, signatureList);
 				
 				/*
 				 * 폴킷 정책

@@ -23,7 +23,50 @@
 		<result property="title" column="title"/>
 		<result property="viewType" column="view_type"/>
 	</resultMap>
-	
+
+	<resultMap type="userReqVO" id="userReqInfo">
+		<result property="reqSeq" column="REQ_SEQ"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="clientId" column="CLIENT_ID"/>
+		<result property="regDt" column="REG_DT"/>
+		<result property="actionType" column="ACTION_TYPE"/>
+		<result property="adminCheck" column="ADMIN_CHECK"/>
+		<result property="modDt" column="MOD_DT"/>
+		<result property="modUserId" column="MOD_USER_ID"/>
+		<result property="usbName" column="USB_NAME"/>
+		<result property="usbSerialNo" column="USB_SERIAL_NO"/>
+		<result property="usbProduct" column="USB_PRODUCT"/>
+		<result property="usbSize" column="USB_SIZE"/>
+		<result property="usbVendor" column="USB_VENDOR"/>
+		<result property="usbModel" column="USB_MODEL"/>
+		<result property="regUserId" column="REG_USER_ID"/>
+	</resultMap>
+
+	<resultMap type="jobVO" id="jobInfo">
+
+		<result property="jobNo" column="JOB_NO" />
+		<result property="jobName" column="JOB_NM" />
+
+		<result property="jobStatus" column="JOB_STATUS" />
+		<result property="jobData" column="JOB_DATA" />
+
+		<result property="regDate" column="REG_DT" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+		<result property="regUserId" column="REG_USER_ID" />
+		<result property="endDate" column="END_DT" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+
+		<result property="runAmount" column="RUN_AMOUNT" />
+
+		<result property="clientId" column="CLIENT_ID" />
+
+		<result property="clientCount" column="CLIENT_COUNT" />
+		<result property="compCount" column="COMP_COUNT" />
+		<result property="errorCount" column="ERROR_COUNT" />
+		<result property="runCount" column="RUN_COUNT" />
+		<result property="runCount" column="RUN_COUNT" />
+		<result property="cancelCount" column="CANCEL_COUNT" />
+
+	</resultMap>
+
 	<insert id="insertLogUpdate" parameterType="map">
 		INSERT INTO log_update (client_id,user_id,log_item,basis_value,log_value,extra_info,reg_dt) 
 			VALUES (#{clientId},#{userId},#{logItem},#{basisValue},#{logValue},#{extraInfo},now())
@@ -388,7 +431,27 @@
 	<select id="selectOneServerjobDispatchTime" resultType="String" parameterType="String">
 		SELECT polling_cycle FROM site_mstr WHERE site_name=#{siteName}
 	</select>
-	
+
+	<select id="selectOneServerjobMaxMediaCnt" resultType="String" parameterType="String">
+		SELECT max_media_cnt FROM site_mstr WHERE site_name=#{siteName}
+	</select>
+
+	<select id="selectOneServerJobRegisterReqMod" resultType="String" parameterType="String">
+		SELECT register_req FROM site_mstr WHERE site_name=#{siteName}
+	</select>
+
+	<select id="selectOneServerjobDeleteReqMod" resultType="String" parameterType="String">
+		SELECT delete_req FROM site_mstr WHERE site_name=#{siteName}
+	</select>
+
+	<select id="selectUserReqSeq" resultType="String" parameterType="String">
+		SELECT req_seq FROM user_req_mstr WHERE user_id=#{userId} AND client_id=#{clientId} AND reg_dt=#{regDt} AND action_type=#{actionType}
+	</select>
+
+	<select id="selectUserReqPropSeq" resultType="String" parameterType="String">
+		SELECT req_seq FROM user_req_prop WHERE user_id=#{userId} AND usb_serial_no=#{usbSerialNo}
+	</select>
+
 	<insert id="insertLogGeneral" parameterType="list">
 		INSERT INTO log_general (LOG_SEQ,client_id, user_id, log_item, log_value, log_tp, reg_dt)
 		VALUES
@@ -667,5 +730,171 @@
           WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='CLIENTCONF'
            ) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='policykitUser' 
 	</select>
-	
+
+	<select id="selectCleanModeUse" parameterType="String" resultType="String">
+		SELECT CIP.PROP_VALUE AS PROP_VALUE
+		FROM CTRL_ITEM_PROP CIP JOIN (
+			SELECT IFNULL(MIN(RC.CONF_ID), 'CLCFDEFAULT') AS CONF_ID
+			FROM GR_GROUP_RULE_CONF RC JOIN CLIENT_MSTR CM ON RC.GRP_ID = CM.GRP_ID
+			WHERE CM.CLIENT_ID=#{clientId} AND RC.CONF_TP='CLIENTCONF'
+		) GD ON CIP.OBJ_ID = GD.CONF_ID AND CIP.PROP_NM='CLEANMODEALLOW'
+	</select>
+
+	<insert id="insertUserReqMstr" parameterType="map">
+		INSERT INTO USER_REQ_MSTR (req_seq, user_id, client_id, reg_dt, action_type, admin_check, mod_dt, mod_user_id)
+		VALUES ((SELECT GRNEXTVAL('USERREQUESTMSTR_SEQ')), #{userId}, #{clientId},#{regDt},#{actionType},#{adminCheck},#{modDt}, #{modUserId})
+	</insert>
+
+	<insert id="insertUserReqProp" parameterType="map">
+		INSERT INTO USER_REQ_PROP (req_seq, user_id, usb_name, usb_serial_no, usb_product, usb_size, usb_vendor, usb_model, status)
+		VALUES (#{reqSeq}, #{userId}, #{usbName}, #{usbSerialNo}, #{usbProduct}, #{usbSize}, #{usbVendor}, #{usbModel} ,#{status})
+	</insert>
+
+	<delete id="deleteUserReqMstr" parameterType="map">
+		DELETE FROM user_req_mstr
+		WHERE req_seq = #{reqSeq}
+	</delete>
+
+	<delete id="deleteUserReqProp" parameterType="map">
+		DELETE FROM user_req_prop
+		WHERE req_seq = #{reqSeq}
+	</delete>
+
+	<select id="selectUserUsbMediaList" parameterType="hashmap" resultMap="userReqInfo">
+		SELECT URM.REQ_SEQ,
+		URM.ACTION_TYPE,
+		URM.MOD_DT,
+		URM.REG_DT,
+		URM.ADMIN_CHECK,
+		URP.USB_SERIAL_NO,
+		URP.USB_NAME,
+		URP.USB_PRODUCT,
+		URP.USB_SIZE,
+		URP.USB_VENDOR,
+		URP.USB_MODEL,
+		URP.STATUS
+		FROM USER_REQ_MSTR URM
+		LEFT JOIN
+		USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URP.STATUS != #{status}
+	</select>
+
+	<update id="updateUserReqProp" parameterType="UserReqVO">
+		UPDATE USER_REQ_PROP SET STATUS = #{status}
+		WHERE REQ_SEQ = #{reqSeq};
+	</update>
+
+	<select id="selectExistMediaRegisterReq" resultType="String" parameterType="String">
+		SELECT URM.REQ_SEQ
+		FROM USER_REQ_MSTR URM
+		JOIN USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo} AND URM.ADMIN_CHECK = 'waiting' AND URM.ACTION_TYPE = 'registering'
+	</select>
+
+	<select id="selectExistMediaUnRegisterReq" resultType="String" parameterType="String">
+		SELECT URM.REQ_SEQ
+		FROM USER_REQ_MSTR URM
+		JOIN USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo} AND URM.ADMIN_CHECK = 'register-approval' AND URM.ACTION_TYPE = 'unregistering'
+	</select>
+
+	<select id="selectExistMedia" resultType="String" parameterType="String">
+		SELECT URM.REQ_SEQ
+		FROM USER_REQ_MSTR URM
+		JOIN USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo} AND URM.ADMIN_CHECK = 'register-approval' AND URM.ACTION_TYPE = 'registering'
+	</select>
+
+	<select id="selectRegisteredReqSeq" resultType="String" parameterType="String">
+		SELECT URM.REQ_SEQ
+		FROM USER_REQ_MSTR URM
+		JOIN USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo}
+	</select>
+
+	<update id="updateReqProp" parameterType="UserReqVO">
+		UPDATE USER_REQ_PROP SET STATUS = #{status}, USB_NAME = #{usbName}, USB_PRODUCT = #{usbProduct}, USB_SIZE = #{usbSize}, USB_VENDOR = #{usbVendor}, USB_MODEL = #{usbModel}
+		WHERE REQ_SEQ = #{reqSeq};
+	</update>
+
+	<update id="updateReqMstr" parameterType="UserReqVO">
+		UPDATE USER_REQ_MSTR SET REG_DT = #{regDt}, ADMIN_CHECK = #{adminCheck}, CLIENT_ID = #{clientId}, ACTION_TYPE = #{actionType}, MOD_DT = #{modDt}, MOD_USER_ID = #{modUserId}
+		WHERE REQ_SEQ = #{reqSeq};
+	</update>
+
+	<select id="selectUserReq" parameterType="String" resultMap="userReqInfo">
+		SELECT URM.REQ_SEQ,
+		URM.USER_ID,
+		URM.ACTION_TYPE,
+		URM.CLIENT_ID,
+		URM.REG_DT,
+		URP.USB_NAME,
+		URP.USB_SERIAL_NO,
+		URP.USB_PRODUCT,
+		URP.USB_SIZE,
+		URP.USB_VENDOR, URP.USB_MODEL,
+		URM.MOD_DT,
+		URM.MOD_USER_ID,
+		URM.ADMIN_CHECK,
+		URP.STATUS
+		FROM USER_REQ_MSTR URM
+		LEFT JOIN
+		USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.REQ_SEQ = #{reqSeq}
+	</select>
+
+	<insert id="insertUserReqHist" parameterType="hashmap">
+		INSERT INTO USER_REQ_HIST (REQ_SEQ, USER_ID, USB_SERIAL_NO, CLIENT_ID, ACTION_TYPE, ADMIN_CHECK, REG_USER_ID, REG_DT)
+		VALUES ((SELECT GRNEXTVAL('USERREQUESTHIST_SEQ')), #{userId}, #{usbSerialNo}, #{clientId}, #{actionType}, #{adminCheck}, #{regUserId}, now())
+	</insert>
+
+	<select id="selectReqSeqNo" resultType="String" parameterType="String">
+		SELECT URM.REQ_SEQ
+		FROM USER_REQ_MSTR URM
+		JOIN USER_REQ_PROP URP
+		ON URM.REQ_SEQ = URP.REQ_SEQ
+		WHERE URM.USER_ID = #{userId} AND URP.USB_SERIAL_NO = #{usbSerialNo} AND URM.REG_DT = #{regDt}
+	</select>
+
+	<select id="selectOnlineClientIdInClientId" resultType="String" parameterType="String">
+		SELECT T.CLIENT_ID
+		FROM CLIENT_MSTR T
+		LEFT JOIN CLIENT_ACCESS CA ON T.CLIENT_ID = CA.CLIENT_ID
+		WHERE T.STATUS_CD = 'STAT010' AND T.CLIENT_ID = #{clientId}
+		AND CAST(COALESCE(TIMESTAMPDIFF(SECOND,CA.CHECK_DT,NOW()), '360') AS UNSIGNED) &lt; (CA.POLLING_TIME+10)
+	</select>
+
+	<insert id="insertJobMaster" parameterType="jobVO">
+		<selectKey keyProperty="jobNo" resultType="string" order="BEFORE">
+			SELECT GRNEXTVAL('JOBNO_SEQ')
+		</selectKey>
+		INSERT INTO JOB_MSTR
+		(JOB_NO, JOB_NM, JOB_TP, JOB_DATA, REG_USER_ID, REG_DT)
+		VALUES (
+		#{jobNo},
+		#{jobName},
+		'',
+		#{jobData},
+		#{regUserId},
+		now(6)
+		);
+	</insert>
+
+	<insert id="insertJobTarget" parameterType="jobVO">
+		INSERT INTO JOB_TRGT
+		(JOB_NO, CLIENT_ID, JOB_STAT, MOD_USER_ID, MOD_DT)
+		VALUES (
+		#{jobNo},
+		#{clientId},
+		'R',
+		#{regUserId},
+		now(6)
+		);
+	</insert>
 </mapper>

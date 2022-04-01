@@ -1,26 +1,13 @@
 package kr.gooroom.gpms.grm.serveragent.service.impl;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import org.springframework.stereotype.Service;
 
-import kr.gooroom.gpms.grm.serveragent.service.ClientInfoVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientJobService;
-import kr.gooroom.gpms.grm.serveragent.service.ClientLoginVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientSecurityStateVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogBrowserVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogGeneralVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogSecurityVO;
-import kr.gooroom.gpms.grm.serveragent.service.LogSecurity2VO;
-import kr.gooroom.gpms.grm.serveragent.service.LogUpdateVO;
-import kr.gooroom.gpms.grm.serveragent.service.NotiVO;
-import kr.gooroom.gpms.grm.serveragent.service.PackageServerVO;
-import kr.gooroom.gpms.grm.serveragent.service.PackageVO;
-import kr.gooroom.gpms.grm.serveragent.service.PollingTimeVO;
-import kr.gooroom.gpms.grm.serveragent.service.ProfileVO;
-import kr.gooroom.gpms.grm.serveragent.service.SchedInfoVO;
+import kr.gooroom.gpms.grm.serveragent.service.*;
+import org.springframework.stereotype.Service;
 
 @Service("clientJobService")
 public class ClientJobServiceImpl implements ClientJobService {
@@ -111,6 +98,21 @@ public class ClientJobServiceImpl implements ClientJobService {
 	@Override
 	public String selectOneServerjobDispatchTime(String siteName) throws Exception {
 		return clientJobDAO.selectOneServerjobDispatchTime(siteName);
+	}
+
+	@Override
+	public String selectOneServerjobMaxMediaCnt(String siteName) throws Exception {
+		return clientJobDAO.selectOneServerjobMaxMediaCnt(siteName);
+	}
+
+	@Override
+	public String selectRegisterReqMod(String siteName) throws Exception {
+		return clientJobDAO.selectRegisterReqMod(siteName);
+	}
+
+	@Override
+	public String selectDeleteReqMod(String siteName) throws Exception {
+		return clientJobDAO.selectDeleteReqMod(siteName);
 	}
 
 	@Override
@@ -246,5 +248,110 @@ public class ClientJobServiceImpl implements ClientJobService {
 	@Override
 	public String selectPolkitAdmin(String clientId) throws Exception {
 		return clientJobDAO.selectPolkitAdmin(clientId);
+	}
+
+	@Override
+	public String selectCleanModeUse(String clientId) throws Exception {
+		return clientJobDAO.selectCleanModeUse(clientId);
+	}
+
+	@Override
+	public int insertUserReqMstr(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.insertUserReqMstr(urmVo);
+	}
+
+	@Override
+	public int insertUserReqProp(UserReqVO urVo) throws Exception {
+		return clientJobDAO.insertUserReqProp(urVo);
+	}
+
+	@Override
+	public String selectUserReqSeq(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectUserReqSeq(urmVo);
+	}
+
+	@Override
+	public String selectUserReqPropSeq(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectUserReqPropSeq(urmVo);
+	}
+
+	@Override
+	public int deleteUserReqMstr(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.deleteUserReqMstr(urmVo);
+	}
+
+	@Override
+	public int deleteUserReqProp(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.deleteUserReqProp(urmVo);
+	}
+
+	@Override
+	public List<UserReqVO> selectUserUsbMediaList(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectUserUsbMediaList(urmVo);
+	}
+
+	@Override
+	public int updateUserReqProp(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.updateUserReqProp(urmVo);
+	}
+
+	@Override
+	public String selectExistMediaRegisterReq(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectExistMediaRegisterReq(urmVo);
+	}
+
+	@Override
+	public String selectExistMediaUnRegisterReq(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectExistMediaUnRegisterReq(urmVo);
+	}
+
+	@Override
+	public String selectExistMedia(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectExistMedia(urmVo);
+	}
+
+	@Override
+	public String selectRegisteredReqSeq(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectRegisteredReqSeq(urmVo);
+	}
+
+	@Override
+	public int updateReqProp(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.updateReqProp(urmVo);
+	}
+
+	@Override
+	public int updateReqMstr(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.updateReqMstr(urmVo);
+	}
+
+	@Override
+	public UserReqVO selectUserReq(String reqSeq) throws Exception {
+		return clientJobDAO.selectUserReq(reqSeq);
+	}
+
+	@Override
+	public int insertUserReqHist(UserReqVO vo) throws Exception {
+		return clientJobDAO.insertUserReqHist(vo);
+	}
+
+	@Override
+	public String selectReqSeqNo(UserReqVO urmVo) throws Exception {
+		return clientJobDAO.selectReqSeqNo(urmVo);
+	}
+
+	@Override
+	public String selectOnlineClientIdInClientId(String reqSeq) throws Exception {
+		return clientJobDAO.selectOnlineClientIdInClientId(reqSeq);
+	}
+
+	@Override
+	public long createJobMaster(JobVO jobVO) throws SQLException {
+		return clientJobDAO.createJobMaster(jobVO);
+	}
+
+	@Override
+	public long createJobTarget(JobVO jobVO) throws SQLException {
+		return clientJobDAO.createJobTarget(jobVO);
 	}
 }

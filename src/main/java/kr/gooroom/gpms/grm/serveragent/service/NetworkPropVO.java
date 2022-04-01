@@ -6,12 +6,21 @@ import java.util.Date;
 @SuppressWarnings("serial")
 public class NetworkPropVO implements Serializable {
 
+    private String seq;
     private String ipaddress;
     private String state;
     private String direction;
     private String src_ports;
     private String dst_ports;
     private String protocol;
+
+    public String getSeq() {
+        return seq;
+    }
+
+    public void setSeq(String seq) {
+        this.seq = seq;
+    }
 
     public String getIpaddress() {
 	return ipaddress;

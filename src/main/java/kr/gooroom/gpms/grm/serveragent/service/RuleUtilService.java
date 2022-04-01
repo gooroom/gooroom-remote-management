@@ -74,7 +74,7 @@ public interface RuleUtilService {
      * @return String
      * @throws Exception
      */
-    String getNetworkAndMediaRuleJson(String userId, String clientId) throws Exception;
+    String getNetworkAndMediaRuleJson(boolean init, String userId, String clientId) throws Exception;
 
     /**
      * Policy Kit 정책을 위한 JSON 조회 - JSON STRING

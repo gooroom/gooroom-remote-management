@@ -226,8 +226,8 @@ public class ClientJobController {
 		/*
 		 * 클라이언트의 JOB을 조회 후 JOB상태를 ready에서 doing으로 업데이트.
 		 */
-		List<JobVO> resultList = 
-				(List<JobVO>) serverJobService.selectListForClientReady(clientId);
+		List<JobVO> resultList =
+				serverJobService.selectListForClientReady(clientId);
 		if (resultList.size() != 0) {
 			for (JobVO vo: resultList) {
 				HashMap<String, Object> param = new HashMap<String, Object>();
@@ -291,7 +291,7 @@ public class ClientJobController {
 		 */
 		JobTargetVO jobTargetVo = new JobTargetVO();
 		jobTargetVo.setClientId(clientId);
-		jobTargetVo.setJobNo((Integer)agentBody.get(Constant.AGENT_DATA_JOBNO));
+		jobTargetVo.setJobNo((String) agentBody.get(Constant.AGENT_DATA_JOBNO));
 		jobTargetVo.setResultData((String)agentBody.get(Constant.AGENT_DATA_JOBDATA));
 		logger.info(
 				"SERVERJOB clientId={} jobNo={}", 
@@ -417,7 +417,7 @@ public class ClientJobController {
 			List<JobVO> agentDataList = new ArrayList<JobVO>();
 			JobVO rspJob = new JobVO();
 			rspJob.setClientId(clientId);
-			rspJob.setJobNo(-1);
+			rspJob.setJobNo("-1");
 			rspJob.setJob(new ObjectMapper().writeValueAsString(job));
 			agentDataList.add(rspJob);
 			

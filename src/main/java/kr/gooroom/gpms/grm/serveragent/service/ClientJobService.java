@@ -22,6 +22,7 @@ public interface ClientJobService {
 	public int insertClientExtHist(String clientId) throws Exception;
 	public int insertClientSecurityStateHist(String clientId) throws Exception;
 	public String selectOneServerjobDispatchTime(String siteName) throws Exception;
+	public String selectOneServerjobMaxMediaCnt(String siteName) throws Exception;
 	public int insertLogGeneral(List<LogGeneralVO> vos) throws Exception;
 	public String selectClientCertificate(String clientId) throws Exception;
 	public String selectHypervisorOperation(String clientId) throws Exception;
@@ -49,4 +50,28 @@ public interface ClientJobService {
 	public String selectRootUse(String clientId) throws Exception;
 	public String selectSudoUse(String clientId) throws Exception;
 	public String selectPolkitAdmin(String clientId) throws Exception;
+	public String selectCleanModeUse(String clientId) throws Exception;
+	public int insertUserReqMstr (UserReqVO urVo) throws Exception;
+	public int insertUserReqProp (UserReqVO urVo) throws Exception;
+	public String selectRegisterReqMod(String siteName) throws Exception;
+	public String selectDeleteReqMod(String siteName) throws Exception;
+	public String selectUserReqSeq(UserReqVO urVo) throws Exception;
+	public String selectUserReqPropSeq(UserReqVO urVo) throws Exception;
+	public int deleteUserReqMstr(UserReqVO urVo) throws Exception;
+	public int deleteUserReqProp(UserReqVO urVo) throws Exception;
+	public List<UserReqVO> selectUserUsbMediaList(UserReqVO urmVo) throws Exception;
+	public int updateUserReqProp(UserReqVO urVo) throws Exception;
+	public String selectExistMediaRegisterReq(UserReqVO urVo) throws Exception;
+	public String selectExistMediaUnRegisterReq(UserReqVO urVo) throws Exception;
+	public String selectExistMedia(UserReqVO urVo) throws Exception;
+	public String selectRegisteredReqSeq(UserReqVO urVo) throws Exception;
+	public int updateReqProp(UserReqVO urVo) throws Exception;
+	public int updateReqMstr(UserReqVO urVo) throws Exception;
+	public UserReqVO selectUserReq(String reqSeq) throws Exception;
+	public int insertUserReqHist(UserReqVO urVo) throws Exception;
+	public String selectReqSeqNo(UserReqVO urVo) throws Exception;
+	public String selectOnlineClientIdInClientId(String reqSeq) throws Exception;
+	public long createJobMaster(JobVO jobVO) throws Exception;
+	public long createJobTarget(JobVO jobVO) throws Exception;
+
 }
