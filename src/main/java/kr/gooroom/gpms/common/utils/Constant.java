@@ -142,6 +142,7 @@ public class Constant {
 	public static final String TASK_GET_UPDATE_OPERATION = "get_update_operation";
 	public static final String TASK_TELL_UPDATE_OPERATION = "tell_update_operation";
 	public static final String TASK_GET_PASSWORD_CYCLE = "get_password_cycle";
+	public static final String TASK_GET_THEME_INFO = "get_theme_info";
 	public static final String TASK_SET_APT_CONF = "set_apt_conf";
 	public static final String TASK_SET_GPG_KEY = "set_gpg_key";
 	public static final String TASK_PROFILING = "profiling";

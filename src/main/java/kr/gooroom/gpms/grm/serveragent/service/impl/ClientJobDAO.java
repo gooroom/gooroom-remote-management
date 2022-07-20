@@ -388,6 +388,16 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	public List<String> selectIpWhiteList(String clientId) throws Exception {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectIpWhiteList", clientId);
 	}
+
+	/**
+	 * 테마 정보 검색
+	 * @param themeId
+	 * @return
+	 * @throws Exception
+	 */
+	public ThemeVO selectThemeInfo(String themeId) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectThemeInfo", themeId);
+	}
 	
 	/**
 	 * 스케줄 정보를 검색

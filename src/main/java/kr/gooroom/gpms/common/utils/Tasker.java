@@ -315,6 +315,24 @@ public class Tasker {
 			}
 		}
 		/*
+		 * GET_THEME_INFO
+		 * 테마 조회
+		 */
+		else if (taskName.equals(Constant.TASK_GET_THEME_INFO)) {
+			try {
+				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
+				String themeId = (String)moduleRequest.get("theme_id");
+
+				ThemeVO themeVO = clientJobService.selectThemeInfo(themeId);
+				jOut.put("theme_info", themeVO);
+				task.put(Constant.J_RESPONSE, jOut);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return String.format("%s=%s", Constant.TASK_GET_THEME_INFO, e.toString());
+			}
+		}
+		/*
 		 * GET_SERVER_CERTIFICATE
 		 * 서버가 서명한 정책을 검증하기 위해서 서버의 인증서를 전송
 		 */

@@ -179,6 +179,11 @@ public class ClientJobServiceImpl implements ClientJobService {
 	public List<String> selectIpWhiteList(String clientId) throws Exception {
 		return clientJobDAO.selectIpWhiteList(clientId);
 	}
+
+	@Override
+	public ThemeVO selectThemeInfo(String themeId) throws Exception {
+		return clientJobDAO.selectThemeInfo(themeId);
+	}
 	
 	@Override
 	public SchedInfoVO selectSchedInfo(String clientId) throws Exception {

@@ -36,6 +36,7 @@ public interface ClientJobService {
 	public List<String> selectAppBlackList(ClientLoginVO clVo) throws Exception;
 	public String selectHomefolderOperation(String clientId) throws Exception;
 	public List<String> selectIpWhiteList(String clientId) throws Exception;
+	public ThemeVO selectThemeInfo(String themeId) throws Exception;
 	public SchedInfoVO selectSchedInfo(String clientId) throws Exception;
 	public int insertSchedInfo(SchedInfoVO schedInfo) throws Exception;
 	public int updateSchedInfo(List<SchedInfoVO> schedInfo) throws Exception;

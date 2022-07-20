@@ -18,6 +18,8 @@
 		<typeAlias alias="SchedInfoVO" type="kr.gooroom.gpms.grm.serveragent.service.SchedInfoVO"/>
 		<typeAlias alias="NotiVO" type="kr.gooroom.gpms.grm.serveragent.service.NotiVO"/>
 		<typeAlias alias="userReqVO" type="kr.gooroom.gpms.grm.serveragent.service.UserReqVO"/>
+		<typeAlias alias="themeVO" type="kr.gooroom.gpms.grm.serveragent.service.ThemeVO"/>
+		<typeAlias alias="fileVO" type="kr.gooroom.gpms.grm.serveragent.service.FileVO" />
 	</typeAliases>
 	
 </configuration>
