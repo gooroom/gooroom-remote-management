@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.gooroom.gpms.grm.serveragent.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -324,7 +325,7 @@ public class Tasker {
 				String themeId = (String)moduleRequest.get("theme_id");
 
 				ThemeVO themeVO = clientJobService.selectThemeInfo(themeId);
-				jOut.put("theme_info", themeVO);
+				jOut.put("theme_info", new ObjectMapper().writeValueAsString(themeVO));
 				task.put(Constant.J_RESPONSE, jOut);
 			}
 			catch (Exception e) {
