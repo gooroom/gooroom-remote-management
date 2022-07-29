@@ -1,6 +1,7 @@
 package kr.gooroom.gpms.grm.serveragent.service.impl;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -391,12 +392,12 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 
 	/**
 	 * 테마 정보 검색
-	 * @param themeId
+	 * @param options
 	 * @return
 	 * @throws Exception
 	 */
-	public ThemeVO selectThemeInfo(String themeId) throws Exception {
-		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectThemeInfo", themeId);
+	public ThemeVO selectThemeInfo(HashMap<String, Object> options) throws Exception {
+		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectThemeInfo", options);
 	}
 	
 	/**

@@ -100,6 +100,8 @@
 		<result property="deleteYn" column="DELETE_YN" />
 		<result property="regUserId" column="REG_USER_ID" />
 		<result property="regDate" column="REG_DT" />
+		<result property="modUserId" column="MOD_USER_ID" />
+		<result property="modDate" column="MOD_DT" />
 
 	</resultMap>
 
@@ -901,13 +903,12 @@
 
 	<select id="selectIconFileListById" resultMap="fileInfo">
 		SELECT FM.FILE_NO, FM.FILE_NM, TI.APP_NM AS ETC_INFO, FM.FILE_TP, FM.FILE_PATH, FM.FILE_SIZE,
-			   FM.FILE_ORG_NM, FM.DELETE_YN, FM.REG_DT, FM.REG_USER_ID, #{iconAddress} AS IMG_URL
-		FROM THEME_ICON TI JOIN FILE_MSTR FM
-								ON TI.FILE_NO = FM.FILE_NO
+			   FM.FILE_ORG_NM, FM.DELETE_YN, FM.REG_DT, FM.REG_USER_ID, FM.MOD_DT, FM.MOD_USER_ID, (SELECT CONCAT(#{iconAddress}, FM.FILE_ORG_NM)) AS IMG_URL
+		FROM THEME_ICON TI JOIN FILE_MSTR FM ON TI.FILE_NO = FM.FILE_NO
 		WHERE TI.THEME_ID=#{themeId};
 	</select>
 
-	<select id="selectThemeInfo" parameterType="String" resultMap="themeInfo">
+	<select id="selectThemeInfo" parameterType="map" resultMap="themeInfo">
 		SELECT
 			TM.THEME_ID, TM.THEME_NM, TM.THEME_CMT, TM.WALLPAPER, WM.WALLPAPER_NM, FM.FILE_NM AS WALLPAPERFILENAME,
 			TM.MOD_USER_ID, TM.MOD_DT, TM.REG_USER_ID, TM.REG_DT, #{ICON_ADDRESS} AS ICON_ADDRESS

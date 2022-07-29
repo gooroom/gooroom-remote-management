@@ -185,4 +185,8 @@ public class Constant {
 	public static final String IP_HIT_SPAN = prop.getProperty("gooroom.ip.hit.span");
 	
 	public static final String SCHED_INFO_TIMEOUT = prop.getProperty("gooroom.sched.info.timeout");
+	// icon path
+	public static final String ICON_SERVER_PROTOCOL = prop.getProperty("gooroom.theme.icon.server.protocol");
+	public static final String ICON_SERVERPATH = prop.getProperty("gooroom.theme.icon.server.path");
+	public static final String PATH_FOR_ICONURL = prop.getProperty("gooroom.theme.icon.url.path");
 }

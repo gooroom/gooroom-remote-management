@@ -1,6 +1,7 @@
 package kr.gooroom.gpms.grm.serveragent.service.impl;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -181,8 +182,8 @@ public class ClientJobServiceImpl implements ClientJobService {
 	}
 
 	@Override
-	public ThemeVO selectThemeInfo(String themeId) throws Exception {
-		return clientJobDAO.selectThemeInfo(themeId);
+	public ThemeVO selectThemeInfo(HashMap<String, Object> options) throws Exception {
+		return clientJobDAO.selectThemeInfo(options);
 	}
 	
 	@Override

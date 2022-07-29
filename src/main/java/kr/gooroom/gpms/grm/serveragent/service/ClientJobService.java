@@ -1,5 +1,6 @@
 package kr.gooroom.gpms.grm.serveragent.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public interface ClientJobService {
 	public List<String> selectAppBlackList(ClientLoginVO clVo) throws Exception;
 	public String selectHomefolderOperation(String clientId) throws Exception;
 	public List<String> selectIpWhiteList(String clientId) throws Exception;
-	public ThemeVO selectThemeInfo(String themeId) throws Exception;
+	public ThemeVO selectThemeInfo(HashMap<String, Object> options) throws Exception;
 	public SchedInfoVO selectSchedInfo(String clientId) throws Exception;
 	public int insertSchedInfo(SchedInfoVO schedInfo) throws Exception;
 	public int updateSchedInfo(List<SchedInfoVO> schedInfo) throws Exception;

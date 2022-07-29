@@ -324,7 +324,21 @@ public class Tasker {
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				String themeId = (String)moduleRequest.get("theme_id");
 
-				ThemeVO themeVO = clientJobService.selectThemeInfo(themeId);
+				StringBuffer sb = new StringBuffer();
+				sb.append(Constant.ICON_SERVER_PROTOCOL).append("://");
+				sb.append(Constant.ICON_SERVERPATH).append("/");
+				sb.append(Constant.PATH_FOR_ICONURL).append("/");
+
+				HashMap<String, Object> options = new HashMap<String, Object>();
+				options.put("themeId", themeId);
+				options.put("ICON_ADDRESS", sb.toString());
+				ThemeVO themeVO = clientJobService.selectThemeInfo(options);
+
+				sb.append(themeVO.getWallpaperFileNm());
+
+				// create theme url by filepath and filename
+				themeVO.setWallpaperUrl(sb.toString());
+
 				jOut.put("theme_info", new ObjectMapper().writeValueAsString(themeVO));
 				task.put(Constant.J_RESPONSE, jOut);
 			}
