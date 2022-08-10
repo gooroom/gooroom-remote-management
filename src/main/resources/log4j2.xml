@@ -7,7 +7,7 @@
                 <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
             </PatternLayout>
         </Console>
-        <RollingRandomAccessFile name="LogApp" fileName="logs/app.log" filePattern="app-%d{yyyy-MM-dd_HH}_%i.log" immediateFlush="false" append="true" ignoreExceptions="false">
+        <RollingRandomAccessFile name="LogApp" fileName="${sys:LOG_PATH}/app.log" filePattern="${sys:LOG_PATH}/app-%d{yyyy-MM-dd_HH}_%i.log" immediateFlush="false" append="true" ignoreExceptions="false">
             <PatternLayout>
                 <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
             </PatternLayout>
@@ -18,7 +18,7 @@
             <DefaultRolloverStrategy max="500"/>
         </RollingRandomAccessFile>
 
-        <RollingRandomAccessFile name="Exception" fileName="logs/excetpion.log" filePattern="exception-%d{yyyy-MM-dd_HH}_%i.log" immediateFlush="false" append="true" ignoreExceptions="false">
+        <RollingRandomAccessFile name="Exception" fileName="${sys:LOG_PATH}/excetpion.log" filePattern="${sys:LOG_PATH}/exception-%d{yyyy-MM-dd_HH}_%i.log" immediateFlush="false" append="true" ignoreExceptions="false">
             <PatternLayout>
                 <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
             </PatternLayout>
