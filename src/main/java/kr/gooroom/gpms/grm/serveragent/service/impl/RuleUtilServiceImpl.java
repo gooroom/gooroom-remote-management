@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import kr.gooroom.gpms.common.utils.Constant;
 import kr.gooroom.gpms.grm.serveragent.service.*;

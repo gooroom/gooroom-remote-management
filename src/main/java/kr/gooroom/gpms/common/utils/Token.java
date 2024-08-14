@@ -1,22 +1,21 @@
 package kr.gooroom.gpms.common.utils;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.xml.bind.DatatypeConverter;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.jsonwebtoken.Claims;
-//import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 public class Token {
 
@@ -46,16 +45,9 @@ public class Token {
 	    Date now = new Date(nowMillis);
 	    logger.debug("now={}", now);
 
-		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-	    //byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(clientIp + salt);
-	    byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(salt);
-	    Key key = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
-	    
-	    JwtBuilder builder = Jwts.builder().setId(clientId)
-	                                .setIssuer(issuer)
-	                                .setExpiration(now)
-	                                .signWith(signatureAlgorithm, key);
-	 
+		byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(salt );
+		Key key = new SecretKeySpec(apiKeySecretBytes, HmacAlgorithms.HMAC_SHA_256.toString());
+		JwtBuilder builder = Jwts.builder().id(clientId).issuer(issuer).expiration(now).signWith(key);
 	    logger.debug("TOKEN CREATED client_id={}", clientId);
 	    return builder.compact();
 	}
@@ -68,20 +60,8 @@ public class Token {
      * @throws JwtException
      */   
 	public String parseToken(String token, String clientIp) throws Exception {
-		//logger.info("parsing ip={}", clientIp);
-		/*
-	    Claims claims = Jwts.parser()         
-	       .setSigningKey(DatatypeConverter.parseBase64Binary(clientIp + salt))
-	       .parseClaimsJws(token).getBody();
-	    */
-	    Claims claims = Jwts.parser()         
-	 	       .setSigningKey(DatatypeConverter.parseBase64Binary(salt))
-	 	       .parseClaimsJws(token).getBody();
-	    
-	    //logger.debug("ID: " + claims.getId());
-	    //logger.debug("Issuer: " + claims.getIssuer());
-	    //logger.debug("Expiration: " + claims.getExpiration());
-	    
-	    return claims.getId(); //clientId
+		SecretKey secretKey = Keys.hmacShaKeyFor(DatatypeConverter.parseBase64Binary( salt));
+		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+	    return claims.getId();
 	}
 }

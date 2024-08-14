@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import kr.gooroom.gpms.grm.serveragent.service.JobVO;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.StringWriter;
 import java.util.HashMap;
 

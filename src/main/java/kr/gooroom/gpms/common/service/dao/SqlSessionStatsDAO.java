@@ -1,6 +1,6 @@
 package kr.gooroom.gpms.common.service.dao;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.mybatis.spring.SqlSessionTemplate;
 

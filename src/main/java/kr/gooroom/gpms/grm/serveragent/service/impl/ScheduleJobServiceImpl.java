@@ -2,7 +2,7 @@ package kr.gooroom.gpms.grm.serveragent.service.impl;
 
 import java.util.HashMap;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import kr.gooroom.gpms.grm.serveragent.service.ScheduleJobService;
 

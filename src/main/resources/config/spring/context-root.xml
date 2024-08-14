@@ -4,8 +4,8 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 	
 	<context:component-scan base-package="kr.gooroom.gpms" />
 	<task:annotation-driven />
@@ -42,22 +42,23 @@
             </list>
         </property>
     </bean>
-	
+
 	<!-- Meta DataSource Configuration -->
-	<bean id="dataSourceMeta" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	<bean id="dataSourceMeta" class="org.apache.commons.dbcp2.BasicDataSource"
+		  destroy-method="close">
 		<property name="driverClassName" value="${metadb.driverClassName}" />
 		<property name="url" value="${metadb.url}" />
 		<property name="username" value="${metadb.username}" />
 		<property name="password" value="${metadb.password}" />
 		<property name="initialSize" value="${metadb.initialSize}" />
-		<property name="maxActive" value="${metadb.maxActive}" />
+		<property name="maxTotal" value="${metadb.maxActive}" />
 		<property name="maxIdle" value="${metadb.maxIdle}" />
 		<property name="minIdle" value="${metadb.minIdle}" />
-		<property name="maxWait" value="${metadb.maxWait}" />
 		<property name="poolPreparedStatements" value="true"></property>
 		<property name="maxOpenPreparedStatements" value="50"></property>
+		<property name="validationQuery" value="select 1" ></property>
 	</bean>
-	
+
 	<!-- meta 데이터베이스 -->
 	<bean id="sqlSessionFactoryMeta" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSourceMeta" />
