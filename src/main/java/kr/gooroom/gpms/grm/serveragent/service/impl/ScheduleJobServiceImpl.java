@@ -13,52 +13,52 @@ public class ScheduleJobServiceImpl implements ScheduleJobService {
     private ScheduleJobDAO scheduleJobDAO;
 	
 	@Override
-	public int copyFinishedJobTrgtToHist(int storagePeriod) throws Exception {
+	public int copyFinishedJobTrgtToHist(int storagePeriod) {
 		return scheduleJobDAO.copyFinishedJobTrgtToHist(storagePeriod);
 	}
 	
 	@Override
-	public int deleteFinishedJobTrgt(int storagePeriod) throws Exception {
+	public int deleteFinishedJobTrgt(int storagePeriod) {
 		return scheduleJobDAO.deleteFinishedJobTrgt(storagePeriod);
 	}
 	
 	@Override
-	public int copyAbnormalClientJobTrgtToHist() throws Exception {
+	public int copyAbnormalClientJobTrgtToHist() {
 		return scheduleJobDAO.copyAbnormalClientJobTrgtToHist();
 	}
 	
 	@Override
-	public int deleteAbnormalClientJobTrgt() throws Exception {
+	public int deleteAbnormalClientJobTrgt() {
 		return scheduleJobDAO.deleteAbnormalClientJobTrgt();
 	}
 	
 	@Override
-	public int copyFinishedJobMstrToHist() throws Exception {
+	public int copyFinishedJobMstrToHist() {
 		return scheduleJobDAO.copyFinishedJobMstrToHist();
 	}
 	
 	@Override
-	public int deleteFinishedJobMstr() throws Exception {
+	public int deleteFinishedJobMstr() {
 		return scheduleJobDAO.deleteFinishedJobMstr();
 	}
 	
 	@Override
-	public int deleteFinishedSchedJobTrgt() throws Exception {
+	public int deleteFinishedSchedJobTrgt() {
 		return scheduleJobDAO.deleteFinishedSchedJobTrgt();
 	}
 	
 	@Override
-	public int deleteFinishedSchedJobMstr() throws Exception {
+	public int deleteFinishedSchedJobMstr() {
 		return scheduleJobDAO.deleteFinishedSchedJobMstr();
 	}
 	
 	@Override
-	public int copyAllFinishedJobTrgtToBk(HashMap<String, Integer> periods) throws Exception {
+	public int copyAllFinishedJobTrgtToBk(HashMap<String, Integer> periods) {
 		return scheduleJobDAO.copyAllFinishedJobTrgtToBk(periods);
 	}
 	
 	@Override
-	public int deleteAllFinishedJobTrgt(HashMap<String, Integer> periods) throws Exception {
+	public int deleteAllFinishedJobTrgt(HashMap<String, Integer> periods) {
 		return scheduleJobDAO.deleteAllFinishedJobTrgt(periods);
 	}
 }

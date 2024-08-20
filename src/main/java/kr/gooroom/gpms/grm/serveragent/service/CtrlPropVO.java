@@ -1,11 +1,13 @@
 package kr.gooroom.gpms.grm.serveragent.service;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
-@SuppressWarnings("serial")
 public class CtrlPropVO implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = -6932027365313951849L;
     private String objId;
 
     private String propId;

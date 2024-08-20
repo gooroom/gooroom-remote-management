@@ -1,9 +1,12 @@
 package kr.gooroom.gpms.grm.serveragent.service;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class UserReqVO implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 7048919778783026315L;
     private String reqSeq;
     private String userId;
     private String clientId;

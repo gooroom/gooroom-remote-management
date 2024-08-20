@@ -75,7 +75,7 @@ public class Tasker {
 			HashMap<String,Object> task) {
 		
 		String taskName = (String)task.get(Constant.J_TASKN);
-		HashMap<String, Object> jOut = new HashMap<String, Object>();
+		HashMap<String, Object> jOut = new HashMap<>();
 		
 		/* 
 		 * CLIENT_SYNC
@@ -105,13 +105,13 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_GET_SERVER_TIME)) {
 			try {
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 				jRes.put("time", serverTime());
 				task.put(Constant.J_RESPONSE, jRes);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_PROFILING, e.toString());
+				return String.format("%s=%s", Constant.TASK_PROFILING, e);
 			}
 		}
 		/*
@@ -125,7 +125,7 @@ public class Tasker {
 				String profileNo = (String)moduleRequest.get("profile_no");
 				
 				//String id = (String)moduleRequest.get("id");
-				List<ProfileVO> profileVoList = new ArrayList<ProfileVO>();
+				List<ProfileVO> profileVoList = new ArrayList<>();
 				
 				for (String pkg : packageList) {				
 					String[] pkgSplited = pkg.split(",");
@@ -147,7 +147,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_PROFILING_PACKAGES, e.toString());
+				return String.format("%s=%s", Constant.TASK_PROFILING_PACKAGES, e);
 			}
 		}
 		/*
@@ -170,7 +170,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_PROFILING, e.toString());
+				return String.format("%s=%s", Constant.TASK_PROFILING, e);
 			}
 		}
 		/*
@@ -180,9 +180,9 @@ public class Tasker {
 		else if (taskName.equals(Constant.TASK_SET_APT_CONF) 
 				|| taskName.equals(Constant.TASK_SET_GPG_KEY)) {
 			
-			HashMap<String, Object> jRes = new HashMap<String, Object>();
+			HashMap<String, Object> jRes = new HashMap<>();
 			String resultMsg = mainUpdateServerUrls(clientJobService, clientId, jRes);
-			if (resultMsg != TASK_SUCCESS) {
+			if (!resultMsg.equals(TASK_SUCCESS)) {
 				return resultMsg;
 			}
 			task.put(Constant.J_RESPONSE, jRes);
@@ -204,7 +204,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_PASSWORD_CYCLE, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_PASSWORD_CYCLE, e);
 			}
 		}
 		/*
@@ -225,7 +225,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_SCREEN_TIME, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_SCREEN_TIME, e);
 			}
 		}
 		/*
@@ -256,7 +256,7 @@ public class Tasker {
 						Constant.TASK_GET_UPDATE_OPERATION, 
 						Constant.TASK_GET_UPDATE_OPERATION_WITH_LOGINID, 
 						Constant.TASK_TELL_UPDATE_OPERATION,
-						e.toString());
+						e);
 			}
 		}
 		/*
@@ -267,9 +267,9 @@ public class Tasker {
 			try {
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				String loginId = (String)moduleRequest.get("login_id");
-				ArrayList<String> fileNameList = new ArrayList<String>();		
-				ArrayList<String> fileContentsList = new ArrayList<String>();
-				ArrayList<String> signatureList = new ArrayList<String>();
+				ArrayList<String> fileNameList = new ArrayList<>();
+				ArrayList<String> fileContentsList = new ArrayList<>();
+				ArrayList<String> signatureList = new ArrayList<>();
 				
 				String resultMsg = browserConfig(
 						ruleUtilService, 
@@ -289,7 +289,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_BROWSER_CONFIG, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_BROWSER_CONFIG, e);
 			}
 		}
 		/*
@@ -312,7 +312,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_MEDIA_CONFIG, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_MEDIA_CONFIG, e);
 			}
 		}
 		/*
@@ -324,12 +324,12 @@ public class Tasker {
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				String themeId = (String)moduleRequest.get("theme_id");
 
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				sb.append(Constant.ICON_SERVER_PROTOCOL).append("://");
 				sb.append(Constant.ICON_SERVERPATH).append("/");
 				sb.append(Constant.PATH_FOR_ICONURL).append("/");
 
-				HashMap<String, Object> options = new HashMap<String, Object>();
+				HashMap<String, Object> options = new HashMap<>();
 				options.put("themeId", themeId);
 				options.put("ICON_ADDRESS", sb.toString());
 				ThemeVO themeVO = clientJobService.selectThemeInfo(options);
@@ -344,7 +344,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_THEME_INFO, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_THEME_INFO, e);
 			}
 		}
 		/*
@@ -360,7 +360,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_SERVER_CERTIFICATE, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_SERVER_CERTIFICATE, e);
 			}
 		}
 		/*
@@ -482,7 +482,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_CLIENT_INFO, e.toString());
+				return String.format("%s=%s", Constant.TASK_CLIENT_INFO, e);
 			}
 		}
 		/*
@@ -495,11 +495,11 @@ public class Tasker {
 				String userId = (String)req.get("user_id");
 				HashMap<String, List<String>> logs = (HashMap<String, List<String>>)req.get("logs");
 				
-				List<LogGeneralVO> vos = new ArrayList<LogGeneralVO>();
+				List<LogGeneralVO> vos = new ArrayList<>();
 				
 				for (Map.Entry<String, List<String>> entry : logs.entrySet()) {
 					String logItem = entry.getKey();
-					List<String> logValueList = (List<String>)entry.getValue();
+					List<String> logValueList = entry.getValue();
 					
 					for (String lv : logValueList) {
 						String[] splited = lv.split(",,,");
@@ -518,7 +518,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GOOROOM_LOG, e.toString());
+				return String.format("%s=%s", Constant.TASK_GOOROOM_LOG, e);
 			}
 		}
 		/*
@@ -564,7 +564,7 @@ public class Tasker {
 						Constant.J_MEDIA_LOG, 
 						Constant.J_AGENT_LOG};
 				
-				List<LogSecurity2VO> logSecurity2VoList = new ArrayList<LogSecurity2VO>();
+				List<LogSecurity2VO> logSecurity2VoList = new ArrayList<>();
 				
 				for (String logItem : logItems) {
 					ArrayList<HashMap<String,Object>> logs = 
@@ -600,7 +600,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_SECURITY_LOG, e.toString());
+				return String.format("%s=%s", Constant.TASK_SECURITY_LOG, e);
 			}
 		}
 		/*
@@ -641,7 +641,7 @@ public class Tasker {
 				clientJobService.insertClientSecurityStateHist(clientId);
 				
 				//SECURITY LOG
-				List<LogSecurityVO> logSecurityVoList = new ArrayList<LogSecurityVO>();
+				List<LogSecurityVO> logSecurityVoList = new ArrayList<>();
 				if (osLog != null && osLog.length() > 0) {
 					LogSecurityVO vo = new LogSecurityVO();
 					vo.setClientId(clientId);
@@ -685,7 +685,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_SUMMARY_LOG, e.toString());
+				return String.format("%s=%s", Constant.TASK_SUMMARY_LOG, e);
 			}
 		}
 		/*
@@ -694,10 +694,10 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_GET_UPDATE_SERVER_CONFIG)) {
 			try {
-				ArrayList<String> fileNameList = new ArrayList<String>();
-				ArrayList<String> fileContentsList = new ArrayList<String>();
-				ArrayList<String> signatureList = new ArrayList<String>();
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				ArrayList<String> fileNameList = new ArrayList<>();
+				ArrayList<String> fileContentsList = new ArrayList<>();
+				ArrayList<String> signatureList = new ArrayList<>();
+				HashMap<String, Object> jRes = new HashMap<>();
 				
 				updateServerInfo(clientJobService, clientId, fileNameList, fileContentsList, signatureList);
 				
@@ -708,7 +708,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_UPDATE_SERVER_CONFIG, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_UPDATE_SERVER_CONFIG, e);
 			}
 		}
 		/*
@@ -718,14 +718,14 @@ public class Tasker {
 		else if (taskName.equals(Constant.TASK_APPEND_CONTENTS_ETC_HOSTS)) {
 			try {
 				String etcHosts = clientJobService.selectEtcHostsContents(clientId);
-				HashMap<String, Object> jIn = new HashMap<String, Object>();
+				HashMap<String, Object> jIn = new HashMap<>();
 				jIn.put("file_contents", etcHosts);
 				jIn.put("signature", signing(etcHosts));
 				task.put(Constant.J_RESPONSE, jIn);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_APPEND_CONTENTS_ETC_HOSTS, e.toString());
+				return String.format("%s=%s", Constant.TASK_APPEND_CONTENTS_ETC_HOSTS, e);
 			}
 		}
 		/*
@@ -735,13 +735,13 @@ public class Tasker {
 		else if (taskName.equals(Constant.TASK_SET_AUTHORITY_CONFIG)) {
 			try {
 				boolean init = true;
-				ArrayList<String> fileNameList = new ArrayList<String>();
-				ArrayList<String> fileContentsList = new ArrayList<String>();
-				ArrayList<String> signatureList = new ArrayList<String>();
+				ArrayList<String> fileNameList = new ArrayList<>();
+				ArrayList<String> fileContentsList = new ArrayList<>();
+				ArrayList<String> signatureList = new ArrayList<>();
 				
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				String loginId = (String)moduleRequest.get("login_id");
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 				
 				securityConfig(ruleUtilService, init, loginId, clientId, fileNameList, fileContentsList, signatureList);
 				
@@ -768,7 +768,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_SET_AUTHORITY_CONFIG, e.toString());
+				return String.format("%s=%s", Constant.TASK_SET_AUTHORITY_CONFIG, e);
 			}
 		}
 		/*
@@ -779,8 +779,8 @@ public class Tasker {
 			try {
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				List<String> packageList = (List<String>)moduleRequest.get("pkg_list");
-				List<PackageVO> packageVoList = new ArrayList<PackageVO>();
-				List<PackageVO> packageVoDelList = new ArrayList<PackageVO>();
+				List<PackageVO> packageVoList = new ArrayList<>();
+				List<PackageVO> packageVoDelList = new ArrayList<>();
 				
 				String requestId = (String)moduleRequest.get("id");
 				if (requestId.equals("installed")) {
@@ -828,7 +828,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_UPDATE_PACKAGE_VERSION_TO_SERVER, e.toString());
+				return String.format("%s=%s", Constant.TASK_UPDATE_PACKAGE_VERSION_TO_SERVER, e);
 			}
 		}
 		/*
@@ -840,7 +840,7 @@ public class Tasker {
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				List<String> packageList = (List<String>)moduleRequest.get("pkg_list");
 				String id = (String)moduleRequest.get("id");
-				List<PackageVO> packageVoList = new ArrayList<PackageVO>();
+				List<PackageVO> packageVoList = new ArrayList<>();
 				
 				for (String pkg : packageList) {				
 					String[] pkgSplited = pkg.split(",");
@@ -876,7 +876,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_INSERT_ALL_PACKAGES_TO_SERVER, e.toString());
+				return String.format("%s=%s", Constant.TASK_INSERT_ALL_PACKAGES_TO_SERVER, e);
 			}
 		}
 		/*
@@ -885,14 +885,14 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_GET_SERVERJOB_DISPATCH_TIME)) {
 			try {				
-				HashMap<String, Object> jIn = new HashMap<String, Object>();
+				HashMap<String, Object> jIn = new HashMap<>();
 				String dispatchTime = clientJobService.selectOneServerjobDispatchTime(Constant.SITE_NAME);
 				jIn.put("dispatch_time", dispatchTime);
 				task.put(Constant.J_RESPONSE, jIn);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_SERVERJOB_DISPATCH_TIME, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_SERVERJOB_DISPATCH_TIME, e);
 			}
 		}
 		/*
@@ -901,20 +901,23 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_GET_HYPERVISOR_OPERATION)) {
 			try {				
-				HashMap<String, Object> jIn = new HashMap<String, Object>();
+				HashMap<String, Object> jIn = new HashMap<>();
+				/*
 				String operation = "true";//clientJobService.selectHypervisorOperation(clientId);
-				if (operation == null || operation.equals("true")) {
+				if (operation.equals("true")) {
 					operation = "enable";
 				}
 				else {
 					operation = "disable";
 				}
+				 */
+				String operation = "enable";
 				jIn.put("operation", operation);
 				task.put(Constant.J_RESPONSE, jIn);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_HYPERVISOR_OPERATION, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_HYPERVISOR_OPERATION, e);
 			}
 		}
 		/*
@@ -930,7 +933,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_CLEAR_SECURITY_ALARM, e.toString());
+				return String.format("%s=%s", Constant.TASK_CLEAR_SECURITY_ALARM, e);
 			}
 		}
 		/*
@@ -943,25 +946,25 @@ public class Tasker {
 			try {
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				String loginId = (String)moduleRequest.get("login_id");
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 
 				ClientLoginVO clVo = new ClientLoginVO();
 				clVo.setClientId(clientId);
 				clVo.setLoginId(loginId);
 				List<String> blackList = clientJobService.selectAppBlackList(clVo);
-				String blackListString = "";
+				StringBuilder blackListString = new StringBuilder();
 				for (String desktopId : blackList) {
-					blackListString += String.format("%s,,,", desktopId);
+					blackListString.append(String.format("%s,,,", desktopId));
 				}
 				if (blackListString.length() > 0) {
-					blackListString = StringUtils.substring(blackListString, 0, -1);
+					blackListString = new StringBuilder(StringUtils.substring(blackListString.toString(), 0, -1));
 				}
-				jRes.put("black_list", blackListString);
+				jRes.put("black_list", blackListString.toString());
 				task.put(Constant.J_RESPONSE, jRes);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_APP_LIST, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_APP_LIST, e);
 			}
 		}
 		/*
@@ -970,7 +973,7 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_GET_LOG_CONFIG)) {
 			try {
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 				
 				//로그 설정
 				String logConfig = ruleUtilService.getLogConfigJson(clientId);
@@ -985,7 +988,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_LOG_CONFIG, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_LOG_CONFIG, e);
 			}
 		}
 		/*
@@ -996,7 +999,7 @@ public class Tasker {
 			try {
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				String loginId = (String)moduleRequest.get("login_id");
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 
 				ClientLoginVO cl = new ClientLoginVO();
 				cl.setClientId(clientId);
@@ -1008,11 +1011,11 @@ public class Tasker {
 				//notis
 				List<NotiVO> notis = clientJobService.selectNoti(cl);
 				int disabledTitleViewCnt = 0;
-				HashMap<String, Object> notiInfo = new HashMap<String, Object>();
-				List<HashMap<String, String>> enabledTitleViewNotis = new ArrayList<HashMap<String, String>>();
+				HashMap<String, Object> notiInfo = new HashMap<>();
+				List<HashMap<String, String>> enabledTitleViewNotis = new ArrayList<>();
 				for (NotiVO vo : notis) {
 					if (vo.getViewType().equals("1")) {
-						HashMap<String, String> noti = new HashMap<String, String>();
+						HashMap<String, String> noti = new HashMap<>();
 						noti.put("url", defaultNotiDomain + "#npid=" + vo.getUrl());
 						noti.put("title", vo.getTitle());
 						enabledTitleViewNotis.add(noti);
@@ -1031,7 +1034,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_NOTI, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_NOTI, e);
 			}
 		}
 		/*
@@ -1044,9 +1047,9 @@ public class Tasker {
 				String loginId = (String)moduleRequest.get("login_id");
 				String noticePublishId = (String)moduleRequest.get("notice_publish_id");
 				
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 
-				Map<String, Object> params = new HashMap<String, Object>();
+				Map<String, Object> params = new HashMap<>();
 				params.put("clientId", clientId);
 				params.put("loginId",  loginId);
 				params.put("noticePublishId",  noticePublishId);
@@ -1057,11 +1060,11 @@ public class Tasker {
 				//instance notis
 				List<NotiVO> notis = clientJobService.selectInstanceNoti(params);
 				int disabledTitleViewCnt = 0;
-				HashMap<String, Object> notiInfo = new HashMap<String, Object>();
-				List<HashMap<String, String>> enabledTitleViewNotis = new ArrayList<HashMap<String, String>>();
+				HashMap<String, Object> notiInfo = new HashMap<>();
+				List<HashMap<String, String>> enabledTitleViewNotis = new ArrayList<>();
 				for (NotiVO vo : notis) {
 					if (vo.getViewType().equals("1")) {
-						HashMap<String, String> noti = new HashMap<String, String>();
+						HashMap<String, String> noti = new HashMap<>();
 						noti.put("url", defaultNotiDomain + "#npid=" + vo.getUrl());
 						noti.put("title", vo.getTitle());
 						enabledTitleViewNotis.add(noti);
@@ -1080,7 +1083,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_SET_NOTI, e.toString());
+				return String.format("%s=%s", Constant.TASK_SET_NOTI, e);
 			}
 		}
 		/*
@@ -1092,7 +1095,7 @@ public class Tasker {
 				HashMap<?,?> request = (HashMap<?,?>)task.get(Constant.J_REQUEST);
 				
 				List<String> logs = (List<String>)request.get("logs");
-				List<LogBrowserVO> vos = new ArrayList<LogBrowserVO>();
+				List<LogBrowserVO> vos = new ArrayList<>();
 				
 				for (String log : logs) {
 					logger.debug("SARABAL log={}", log);
@@ -1116,7 +1119,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_BROWSER_URL, e.toString());
+				return String.format("%s=%s", Constant.TASK_BROWSER_URL, e);
 			}
 		}
 		/*
@@ -1127,25 +1130,25 @@ public class Tasker {
 			try {
 				HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get("request");
 				String loginId = (String)moduleRequest.get("login_id");
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 
 				ClientLoginVO clVo = new ClientLoginVO();
 				clVo.setClientId(clientId);
 				clVo.setLoginId(loginId);
 				List<String> controlcenterItems = clientJobService.selectControlcenterItems(clVo);
-				String controlcenterItemsString = "";
+				StringBuilder controlcenterItemsString = new StringBuilder();
 				for (String item : controlcenterItems) {
-					controlcenterItemsString += String.format("%s,", item);
+					controlcenterItemsString.append(String.format("%s,", item));
 				}
 				if (controlcenterItemsString.length() > 0) {
-					controlcenterItemsString = StringUtils.substring(controlcenterItemsString, 0, -1);
+					controlcenterItemsString = new StringBuilder(StringUtils.substring(controlcenterItemsString.toString(), 0, -1));
 				}
-				jRes.put("controlcenter_items", controlcenterItemsString);
+				jRes.put("controlcenter_items", controlcenterItemsString.toString());
 				task.put(Constant.J_RESPONSE, jRes);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_CONTROLCENTER_ITEMS, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_CONTROLCENTER_ITEMS, e);
 			}
 		}
 		/*
@@ -1167,7 +1170,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_POLICYKIT_CONFIG, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_POLICYKIT_CONFIG, e);
 			}
 		}
 		/*
@@ -1187,7 +1190,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_UPDATE_POLLING_TIME, e.toString());
+				return String.format("%s=%s", Constant.TASK_UPDATE_POLLING_TIME, e);
 			}
 		}
 		/*
@@ -1196,7 +1199,7 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_GET_ACCOUNT_CONFIG)) {
 			try {	
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 				String rootUse = clientJobService.selectRootUse(clientId);
 				String sudoUse = clientJobService.selectSudoUse(clientId);
 				jRes.put("root_use", rootUse);
@@ -1205,7 +1208,7 @@ public class Tasker {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_ACCOUNT_CONFIG, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_ACCOUNT_CONFIG, e);
 			}
 		}
 		/*
@@ -1215,14 +1218,14 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_SET_CLEANMODE_CONFIG)) {
 			try {
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 				String cleanModeUse = clientJobService.selectCleanModeUse(clientId);
 				jRes.put("cleanmode_use", cleanModeUse);
 				task.put(Constant.J_RESPONSE, jRes);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_SET_CLEANMODE_CONFIG, e.toString());
+				return String.format("%s=%s", Constant.TASK_SET_CLEANMODE_CONFIG, e);
 			}
 		}
 		/*
@@ -1231,14 +1234,14 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_SET_AUTHORITY_CONFIG_LOCAL)) {
 			try {	
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 				String polkitAdmin = clientJobService.selectPolkitAdmin(clientId);
 				jRes.put("polkit_admin", polkitAdmin);
 				task.put(Constant.J_RESPONSE, jRes);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_SET_AUTHORITY_CONFIG_LOCAL, e.toString());
+				return String.format("%s=%s", Constant.TASK_SET_AUTHORITY_CONFIG_LOCAL, e);
 			}
 		}
 		/*
@@ -1247,14 +1250,14 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_GET_POLKIT_ADMIN_CONFIG)) {
 			try {	
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 				String polkitAdmin = clientJobService.selectPolkitAdmin(clientId);
 				jRes.put("polkit_admin", polkitAdmin);
 				task.put(Constant.J_RESPONSE, jRes);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_POLKIT_ADMIN_CONFIG, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_POLKIT_ADMIN_CONFIG, e);
 			}
 		}
 		/*
@@ -1263,14 +1266,14 @@ public class Tasker {
 		 */
 		else if (taskName.equals(Constant.TASK_GET_USB_WHITELIST_MAX_CONFIG)) {
 			try {
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
+				HashMap<String, Object> jRes = new HashMap<>();
 				String maxMediaCnt = clientJobService.selectOneServerjobMaxMediaCnt(Constant.SITE_NAME);
 				jRes.put("usb_whitelist_max", maxMediaCnt);
 				task.put(Constant.J_RESPONSE, jRes);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_GET_USB_WHITELIST_MAX_CONFIG, e.toString());
+				return String.format("%s=%s", Constant.TASK_GET_USB_WHITELIST_MAX_CONFIG, e);
 			}
 		}
 		/*
@@ -1318,7 +1321,7 @@ public class Tasker {
 					//등록 요청
 					String registerReqMod = clientJobService.selectRegisterReqMod(Constant.SITE_NAME);
 					urVo.setActionType(Constant.ACTION_REGISTERING);
-					if(registerReqMod.equals(new String("1"))) {
+					if(registerReqMod.equals("1")) {
 						//register_req 칼럼 값이 1(자동)일 경우
 						urVo.setAdminCheck(Constant.ACTION_REGISTER_APPROVAL);
 						urVo.setModUserId(Constant.H_SYSTEM);
@@ -1348,7 +1351,7 @@ public class Tasker {
 					//삭제 요청
 					String deteleReqMod = clientJobService.selectDeleteReqMod(Constant.SITE_NAME);
 					urVo.setActionType(Constant.ACTION_UNREGISTERING);
-					if(deteleReqMod.equals(new String("1"))) {
+					if(deteleReqMod.equals("1")) {
 						//delete_req 칼럼 값이 1(자동)일 경우
 						urVo.setAdminCheck(Constant.ACTION_UNREGISTER_APPROVAL);
 						urVo.setModUserId(Constant.H_SYSTEM);
@@ -1406,18 +1409,16 @@ public class Tasker {
 
 				//등록된 모든 요청의 req_seq 정보를 agent에 전달
 				String seqNo = clientJobService.selectReqSeqNo(urVo);
-				HashMap<String, Object> jRes = new HashMap<String, Object>();
-				if(message != null) {
-					jRes.put("message", message);
-					jRes.put("errorcode", errorcode);
-				}
+				HashMap<String, Object> jRes = new HashMap<>();
+				jRes.put("message", message);
+				jRes.put("errorcode", errorcode);
 				jRes.put("req_seq", seqNo);
 				jRes.put("state", state);
 				task.put(Constant.J_RESPONSE, jRes);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return String.format("%s=%s", Constant.TASK_CLIENT_EVENT_USB_WHITELIST, e.toString());
+				return String.format("%s=%s", Constant.TASK_CLIENT_EVENT_USB_WHITELIST, e);
 			}
 		}
 		return Constant.TR_OK;
@@ -1484,7 +1485,7 @@ public class Tasker {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			resultMsg = String.format("%s=%s", Constant.TASK_GET_BROWSER_CONFIG, e.toString());
+			resultMsg = String.format("%s=%s", Constant.TASK_GET_BROWSER_CONFIG, e);
 			
 		}
 		return resultMsg;
@@ -1521,7 +1522,7 @@ public class Tasker {
 		catch (Exception e) {
 			e.printStackTrace();
 			result.put("update_base_urls", "");
-			resultMsg = String.format("%s|%s=%s", Constant.TASK_SET_APT_CONF, Constant.TASK_SET_GPG_KEY, e.toString());
+			resultMsg = String.format("%s|%s=%s", Constant.TASK_SET_APT_CONF, Constant.TASK_SET_GPG_KEY, e);
 		}
 		return resultMsg;
 	}
@@ -1622,19 +1623,12 @@ public class Tasker {
 		if (_privateKey == null) {
 			throw new Exception("THERE IS NO SIGNING KEY");
 		}
-		
-		try {  
-		    Signature signature = Signature.getInstance("SHA256withRSA");
-		    signature.initSign(_privateKey);
-		    signature.update(data.getBytes("UTF-8"));
-		    byte[] bSign = signature.sign();
-		    String sSign = ENCODER.encodeToString(bSign);
-		    
-		    return sSign;
-		}
-		catch (Exception e) {
-			throw e;
-		}
+
+		Signature signature = Signature.getInstance("SHA256withRSA");
+		signature.initSign(_privateKey);
+		signature.update(data.getBytes(StandardCharsets.UTF_8));
+		byte[] bSign = signature.sign();
+		return ENCODER.encodeToString(bSign);
 	}
 	
 	/**
@@ -1654,11 +1648,11 @@ public class Tasker {
 			HashMap<String,Object> task) {
 		
 		try {
-			ArrayList<String> fileNameList = new ArrayList<String>();
-			ArrayList<String> fileContentsList = new ArrayList<String>();
-			ArrayList<String> signatureList = new ArrayList<String>();
-			
-			HashMap<String, Object> jRes = new HashMap<String, Object>();
+			ArrayList<String> fileNameList = new ArrayList<>();
+			ArrayList<String> fileContentsList = new ArrayList<>();
+			ArrayList<String> signatureList = new ArrayList<>();
+
+			HashMap<String, Object> jRes = new HashMap<>();
 			
 			/*
 			 * 클라이언트에 파일로 저장될 모든 정책은 아래 리스트 형식으로 전송
@@ -1722,7 +1716,8 @@ public class Tasker {
 			/*
 			 * 하이퍼바이저 동작유무(gop)
 			 */
-			try {				
+			try {
+				/*
 				String operation = "true";//clientJobService.selectHypervisorOperation(clientId);
 				if (operation == null || operation.equals("true")) {
 					operation = "enable";
@@ -1730,6 +1725,8 @@ public class Tasker {
 				else {
 					operation = "disable";
 				}
+				 */
+				String operation = "enable";
 				jRes.put("hyper_operation", operation);
 			}
 			catch (Exception e) {
@@ -1839,7 +1836,7 @@ public class Tasker {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			return String.format("%s=%s", Constant.TASK_CLIENT_SYNC, e.toString());
+			return String.format("%s=%s", Constant.TASK_CLIENT_SYNC, e);
 		}
 		return Constant.TR_OK;
 	}
@@ -1861,7 +1858,7 @@ public class Tasker {
 			HashMap<String,Object> task) {
 		
 		try {
-			HashMap<String, Object> jRes = new HashMap<String, Object>();
+			HashMap<String, Object> jRes = new HashMap<>();
 			HashMap<?,?> moduleRequest = (HashMap<?,?>)task.get(Constant.J_REQUEST);
 			String loginId = (String)moduleRequest.get("login_id");
 			boolean init = false;
@@ -1870,9 +1867,9 @@ public class Tasker {
 			 * 보안기술요소 설정
 			 */
 			try {
-				ArrayList<String> fileNameList = new ArrayList<String>();
-				ArrayList<String> fileContentsList = new ArrayList<String>();
-				ArrayList<String> signatureList = new ArrayList<String>();
+				ArrayList<String> fileNameList = new ArrayList<>();
+				ArrayList<String> fileContentsList = new ArrayList<>();
+				ArrayList<String> signatureList = new ArrayList<>();
 
 				securityConfig(ruleUtilService, init, loginId, clientId, fileNameList, fileContentsList, signatureList);
 				
@@ -1923,7 +1920,7 @@ public class Tasker {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			return String.format("%s=%s", Constant.TASK_CLIENT_USER_SYNC, e.toString());
+			return String.format("%s=%s", Constant.TASK_CLIENT_USER_SYNC, e);
 		}
 		return Constant.TR_OK;
 	}

@@ -1,10 +1,12 @@
 package kr.gooroom.gpms.grm.serveragent.service;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 
 public class PollingTimeVO implements Serializable{
 
+	@Serial
 	private static final long serialVersionUID = -9095168071704047965L;
 	
 	String clientId;

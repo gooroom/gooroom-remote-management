@@ -1,10 +1,12 @@
 package kr.gooroom.gpms.common.service;
 
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class AgentStatusVO implements Serializable{
 
+	@Serial
 	private static final long serialVersionUID = -4276539527633969279L;
 	
 	private String result ;

@@ -54,9 +54,9 @@
 		<property name="maxTotal" value="${metadb.maxActive}" />
 		<property name="maxIdle" value="${metadb.maxIdle}" />
 		<property name="minIdle" value="${metadb.minIdle}" />
-		<property name="poolPreparedStatements" value="true"></property>
-		<property name="maxOpenPreparedStatements" value="50"></property>
-		<property name="validationQuery" value="select 1" ></property>
+		<property name="poolPreparedStatements" value="true"/>
+		<property name="maxOpenPreparedStatements" value="50"/>
+		<property name="validationQuery" value="select 1" />
 	</bean>
 
 	<!-- meta 데이터베이스 -->

@@ -49,7 +49,7 @@ public class JobScheduler {
 			 * Ready-저장기간이 지난 Ready 상태인
 			 * 동일한 job_id를 가진 모든 타겟을 BK로 복사 후 삭제
 			 */
-			HashMap<String, Integer> periods = new HashMap<String, Integer>();
+			HashMap<String, Integer> periods = new HashMap<>();
 			periods.put("doingPeriod", DOING_PERIOD);
 			periods.put("readyPeriod",  READY_PERIOD);
 			scheduleJobService.copyAllFinishedJobTrgtToBk(periods);

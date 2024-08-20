@@ -28,9 +28,8 @@ public class AuthDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String trmutId
 	 * @return List<AuthVO>
-	 * @throws Exception
 	 */
-	public List<AuthVO> selectTrmut(String trmutId) throws Exception {
+	public List<AuthVO> selectTrmut(String trmutId) {
 		return sqlSessionMeta.selectList("AuthManagerDAO.selectTrmut", trmutId);
 	}
 

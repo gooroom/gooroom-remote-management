@@ -1,10 +1,12 @@
 package kr.gooroom.gpms.grm.serveragent.service;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 
 public class LogBrowserVO implements Serializable{
 
+	@Serial
 	private static final long serialVersionUID = -9016270243313529052L;
 	
 	String clientId;

@@ -1,9 +1,11 @@
 package kr.gooroom.gpms.grm.serveragent.service;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class JobResultVO implements Serializable{
 
+	@Serial
 	private static final long serialVersionUID = -1156268382492615495L;
 
 	private int jobNo = 0;   // job 구분번호

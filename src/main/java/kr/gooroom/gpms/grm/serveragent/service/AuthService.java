@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface AuthService {
 
-	public List<AuthVO> selectTrmut(String trmutId) throws Exception;
+	List<AuthVO> selectTrmut(String trmutId) throws Exception;
 
 }

@@ -19,9 +19,9 @@ import java.util.TimeZone;
 
 public class Token {
 
-	private String salt;
-	private String issuer;
-	private long expInterval;
+	private final String salt;
+	private final String issuer;
+	private final long expInterval;
 
 	private static final Logger logger = LoggerFactory.getLogger(Token.class);
 	
@@ -37,9 +37,8 @@ public class Token {
      * 
      * @param String clientIp, String clientId
      * @return String
-     * @throws JwtException
-     */   
-	public String genToken(String clientIp, String clientId) throws Exception {
+	 */
+	public String genToken(String clientIp, String clientId) {
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 	    long nowMillis = cal.getTimeInMillis() + expInterval;
 	    Date now = new Date(nowMillis);
@@ -57,9 +56,8 @@ public class Token {
      * 
      * @param String token, String clientIp
      * @return String
-     * @throws JwtException
-     */   
-	public String parseToken(String token, String clientIp) throws Exception {
+	 */
+	public String parseToken(String token, String clientIp) {
 		SecretKey secretKey = Keys.hmacShaKeyFor(DatatypeConverter.parseBase64Binary( salt));
 		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
 	    return claims.getId();

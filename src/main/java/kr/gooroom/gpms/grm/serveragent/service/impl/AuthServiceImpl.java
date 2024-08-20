@@ -16,7 +16,7 @@ public class AuthServiceImpl implements AuthService {
     private AuthDAO authDAO;
     
 	@Override
-	public List<AuthVO> selectTrmut(String trmutId) throws Exception {
+	public List<AuthVO> selectTrmut(String trmutId) {
 		return authDAO.selectTrmut(trmutId);
 	}
 

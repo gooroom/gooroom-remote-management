@@ -16,6 +16,7 @@
 
 package kr.gooroom.gpms.grm.serveragent.service;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -28,9 +29,10 @@ import java.util.List;
  * @since 1.8
  */
 
-@SuppressWarnings("serial")
 public class ThemeVO implements Serializable {
 
+	@Serial
+	private static final long serialVersionUID = 3527497253679579298L;
 	private String themeId;
 	private String themeNm;
 	private String themeCmt;

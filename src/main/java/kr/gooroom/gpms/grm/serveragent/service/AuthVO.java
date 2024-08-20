@@ -1,10 +1,12 @@
 package kr.gooroom.gpms.grm.serveragent.service;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 
 public class AuthVO implements Serializable{
 
+	@Serial
 	private static final long serialVersionUID = 3538239955449723982L;
 	
 	private String trmutId;

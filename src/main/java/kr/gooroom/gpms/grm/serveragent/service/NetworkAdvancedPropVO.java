@@ -1,10 +1,12 @@
 package kr.gooroom.gpms.grm.serveragent.service;
 
+import java.io.Serial;
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
 public class NetworkAdvancedPropVO implements Serializable {
 
+	@Serial
+	private static final long serialVersionUID = -1594914635296788007L;
 	private String seq;
     private String cmd;
 

@@ -1,10 +1,12 @@
 package kr.gooroom.gpms.grm.serveragent.service;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 
 public class LogSecurity2VO extends LogBaseVO implements Serializable{
 
+	@Serial
 	private static final long serialVersionUID = 4819226489896542652L;
 
 	private String logDt;

@@ -7,20 +7,20 @@ import org.apache.ibatis.annotations.Param;
 
 public interface ServerJobService {
 
-	public List<JobVO> selectListForClientReady(String clientId) throws Exception;
-	public int updateReadyToDoing(HashMap<String, Object> param) throws Exception;
-	public int updateDoingToComplete(JobVO job) throws Exception;
-	public int insertOrUpdateJobResult(JobTargetVO jobTargetVo) throws Exception;
-	public int insertOrUpdateClientConnStatus(ClientAccessVO cav) throws Exception;
-	public int updateDoingToError(JobVO job) throws Exception;
-	public int insertOrUpdateOnlineClientConnStatus(ClientAccessVO cav) throws Exception;
-	public int insertOrUpdateLocalClientConnStatus(ClientAccessVO cav) throws Exception;
-	public int insertOrUpdateNotLogginedClientConnStatus(ClientAccessVO cav) throws Exception;
-	public int selectIsJob(String clientId) throws Exception;
-	public int updateIsJobTo0(String clientId) throws Exception;
-	public String selectOnlineAccessDiffTime(String clientId) throws Exception;
-	public String selectLocalAccessDiffTime(String clientId) throws Exception;
-	public String selectNotLoginAccessDiffTime(String clientId) throws Exception;
-	public int insertJobTrgt(HashMap<String, Object> param) throws Exception;
-	public int selectPollingTimeColumnCntInClientAccess() throws Exception;
+	List<JobVO> selectListForClientReady(String clientId) throws Exception;
+	int updateReadyToDoing(HashMap<String, Object> param) throws Exception;
+	int updateDoingToComplete(JobVO job) throws Exception;
+	int insertOrUpdateJobResult(JobTargetVO jobTargetVo) throws Exception;
+	int insertOrUpdateClientConnStatus(ClientAccessVO cav) throws Exception;
+	int updateDoingToError(JobVO job) throws Exception;
+	int insertOrUpdateOnlineClientConnStatus(ClientAccessVO cav) throws Exception;
+	int insertOrUpdateLocalClientConnStatus(ClientAccessVO cav) throws Exception;
+	int insertOrUpdateNotLogginedClientConnStatus(ClientAccessVO cav) throws Exception;
+	int selectIsJob(String clientId) throws Exception;
+	int updateIsJobTo0(String clientId) throws Exception;
+	String selectOnlineAccessDiffTime(String clientId) throws Exception;
+	String selectLocalAccessDiffTime(String clientId) throws Exception;
+	String selectNotLoginAccessDiffTime(String clientId) throws Exception;
+	int insertJobTrgt(HashMap<String, Object> param) throws Exception;
+	int selectPollingTimeColumnCntInClientAccess() throws Exception;
 }

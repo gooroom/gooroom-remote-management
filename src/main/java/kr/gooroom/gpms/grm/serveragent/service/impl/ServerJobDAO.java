@@ -32,9 +32,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String clientId
 	 * @return List<JobVO>
-	 * @throws Exception
 	 */
-	public List<JobVO> selectListForClientReady(String clientId) throws Exception {
+	public List<JobVO> selectListForClientReady(String clientId) {
 		return sqlSessionMeta.selectList("ServerJobManagerDAO.selectListForClientReady", clientId);
 	}
 
@@ -43,9 +42,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param HashMap<String, Object> param
 	 * @return int
-	 * @throws Exception
 	 */
-	public int updateReadyToDoing(HashMap<String, Object> param) throws Exception {
+	public int updateReadyToDoing(HashMap<String, Object> param) {
 		return sqlSessionMeta.update("ServerJobManagerDAO.updateReadyToDoing", param);
 	}
 	
@@ -54,9 +52,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param JobVO job
 	 * @return int
-	 * @throws Exception
 	 */
-	public int updateDoingToComplete(JobVO job) throws Exception {
+	public int updateDoingToComplete(JobVO job) {
 		return sqlSessionMeta.update("ServerJobManagerDAO.updateDoingToComplete", job);
 	}
 	
@@ -65,9 +62,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param JobVO job
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertOrUpdateJobResult(JobTargetVO jobTargetVo) throws Exception {
+	public int insertOrUpdateJobResult(JobTargetVO jobTargetVo) {
 		return sqlSessionMeta.insert("ServerJobManagerDAO.insertOrUpdateJobResult", jobTargetVo);
 	}
 	
@@ -76,9 +72,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param ClientAccessVO cav
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertOrUpdateClientConnStatus(ClientAccessVO cav) throws Exception {
+	public int insertOrUpdateClientConnStatus(ClientAccessVO cav) {
 		return sqlSessionMeta.update("ServerJobManagerDAO.insertOrUpdateClientConnStatus", cav);
 	}
 	
@@ -87,9 +82,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param JobVO job
 	 * @return int
-	 * @throws Exception
 	 */
-	public int updateDoingToError(JobVO job) throws Exception {
+	public int updateDoingToError(JobVO job) {
 		return sqlSessionMeta.update("ServerJobManagerDAO.updateDoingToError", job);
 	}
 	
@@ -98,9 +92,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param ClientAccessVO cav
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertOrUpdateOnlineClientConnStatus(ClientAccessVO cav) throws Exception {
+	public int insertOrUpdateOnlineClientConnStatus(ClientAccessVO cav) {
 		return sqlSessionMeta.update("ServerJobManagerDAO.insertOrUpdateOnlineClientConnStatus", cav);
 	}
 	
@@ -109,9 +102,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param ClientAccessVO cav
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertOrUpdateLocalClientConnStatus(ClientAccessVO cav) throws Exception {
+	public int insertOrUpdateLocalClientConnStatus(ClientAccessVO cav) {
 		return sqlSessionMeta.update("ServerJobManagerDAO.insertOrUpdateLocalClientConnStatus", cav);
 	}
 	
@@ -120,9 +112,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param ClientAccessVO cav
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertOrUpdateNotLogginedClientConnStatus(ClientAccessVO cav) throws Exception {
+	public int insertOrUpdateNotLogginedClientConnStatus(ClientAccessVO cav) {
 		return sqlSessionMeta.update("ServerJobManagerDAO.insertOrUpdateNotLogginedClientConnStatus", cav);
 	}
 	
@@ -131,9 +122,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String clientId
 	 * @return int
-	 * @throws Exception
 	 */
-	public int selectIsJob(String clientId) throws Exception {
+	public int selectIsJob(String clientId) {
 		return sqlSessionMeta.selectOne("ServerJobManagerDAO.selectIsJob", clientId);
 	}
 	
@@ -142,9 +132,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String clientId
 	 * @return int
-	 * @throws Exception
 	 */
-	public int updateIsJobTo0(String clientId) throws Exception {
+	public int updateIsJobTo0(String clientId) {
 		return sqlSessionMeta.update("ServerJobManagerDAO.updateIsJobTo0", clientId);
 	}
 	
@@ -153,9 +142,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String clientId
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectOnlineAccessDiffTime(String clientId) throws Exception {
+	public String selectOnlineAccessDiffTime(String clientId) {
 		return sqlSessionMeta.selectOne("ServerJobManagerDAO.selectOnlineAccessDiffTime", clientId);
 	}
 	
@@ -164,9 +152,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String clientId
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectLocalAccessDiffTime(String clientId) throws Exception {
+	public String selectLocalAccessDiffTime(String clientId) {
 		return sqlSessionMeta.selectOne("ServerJobManagerDAO.selectLocalAccessDiffTime", clientId);
 	}
 	
@@ -174,9 +161,8 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 로그인하지않은 클라이언트의 이전 엑세스시간을 조회
 	 * @param String clientId
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectNotLoginAccessDiffTime(String clientId) throws Exception {
+	public String selectNotLoginAccessDiffTime(String clientId) {
 		return sqlSessionMeta.selectOne("ServerJobManagerDAO.selectNotLoginAccessDiffTime", clientId);
 	}
 	
@@ -184,18 +170,16 @@ public class ServerJobDAO extends SqlSessionMetaDAO {
 	 * 전체 JOB일 때 GRM이 job_trgt에 row를 생성
 	 * @param param
 	 * @return
-	 * @throws Exception
 	 */
-	public int insertJobTrgt(HashMap<String, Object> param) throws Exception {
+	public int insertJobTrgt(HashMap<String, Object> param) {
 		return sqlSessionMeta.insert("ServerJobManagerDAO.insertJobTrgt", param);
 	}
 	
 	/**
 	 * client_access 테이블에 polling_time 칼럼의 존재 유무 확인
 	 * @return
-	 * @throws Exception
 	 */
-	public int selectPollingTimeColumnCntInClientAccess() throws Exception {
+	public int selectPollingTimeColumnCntInClientAccess() {
 		return sqlSessionMeta.selectOne("ServerJobManagerDAO.selectPollingTimeColumnCntInClientAccess");
 	}
 }

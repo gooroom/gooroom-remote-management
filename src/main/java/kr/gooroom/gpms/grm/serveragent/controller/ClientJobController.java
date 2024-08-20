@@ -1,16 +1,14 @@
 package kr.gooroom.gpms.grm.serveragent.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import kr.gooroom.gpms.common.service.AgentStatusVO;
+import kr.gooroom.gpms.common.utils.Constant;
+import kr.gooroom.gpms.common.utils.Tasker;
+import kr.gooroom.gpms.common.utils.Token;
+import kr.gooroom.gpms.grm.serveragent.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -19,21 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import kr.gooroom.gpms.common.utils.Token;
-import kr.gooroom.gpms.common.service.AgentStatusVO;
-import kr.gooroom.gpms.common.utils.Constant;
-import kr.gooroom.gpms.common.utils.JobScheduler;
-import kr.gooroom.gpms.common.utils.Tasker;
-import kr.gooroom.gpms.grm.serveragent.service.AuthService;
-import kr.gooroom.gpms.grm.serveragent.service.AuthVO;
-import kr.gooroom.gpms.grm.serveragent.service.ClientAccessVO;
-import kr.gooroom.gpms.grm.serveragent.service.ServerJobService;
-import kr.gooroom.gpms.grm.serveragent.service.JobVO;
-import kr.gooroom.gpms.grm.serveragent.service.RuleUtilService;
-import kr.gooroom.gpms.grm.serveragent.service.ClientJobService;
-import kr.gooroom.gpms.grm.serveragent.service.JobTargetVO;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 
 @Controller
@@ -53,7 +40,7 @@ public class ClientJobController {
     @Resource(name = "ruleUtilService")
     private RuleUtilService ruleUtilService;
     
-    private Token tokenFactory = new Token(
+    private final Token tokenFactory = new Token(
     		Constant.TOKEN_SALT,
     		Constant.TOKEN_ISSUER,
     		Constant.TOKEN_INTERVAL);
@@ -79,13 +66,13 @@ public class ClientJobController {
      * hitCache() 메서드에서 사용
      *  
      */
-    HashMap<String, IpCacheItem> ipCache = new HashMap<String, IpCacheItem>();
+    HashMap<String, IpCacheItem> ipCache = new HashMap<>();
     
     
     /*
      *client job의 task들을 처리하는 객체
      */
-    private Tasker tasker = new Tasker();
+    private final Tasker tasker = new Tasker();
     
     /**
      * 토큰을 복호화해서 토큰의 클라이언트 아이디와 데이터의 클라이언트 아이디가 일치하는 지 조사한다.
@@ -120,7 +107,7 @@ public class ClientJobController {
 					e.getMessage(), 
 					"",
 					"",
-					null, 
+					null,
 					model);
 		}
 		return Constant.TOKEN_SUCCESS;
@@ -169,9 +156,9 @@ public class ClientJobController {
 					Constant.MSG_FAIL, 
 					String.format("Your incoming-ip(%s) is blocked", clientIp), 
 					"", 
-					"", 
 					"",
-					null, 
+					"",
+					null,
 					model);
     	}
     	
@@ -230,7 +217,7 @@ public class ClientJobController {
 				serverJobService.selectListForClientReady(clientId);
 		if (resultList.size() != 0) {
 			for (JobVO vo: resultList) {
-				HashMap<String, Object> param = new HashMap<String, Object>();
+				HashMap<String, Object> param = new HashMap<>();
 				param.put("clientId", clientId);
 				param.put("jobNo", vo.getJobNo());
 				serverJobService.updateReadyToDoing(param);
@@ -313,9 +300,9 @@ public class ClientJobController {
 				Constant.MSG_SUCCESS, 
 				Constant.RSP_OK, 
 				"", 
-				"", 
 				"",
-				null, 
+				"",
+				null,
 				model);
     }
     
@@ -344,7 +331,7 @@ public class ClientJobController {
 		String token = req.getHeader(Constant.H_TOKEN);
 		List<HashMap<String,Object>> reqAgentDataList = 
 				(List<HashMap<String,Object>>)reqBody.get(Constant.AGENT_DATA);
-		HashMap<String,Object> agentData = (HashMap<String,Object>)reqAgentDataList.get(0);
+		HashMap<String,Object> agentData = reqAgentDataList.get(0);
 		String clientId = (String)agentData.get(Constant.AGENT_DATA_CLIENTID);
 
     	/*
@@ -355,9 +342,9 @@ public class ClientJobController {
 					Constant.MSG_FAIL, 
 					String.format("Your incoming-ip(%s) is blocked", clientIp), 
 					"", 
-					"", 
 					"",
-					null, 
+					"",
+					null,
 					model);
     	}
     	
@@ -414,7 +401,7 @@ public class ClientJobController {
 		 */
 		//JOB처리는 성공했고 결과데이터가 있을 경우 
 		if (taskerResult.equals(Constant.TR_OK)) {
-			List<JobVO> agentDataList = new ArrayList<JobVO>();
+			List<JobVO> agentDataList = new ArrayList<>();
 			JobVO rspJob = new JobVO();
 			rspJob.setClientId(clientId);
 			rspJob.setJobNo("-1");
@@ -425,9 +412,9 @@ public class ClientJobController {
 					Constant.MSG_SUCCESS, 
 					Constant.RSP_OK, 
 					"", 
-					"", 
 					"",
-					agentDataList, 
+					"",
+					agentDataList,
 					model);
 		}
 		 //JOB처리는 성공했고 결과데이터가 없을 경우
@@ -436,9 +423,9 @@ public class ClientJobController {
 					Constant.MSG_SUCCESS, 
 					Constant.RSP_OK, 
 					"", 
-					"", 
 					"",
-					null, 
+					"",
+					null,
 					model);
 		}
 		//JOB처리에 실패했을 경우
@@ -447,9 +434,9 @@ public class ClientJobController {
 					Constant.MSG_FAIL, 
 					Constant.RSP_INTERNAL_ERR, 
 					taskerResult, 
-					"", 
 					"",
-					null, 
+					"",
+					null,
 					model);
 
 		}
@@ -486,7 +473,7 @@ public class ClientJobController {
 		/*
 		 * 클라이언트의 아이디와 인증서가 DB에 저장되어 있는 정보와 일치하는 지 확인을 한다.
 		 */
-		List<AuthVO> trmutList = (List<AuthVO>) authService.selectTrmut(clientId);
+		List<AuthVO> trmutList = authService.selectTrmut(clientId);
 		
 		//client_mstr에 클라이언트아이디에 해당하는 정보가 유일해야하고(등록이 정상)
 		//클라이언트의 상태가 정상(STAT010)이어야하며
@@ -507,16 +494,16 @@ public class ClientJobController {
 					Constant.MSG_SUCCESS, 
 					Constant.RSP_OK,
 					"", 
-					"", 
 					"",
-					null, 
+					"",
+					null,
 					model);
 		}
 		else {
 			//인증이 실패하면
-			String trmUtStat = null;
-			String errReason = null;
-			
+			String trmUtStat;
+			String errReason;
+
 			int size = trmutList.size();
 			//클라이언트 등록 정상
 			if (size == 1) {
@@ -544,7 +531,7 @@ public class ClientJobController {
 						"AUTH ERROR clientId=%s clientIp=%s client row number in client_mstr=%s",
 						clientId,
 						clientIp,
-						Integer.toString(size));
+						size);
 			}
 			res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.error(errReason);
@@ -553,9 +540,9 @@ public class ClientJobController {
 					Constant.MSG_FAIL, 
 					Constant.RSP_NOT_AUTH, 
 					errReason, 
-					"", 
 					"",
-					null, 
+					"",
+					null,
 					model);
 		}
 	}
@@ -566,13 +553,12 @@ public class ClientJobController {
      * @param res
      * @param model
      * @return pageJsonView
-     * @throws Exception
-     */   
+	 */
 	@RequestMapping(value = "/server", method = RequestMethod.GET)
 	public String server(
 			HttpServletRequest req
 			,HttpServletResponse res
-			,ModelMap model) throws Exception {
+			,ModelMap model) {
 		String fromIp = req.getHeader(Constant.H_REALIP);
 		logger.info("SERVER STATUS REQUEST from {}", fromIp);
 		return "pageJsonView";
@@ -607,9 +593,9 @@ public class ClientJobController {
 				Constant.MSG_SUCCESS,
 				Constant.RSP_OK,
 				"", 
-				"", 
 				"",
-				null, 
+				"",
+				null,
 				model);
 	}
 	
@@ -627,9 +613,9 @@ public class ClientJobController {
     		String rspStatus, 
     		String rspCode, 
     		String message, 
-    		String prevPollingTime, 
+    		String prevPollingTime,
     		String visaStatus,
-    		List<JobVO> resultList, 
+    		List<JobVO> resultList,
     		ModelMap model)
     {
     	/*
@@ -655,8 +641,8 @@ public class ClientJobController {
      * @return
      */
     private int hitCache(String ip, String clientId) {
-    	IpCacheItem item = null;
-    	boolean isNewIp = false;
+    	IpCacheItem item;
+    	boolean isNewIp;
     	
     	/*
     	 * IP가 key이고 차단상태와 DB를 확인한 시간이 기록된 IpCacheItem이 value인

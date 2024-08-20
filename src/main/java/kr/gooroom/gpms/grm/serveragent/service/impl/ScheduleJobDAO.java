@@ -27,9 +27,8 @@ public class ScheduleJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param int
 	 * @return int
-	 * @throws Exception
 	 */
-	public int copyFinishedJobTrgtToHist(int storagePeriod) throws Exception {
+	public int copyFinishedJobTrgtToHist(int storagePeriod) {
 		return sqlSessionMeta.insert("ScheduleJobManagerDAO.copyFinishedJobTrgtToHist", storagePeriod);
 	}
 	
@@ -38,9 +37,8 @@ public class ScheduleJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param int
 	 * @return int
-	 * @throws Exception
 	 */
-	public int deleteFinishedJobTrgt(int storagePeriod) throws Exception {
+	public int deleteFinishedJobTrgt(int storagePeriod) {
 		return sqlSessionMeta.delete("ScheduleJobManagerDAO.deleteFinishedJobTrgt", storagePeriod);
 	}
 	
@@ -49,9 +47,8 @@ public class ScheduleJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param 
 	 * @return int
-	 * @throws Exception
 	 */
-	public int copyAbnormalClientJobTrgtToHist() throws Exception {
+	public int copyAbnormalClientJobTrgtToHist() {
 		return sqlSessionMeta.insert("ScheduleJobManagerDAO.copyAbnormalClientJobTrgtToHist");
 	}
 	
@@ -60,9 +57,8 @@ public class ScheduleJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param 
 	 * @return int
-	 * @throws Exception
 	 */
-	public int deleteAbnormalClientJobTrgt() throws Exception {
+	public int deleteAbnormalClientJobTrgt() {
 		return sqlSessionMeta.delete("ScheduleJobManagerDAO.deleteAbnormalClientJobTrgt");
 	}
 	
@@ -71,9 +67,8 @@ public class ScheduleJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param 
 	 * @return int
-	 * @throws Exception
 	 */
-	public int copyFinishedJobMstrToHist() throws Exception {
+	public int copyFinishedJobMstrToHist() {
 		return sqlSessionMeta.insert("ScheduleJobManagerDAO.copyFinishedJobMstrToHist");
 	}
 	
@@ -82,9 +77,8 @@ public class ScheduleJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param 
 	 * @return int
-	 * @throws Exception
 	 */
-	public int deleteFinishedJobMstr() throws Exception {
+	public int deleteFinishedJobMstr() {
 		return sqlSessionMeta.delete("ScheduleJobManagerDAO.deleteFinishedJobMstr");
 	}
 	
@@ -93,9 +87,8 @@ public class ScheduleJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param 
 	 * @return int
-	 * @throws Exception
 	 */
-	public int deleteFinishedSchedJobTrgt() throws Exception {
+	public int deleteFinishedSchedJobTrgt() {
 		return sqlSessionMeta.delete("ScheduleJobManagerDAO.deleteFinishedSchedJobTrgt");
 	}
 	
@@ -104,9 +97,8 @@ public class ScheduleJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param 
 	 * @return int
-	 * @throws Exception
 	 */
-	public int deleteFinishedSchedJobMstr() throws Exception {
+	public int deleteFinishedSchedJobMstr() {
 		return sqlSessionMeta.delete("ScheduleJobManagerDAO.deleteFinishedSchedJobMstr");
 	}
 	
@@ -115,9 +107,8 @@ public class ScheduleJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param HashMap<String, Integer>
 	 * @return int
-	 * @throws Exception
 	 */
-	public int copyAllFinishedJobTrgtToBk(HashMap<String,Integer> periods) throws Exception {
+	public int copyAllFinishedJobTrgtToBk(HashMap<String,Integer> periods) {
 		return sqlSessionMeta.insert("ScheduleJobManagerDAO.copyAllFinishedJobTrgtToBk", periods);
 	}
 	
@@ -126,9 +117,8 @@ public class ScheduleJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param HashMap<String, Integer>
 	 * @return int
-	 * @throws Exception
 	 */
-	public int deleteAllFinishedJobTrgt(HashMap<String, Integer> periods) throws Exception {
+	public int deleteAllFinishedJobTrgt(HashMap<String, Integer> periods) {
 		return sqlSessionMeta.delete("ScheduleJobManagerDAO.deleteAllFinishedJobTrgt", periods);
 	}
 	

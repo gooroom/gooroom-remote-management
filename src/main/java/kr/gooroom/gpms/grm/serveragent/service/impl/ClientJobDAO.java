@@ -1,13 +1,12 @@
 package kr.gooroom.gpms.grm.serveragent.service.impl;
 
-import java.sql.SQLException;
+import kr.gooroom.gpms.common.service.dao.SqlSessionMetaDAO;
+import kr.gooroom.gpms.grm.serveragent.service.*;
+import org.springframework.stereotype.Repository;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import kr.gooroom.gpms.grm.serveragent.service.*;
-import org.springframework.stereotype.Repository;
-import kr.gooroom.gpms.common.service.dao.SqlSessionMetaDAO;
 
 /**
  * @Class Name : ClientJobDAO.java
@@ -32,9 +31,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param LogUpdateVO log
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertLogUpdate(LogUpdateVO log) throws Exception {
+	public int insertLogUpdate(LogUpdateVO log) {
 		return sqlSessionMeta.update("ClientJobManagerDAO.insertLogUpdate", log);
 	}
 	
@@ -43,9 +41,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param ClientInfoVO clientInfo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertOrUpdateClientExt(ClientInfoVO clientInfo) throws Exception {
+	public int insertOrUpdateClientExt(ClientInfoVO clientInfo) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertOrUpdateClientExt", clientInfo);
 	}
 	
@@ -54,9 +51,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param 
 	 * @return PackageServerVO
-	 * @throws Exception
 	 */
-	public PackageServerVO selectUpdateServerFiles(String clientId) throws Exception {
+	public PackageServerVO selectUpdateServerFiles(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectUpdateServerFiles", clientId);
 	}
 	
@@ -65,9 +61,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param 
 	 * @return PackageServerVO
-	 * @throws Exception
 	 */
-	public String selectEtcHostsContents(String clientId) throws Exception {
+	public String selectEtcHostsContents(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectEtcHostsContents", clientId);
 	}
 	
@@ -75,10 +70,9 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 인증서 검색
 	 * 
 	 * @param String clientId
-	 * @return String 
-	 * @throws Exception
+	 * @return String
 	 */
-	public String selectCert(String clientId) throws Exception {
+	public String selectCert(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectCert",clientId);
 	}
 	
@@ -87,9 +81,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param List<PackageVO> packageVoList
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertOrUpdatePackage(List<PackageVO> packageVoList) throws Exception {
+	public int insertOrUpdatePackage(List<PackageVO> packageVoList) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertOrUpdatePackage",packageVoList);
 	}
 	
@@ -98,9 +91,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String clientId
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertOrUpdatePackageState(String clientId) throws Exception {
+	public int insertOrUpdatePackageState(String clientId) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertOrUpdatePackageState",clientId);
 	}
 	
@@ -109,9 +101,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param PackageVO packageVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int deletePackage(PackageVO packageVo) throws Exception {
+	public int deletePackage(PackageVO packageVo) {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.deletePackage",packageVo);
 	}
 	
@@ -120,9 +111,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param 
 	 * @return int
-	 * @throws Exception
 	 */
-	public int deletePackageMstr() throws Exception {
+	public int deletePackageMstr() {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.deletePackageMstr");
 	}
 	
@@ -131,9 +121,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param List<PackageVO> packageVoList
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertPackageMstr(List<PackageVO> packageVoList) throws Exception {
+	public int insertPackageMstr(List<PackageVO> packageVoList) {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.insertPackageMstr", packageVoList);
 	}
 	
@@ -142,9 +131,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param List<LogSecurityVO> logSecurityVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertLogSecurity(List<LogSecurityVO> logSecurityVoList) throws Exception {
+	public int insertLogSecurity(List<LogSecurityVO> logSecurityVoList) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertLogSecurity", logSecurityVoList);
 	}
 	
@@ -153,9 +141,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param List<LogSecurityVO> logSecurity2Vo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertLogSecurity2(List<LogSecurity2VO> logSecurity2VoList) throws Exception {
+	public int insertLogSecurity2(List<LogSecurity2VO> logSecurity2VoList) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertLogSecurity2", logSecurity2VoList);
 	}
 	
@@ -164,9 +151,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param List<LogSecurityVO> logSecurityVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertOrUpdateClientSecurityState(ClientSecurityStateVO clientSecurityStateVo) throws Exception {
+	public int insertOrUpdateClientSecurityState(ClientSecurityStateVO clientSecurityStateVo) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertOrUpdateClientSecurityState", clientSecurityStateVo);
 	}
 	
@@ -175,9 +161,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param List<LogSecurityVO> logSecurityVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertOrUpdateClientSecurityStateClear(ClientSecurityStateVO clientSecurityStateVo) throws Exception {
+	public int insertOrUpdateClientSecurityStateClear(ClientSecurityStateVO clientSecurityStateVo) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertOrUpdateClientSecurityStateClear", clientSecurityStateVo);
 	}
 	
@@ -186,9 +171,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String clientId
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertClientExtHist(String clientId) throws Exception {
+	public int insertClientExtHist(String clientId) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertClientExtHist", clientId);
 	}
 	
@@ -197,9 +181,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String clientId
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertClientSecurityStateHist(String clientId) throws Exception {
+	public int insertClientSecurityStateHist(String clientId) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertClientSecurityStateHist", clientId);
 	}
 	
@@ -208,9 +191,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectOneServerjobDispatchTime(String siteName) throws Exception {
+	public String selectOneServerjobDispatchTime(String siteName) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectOneServerjobDispatchTime", siteName);
 	}
 
@@ -219,9 +201,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param String
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectOneServerjobMaxMediaCnt(String siteName) throws Exception {
+	public String selectOneServerjobMaxMediaCnt(String siteName) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectOneServerjobMaxMediaCnt", siteName);
 	}
 
@@ -230,9 +211,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param String
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectRegisterReqMod(String siteName) throws Exception {
+	public String selectRegisterReqMod(String siteName) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectOneServerJobRegisterReqMod", siteName);
 	}
 
@@ -241,9 +221,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param String
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectDeleteReqMod(String siteName) throws Exception {
+	public String selectDeleteReqMod(String siteName) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectOneServerjobDeleteReqMod", siteName);
 	}
 	
@@ -252,9 +231,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param List<LogGeneralVO>
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertLogGeneral(List<LogGeneralVO> vos) throws Exception {
+	public int insertLogGeneral(List<LogGeneralVO> vos) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertLogGeneral", vos);
 	}
 	
@@ -263,9 +241,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectClientCertificate(String clientId) throws Exception {
+	public String selectClientCertificate(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectClientCertificate", clientId);
 	}
 	
@@ -274,9 +251,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectHypervisorOperation(String clientId) throws Exception {
+	public String selectHypervisorOperation(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectHypervisorOperation", clientId);
 	}
 	
@@ -285,9 +261,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param ClientLoginVO
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectUpdateOperation(ClientLoginVO clVo) throws Exception {
+	public String selectUpdateOperation(ClientLoginVO clVo) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectUpdateOperation", clVo);
 	}
 	
@@ -296,9 +271,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String
 	 * @return List<String>
-	 * @throws Exception
 	 */
-	public List<String> selectPackageList(String clientId) throws Exception {
+	public List<String> selectPackageList(String clientId) {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectPackageList", clientId);
 	}
 	
@@ -308,9 +282,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertProfilingPackage(List<ProfileVO> profileVoList) throws Exception {
+	public int insertProfilingPackage(List<ProfileVO> profileVoList) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertProfilingPackage", profileVoList);
 	}
 	
@@ -319,9 +292,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String
 	 * @return List<String>
-	 * @throws Exception
 	 */
-	public List<String> selectProfilingPackageList(String profileNo) throws Exception {
+	public List<String> selectProfilingPackageList(String profileNo) {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectProfilingPackageList", profileNo);
 	}
 	
@@ -330,9 +302,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param String
 	 * @return
-	 * @throws Exception
 	 */
-	public String selectServerVersion(String siteName) throws Exception {
+	public String selectServerVersion(String siteName) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectServerVersion", siteName);
 	}
 	
@@ -342,9 +313,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param ClientLoginVO
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectPasswordCycle(ClientLoginVO clVo) throws Exception {
+	public String selectPasswordCycle(ClientLoginVO clVo) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectPasswordCycle", clVo);
 	}
 	
@@ -353,9 +323,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param ClientLoginVO
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectScreenTime(ClientLoginVO clVo) throws Exception {
+	public String selectScreenTime(ClientLoginVO clVo) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectScreenTime", clVo);
 	}
 	
@@ -364,9 +333,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 
 	 * @param ClientLoginVO
 	 * @return List<String>
-	 * @throws Exception
 	 */
-	public List<String> selectAppBlackList(ClientLoginVO clVo) throws Exception {
+	public List<String> selectAppBlackList(ClientLoginVO clVo) {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectAppBlackList", clVo);
 	}
 	
@@ -374,9 +342,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 홈폴더 초기화 기능 사용 여부 검색
 	 * @param String
 	 * @return String
-	 * @throws Exception
 	 */
-	public String selectHomefolderOperation(String clientId) throws Exception {
+	public String selectHomefolderOperation(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectHomefolderOperation", clientId);
 	}
 	
@@ -384,9 +351,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 아이피 화이트리스트를 검색
 	 * @param clientId
 	 * @return
-	 * @throws Exception
 	 */
-	public List<String> selectIpWhiteList(String clientId) throws Exception {
+	public List<String> selectIpWhiteList(String clientId) {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectIpWhiteList", clientId);
 	}
 
@@ -394,9 +360,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 테마 정보 검색
 	 * @param options
 	 * @return
-	 * @throws Exception
 	 */
-	public ThemeVO selectThemeInfo(HashMap<String, Object> options) throws Exception {
+	public ThemeVO selectThemeInfo(HashMap<String, Object> options) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectThemeInfo", options);
 	}
 	
@@ -404,9 +369,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 스케줄 정보를 검색
 	 * @param clientId
 	 * @return
-	 * @throws Exception
 	 */
-	public SchedInfoVO selectSchedInfo(String clientId) throws Exception {
+	public SchedInfoVO selectSchedInfo(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectSchedInfo", clientId);
 	}
 	
@@ -414,9 +378,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 스케줄 정보를 저장
 	 * @param schedInfo
 	 * @return
-	 * @throws Exception
 	 */
-	public int insertSchedInfo(SchedInfoVO schedInfo) throws Exception {
+	public int insertSchedInfo(SchedInfoVO schedInfo) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertSchedInfo", schedInfo);
 	}
 	
@@ -424,9 +387,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 스케줄 정보를 갱신
 	 * @param schedInfo
 	 * @return
-	 * @throws Exception
 	 */
-	public int updateSchedInfo(List<SchedInfoVO> schedInfo) throws Exception {
+	public int updateSchedInfo(List<SchedInfoVO> schedInfo) {
 		return sqlSessionMeta.update("ClientJobManagerDAO.updateSchedInfo", schedInfo);
 	}
 	
@@ -434,18 +396,16 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 공지정보 조회
 	 * @param vo
 	 * @return
-	 * @throws Exception
 	 */
-	public List<NotiVO> selectNoti(ClientLoginVO vo) throws Exception {
+	public List<NotiVO> selectNoti(ClientLoginVO vo) {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectNoti", vo);
 	}
 	
 	/**
 	 * GPMS DOMAIN 조회
 	 * @return
-	 * @throws Exception
 	 */
-	public String selectDefaultNotiDomain() throws Exception {
+	public String selectDefaultNotiDomain() {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectDefaultNotiDomain");
 	}
 	
@@ -453,9 +413,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 즉시공지정보 조회
 	 * @param params
 	 * @return
-	 * @throws Exception
 	 */
-	public List<NotiVO> selectInstanceNoti(Map<String, Object> params) throws Exception {
+	public List<NotiVO> selectInstanceNoti(Map<String, Object> params) {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectInstanceNoti", params);
 	}
 	
@@ -463,9 +422,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 대용량 브라우저 로그 저장
 	 * @param vos
 	 * @return
-	 * @throws Exception
 	 */
-	public int insertLogBrowser(List<LogBrowserVO> vos) throws Exception {
+	public int insertLogBrowser(List<LogBrowserVO> vos) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertLogBrowser", vos);
 	}
 	
@@ -473,18 +431,16 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 클라이언트 패키지정보 삭제
 	 * @param clientId
 	 * @return
-	 * @throws Exception
 	 */
-	public int deleteClientPackage(String clientId) throws Exception {
+	public int deleteClientPackage(String clientId) {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.deleteClientPackage", clientId);
 	}
 	
 	/**
 	 * 모든 클라이언트 아이디 조회
 	 * @return
-	 * @throws Exception
 	 */
-	public List<String> selectAllClients() throws Exception {
+	public List<String> selectAllClients() {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectAllClients");
 	}
 	
@@ -492,9 +448,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 제어판 항목 조회
 	 * @param clVo
 	 * @return
-	 * @throws Exception
 	 */
-	public List<String> selectControlcenterItems(ClientLoginVO clVo) throws Exception {
+	public List<String> selectControlcenterItems(ClientLoginVO clVo) {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectControlcenterItems", clVo);
 	}
 	
@@ -502,9 +457,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 클라이언트의 폴링타임을 업데이트
 	 * @param vo
 	 * @return
-	 * @throws Exception
 	 */
-	public int updatePollingTime(PollingTimeVO vo) throws Exception {
+	public int updatePollingTime(PollingTimeVO vo) {
 		return sqlSessionMeta.update("ClientJobManagerDAO.updatePollingTime", vo);
 	}
 	
@@ -512,9 +466,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 루트계정 활성화/비활성화
 	 * @param clientId
 	 * @return
-	 * @throws Exception
 	 */
-	public String selectRootUse(String clientId) throws Exception {
+	public String selectRootUse(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectRootUse", clientId);
 	}
 	
@@ -522,9 +475,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * SUDO계정 활성화/비활성화
 	 * @param clientId
 	 * @return
-	 * @throws Exception
 	 */
-	public String selectSudoUse(String clientId) throws Exception {
+	public String selectSudoUse(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectSudoUse", clientId);
 	}
 
@@ -532,9 +484,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 클린모드 활성화/비활성화
 	 * @param clientId
 	 * @return
-	 * @throws Exception
 	 */
-	public String selectCleanModeUse(String clientId) throws Exception {
+	public String selectCleanModeUse(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectCleanModeUse", clientId);
 	}
 
@@ -542,9 +493,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 매체 등록, 삭제 요청의 reqSeq 검색
 	 * @param urmVo
 	 * @return
-	 * @throws Exception
 	 */
-	public String selectUserReqSeq(UserReqVO urmVo) throws Exception {
+	public String selectUserReqSeq(UserReqVO urmVo) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectUserReqSeq", urmVo);
 	}
 
@@ -552,9 +502,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 매체 요청 상세 정보의 reqSeq 검색
 	 * @param urmVo
 	 * @return
-	 * @throws Exception
 	 */
-	public String selectUserReqPropSeq(UserReqVO urmVo) throws Exception {
+	public String selectUserReqPropSeq(UserReqVO urmVo) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectUserReqPropSeq", urmVo);
 	}
 	
@@ -562,9 +511,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 폴킷 관리자 조회
 	 * @param clientId
 	 * @return
-	 * @throws Exception
 	 */
-	public String selectPolkitAdmin(String clientId) throws Exception {
+	public String selectPolkitAdmin(String clientId) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectPolkitAdmin", clientId);
 	}
 
@@ -573,9 +521,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urmVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertUserReqMstr(UserReqVO urmVo) throws Exception {
+	public int insertUserReqMstr(UserReqVO urmVo) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertUserReqMstr", urmVo);
 	}
 
@@ -584,9 +531,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertUserReqProp(UserReqVO urVo) throws Exception {
+	public int insertUserReqProp(UserReqVO urVo) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertUserReqProp", urVo);
 	}
 
@@ -595,9 +541,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urmVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int deleteUserReqMstr(UserReqVO urmVo) throws Exception {
+	public int deleteUserReqMstr(UserReqVO urmVo) {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.deleteUserReqMstr",urmVo);
 	}
 
@@ -606,9 +551,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urmVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int deleteUserReqProp(UserReqVO urmVo) throws Exception {
+	public int deleteUserReqProp(UserReqVO urmVo) {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.deleteUserReqProp",urmVo);
 	}
 
@@ -616,9 +560,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 사용자의 승인/반려된 usb 등록 요청 리스트
 	 * @param urmVo
 	 * @return
-	 * @throws Exception
 	 */
-	public List<UserReqVO> selectUserUsbMediaList(UserReqVO urmVo) throws Exception {
+	public List<UserReqVO> selectUserUsbMediaList(UserReqVO urmVo) {
 		return sqlSessionMeta.selectList("ClientJobManagerDAO.selectUserUsbMediaList", urmVo);
 	}
 
@@ -627,9 +570,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urmVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int updateUserReqProp(UserReqVO urmVo) throws Exception {
+	public int updateUserReqProp(UserReqVO urmVo) {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.updateUserReqProp",urmVo);
 	}
 
@@ -638,9 +580,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urmVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public String selectExistMediaRegisterReq(UserReqVO urmVo) throws Exception {
+	public String selectExistMediaRegisterReq(UserReqVO urmVo) {
 		return sqlSessionMeta.selectOne("selectExistMediaRegisterReq", urmVo);
 	}
 
@@ -649,9 +590,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urmVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public String selectExistMediaUnRegisterReq(UserReqVO urmVo) throws Exception {
+	public String selectExistMediaUnRegisterReq(UserReqVO urmVo) {
 		return sqlSessionMeta.selectOne("selectExistMediaUnRegisterReq", urmVo);
 	}
 
@@ -660,9 +600,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urmVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public String selectExistMedia(UserReqVO urmVo) throws Exception {
+	public String selectExistMedia(UserReqVO urmVo) {
 		return sqlSessionMeta.selectOne("selectExistMedia", urmVo);
 	}
 
@@ -670,9 +609,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 이전에 요청이 있던 USB 매체인지 확인
 	 * @param urmVo
 	 * @return
-	 * @throws Exception
 	 */
-	public String selectRegisteredReqSeq(UserReqVO urmVo) throws Exception {
+	public String selectRegisteredReqSeq(UserReqVO urmVo) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectRegisteredReqSeq", urmVo);
 	}
 
@@ -681,9 +619,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urmVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int updateReqProp(UserReqVO urmVo) throws Exception {
+	public int updateReqProp(UserReqVO urmVo) {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.updateReqProp",urmVo);
 	}
 
@@ -692,9 +629,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urmVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int updateReqMstr(UserReqVO urmVo) throws Exception {
+	public int updateReqMstr(UserReqVO urmVo) {
 		return sqlSessionMeta.delete("ClientJobManagerDAO.updateReqMstr",urmVo);
 	}
 
@@ -703,9 +639,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param reqSeq
 	 * @return int
-	 * @throws Exception
 	 */
-	public UserReqVO selectUserReq(String reqSeq) throws Exception {
+	public UserReqVO selectUserReq(String reqSeq) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectUserReq",reqSeq);
 	}
 
@@ -714,9 +649,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param urVo
 	 * @return int
-	 * @throws Exception
 	 */
-	public int insertUserReqHist(UserReqVO urVo) throws Exception {
+	public int insertUserReqHist(UserReqVO urVo) {
 		return sqlSessionMeta.insert("ClientJobManagerDAO.insertUserReqHist", urVo);
 	}
 
@@ -724,9 +658,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 * 사용자 요청에 대한 seq 검색
 	 * @param urmVo
 	 * @return
-	 * @throws Exception
 	 */
-	public String selectReqSeqNo(UserReqVO urmVo) throws Exception {
+	public String selectReqSeqNo(UserReqVO urmVo) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectReqSeqNo", urmVo);
 	}
 
@@ -735,9 +668,8 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param reqSeq
 	 * @return int
-	 * @throws Exception
 	 */
-	public String selectOnlineClientIdInClientId(String reqSeq) throws Exception {
+	public String selectOnlineClientIdInClientId(String reqSeq) {
 		return sqlSessionMeta.selectOne("ClientJobManagerDAO.selectOnlineClientIdInClientId",reqSeq);
 	}
 
@@ -746,10 +678,9 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param jobVO JobVO job configuration data bean.
 	 * @return long data insert result count.
-	 * @throws SQLException
 	 */
-	public long createJobMaster(JobVO jobVO) throws SQLException {
-		return (long) sqlSessionMeta.insert("ClientJobManagerDAO.insertJobMaster", jobVO);
+	public long createJobMaster(JobVO jobVO) {
+		return sqlSessionMeta.insert("ClientJobManagerDAO.insertJobMaster", jobVO);
 	}
 
 	/**
@@ -757,10 +688,9 @@ public class ClientJobDAO extends SqlSessionMetaDAO {
 	 *
 	 * @param jobVO JobVO job configuration data bean.
 	 * @return long data insert result count.
-	 * @throws SQLException
 	 */
-	public long createJobTarget(JobVO jobVO) throws SQLException {
-		return (long) sqlSessionMeta.insert("ClientJobManagerDAO.insertJobTarget", jobVO);
+	public long createJobTarget(JobVO jobVO) {
+		return sqlSessionMeta.insert("ClientJobManagerDAO.insertJobTarget", jobVO);
 	}
 
 }
