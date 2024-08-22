@@ -34,14 +34,13 @@
 	</bean>
 
 	<!-- Properties Files -->
-    <bean id="propertyConfigurer" class="org.jasypt.spring31.properties.EncryptablePropertyPlaceholderConfigurer">
-        <constructor-arg ref="configurationEncryptor" />
-        <property name="locations">
-            <list>
-                <value>classpath:/properties/db.properties</value>
-            </list>
-        </property>
-    </bean>
+	<bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/properties/db.properties</value>
+			</list>
+		</property>
+	</bean>
 
 	<!-- Meta DataSource Configuration -->
 	<bean id="dataSourceMeta" class="org.apache.commons.dbcp2.BasicDataSource"
@@ -49,7 +48,7 @@
 		<property name="driverClassName" value="${metadb.driverClassName}" />
 		<property name="url" value="${metadb.url}" />
 		<property name="username" value="${metadb.username}" />
-		<property name="password" value="${metadb.password}" />
+		<property name="password" value="#{gpmsEncryptor.decrypt('${metadb.password1}', '${metadb.password2}', '${metadb.salt}')}" />
 		<property name="initialSize" value="${metadb.initialSize}" />
 		<property name="maxTotal" value="${metadb.maxActive}" />
 		<property name="maxIdle" value="${metadb.maxIdle}" />
@@ -74,18 +73,15 @@
 		<constructor-arg ref="sqlSessionFactoryMeta" />
 	</bean>
 	
-	<bean id="environmentVariablesConfiguration" class="org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig">
-        <property name="algorithm" value="PBEWITHMD5ANDDES" />
-        <property name="password" value="GOOROOM_GPMS_PASS_KEY" />
-    </bean>  
-      
-    <bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">  
-       <property name="config" ref="environmentVariablesConfiguration" />  
-    </bean>
-	
 	<!-- org.springframework.jdbc.datasource.DataSourceTransactionManager -->
 	<bean id="transactionManagerMeta" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource"><ref bean="dataSourceMeta"/></property>
 	</bean>
+
+	<bean id="gpmsEncryptor" class="kr.gooroom.encryptor.AESConfig">
+		<constructor-arg ref="configurationEncryptor" />
+	</bean>
+
+	<bean id="configurationEncryptor" class="kr.gooroom.encryptor.AESEncryptor"/>
 	
 </beans>
